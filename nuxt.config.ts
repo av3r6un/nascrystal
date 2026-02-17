@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://av3r6un.github.io/nascrystal',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
       siteName: 'NAS Crystal',
       siteDescription: 'NAS Crystal',
     },

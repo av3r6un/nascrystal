@@ -1,0 +1,292 @@
+<template>
+  <article class="index">
+    <div class="index_banner">
+      <img src="/img/banner.jpg" alt="banner" class="banner base_image">
+      <div class="index_banner-hero__wrapper">
+        <div class="index_banner-hero">
+          <div class="index_banner-title">
+            {{ $t('index.title') }}
+          </div>
+          <p class="index_banner-info">
+            {{ $t('index.banner_info') }}
+          </p>
+          <NuxtLink to="/catalog" class="base_link index_banner-cta">{{ $t('index.cta') }}</NuxtLink>
+        </div>
+      </div>
+    </div>
+    <div class="index_benefits">
+      <div v-for="(b, idx) in $tm('benefits')" :key="idx" class="index_benefits-benefit">
+        <BulletCard :title="$rt(b.title)" :icon="$rt(b.icon)" :info="$rt(b.info)" />
+      </div>
+    </div>
+    <div class="index_categories">
+      <div class="index_categories-title">
+        {{ $t('categories.title') }}
+      </div>
+      <div class="index_categories-wrapper">
+        <div v-for="(c, idx) in $tm('categories.list')" :key="idx" class="index_categories-category">
+          <BulletCard :title="$rt(c.title)" :info="$rt(c.info)" :icon="$rt(c.icon)" reversed />
+        </div>
+      </div>
+    </div>
+    <div class="index_about">
+      <div class="index_about-wrapper">
+        <div class="index_about-image">
+          <img
+            v-if="$te('index_about.image')"
+            :src="$t('index_about.image')"
+            class="base_link"
+          >
+          <div v-else class="index_about-image__blank">
+            <Icon name="nsc:diamond" :size="64" />
+          </div>
+        </div>
+        <div class="index_about-info">
+          <div class="index_about-title">
+            {{ $t('index_about.title') }}
+          </div>
+          <p class="index_about-story">
+            {{ $t('index_about.story') }}
+          </p>
+          <NuxtLink to="/about" class="index_about-cta base_link">
+            {{ $t('index_about.cta') }}
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+    <div class="index_telegram">
+      <div class="index_telegram-title">
+        {{ $t('index_telegram.title') }}
+      </div>
+      <div class="index_telegram-description">
+        {{ $t('index_telegram.info') }}
+      </div>
+      <a :href="$t('index_telegram.link')" class="base_link index_telegram-cta">
+        {{ $t('index_telegram.cta') }}
+      </a>
+    </div>
+  </article>
+</template>
+
+<script>
+export default {
+  name: 'Index',
+  data() {
+    return {};
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.index{
+  &_banner{
+    height: 700px;
+    position: relative;
+    user-select: none;
+    .banner{
+      position: absolute;
+    }
+    &:before{
+      position: absolute;
+      content: '';
+      height: 100%;
+      width: 100%;
+      background: $blur;
+      z-index: 1;
+      backdrop-filter: blur(3px);
+    }
+    &-hero{
+      height: 100%;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 23px;
+      &__wrapper{
+        height: 100%;
+        max-width: $wrapper-width;
+        margin: $wrapper-pos;
+        padding: $wrapper-px0;
+      }
+      @media (max-width: 500px) {
+        align-items: center;
+      }
+    }
+    &-title{
+      font-family: $title-font;
+      color: $brown;
+      font-size: 60px;
+      max-width: 600px;
+      @media (max-width: 575px) {
+        font-size: 40px;
+      }
+      @media (max-width: 500px) {
+        text-align: center;
+      }
+    }
+    &-info{
+      font-size: 18px;
+      font-weight: 300;
+      color: $light-brown;
+      text-shadow: 1px 1px 10px rgba(black, 0.3);
+      @media (max-width: 500px) {
+        text-align: center;
+      }
+    }
+    &-cta{
+      padding: 14px 32px;
+      border-radius: 8px;
+      background: $brown;
+      color: $white;
+      font-weight: 100;
+      box-sizing: border-box;
+      text-transform: uppercase;
+    }
+  }
+  &_benefits{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    align-items: stretch;
+    justify-items: center;
+    max-width: $wrapper-width;
+    margin: $wrapper-pos;
+    padding: $wrapper-px0;
+    padding-top: 112px;
+    padding-bottom: 112px;
+    gap: 24px;
+    cursor: default;
+    @media (max-width: 1240px) {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+    @media (max-width: 1180px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  &_categories{
+    background: $pinky;
+    padding: 112px 0;
+    &-title{
+      font-family: $title-font;
+      font-size: 36px;
+      margin-bottom: 56px;
+      text-align: center;
+      color: $brown;
+    }
+    &-wrapper{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items: stretch;
+      justify-items: center;
+      gap: 24px;
+      max-width: $wrapper-width;
+      margin: $wrapper-pos;
+      padding: $wrapper-px0;
+      @media (max-width: 1180px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+  &_about{
+    background: $pinky;
+    &-wrapper{
+      max-width: $wrapper-width;
+      margin: $wrapper-pos;
+      padding: $wrapper-px0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      padding-top: 112px;
+      padding-bottom: 112px;
+      @media (max-width: 1130px) {
+        flex-direction: column;
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+    }
+    &-info{
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+      max-width: 550px;
+    }
+    &-title{
+      font-family: $title-font;
+      font-size: 30px;
+      font-weight: 300;
+      color: $brown;
+    }
+    &-story{
+      color: $light-brown;
+      font-size: 16px;
+      font-weight: 100;
+    }
+    &-cta{
+      color: #B49764;
+      text-decoration: underline;
+      font-size: 14px;
+      font-weight: 100;
+    }
+    &-image{
+      width: 584px;
+      height: 438px;
+      position: relative;
+      border-radius: 8px;
+      background: $semi-grey;
+      &__blank{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        border-radius: inherit;
+      }
+      @media (max-width: 620px) {
+        width: 95%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+      }
+    }
+  }
+  &_telegram{
+    max-width: $wrapper-width;
+    margin: $wrapper-pos;
+    padding: $wrapper-px64;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    &-title{
+      font-family: $title-font;
+      font-size: 30px;
+      color: $brown
+    }
+    &-description{
+      max-width: 420px;
+      text-align: center;
+      color: $light-brown;
+      font-weight: 100;
+    }
+    &-cta{
+      padding: 14px 32px;
+      border-radius: 8px;
+      background: $brown;
+      color: $white;
+      text-transform: uppercase;
+      font-weight: 100;
+      font-size: 14px;
+    }
+  }
+}
+</style>

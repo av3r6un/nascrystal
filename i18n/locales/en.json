@@ -1,0 +1,40 @@
+{
+  "error": {
+    "go_home": "Return to home page",
+    "404": "Page not found",
+    "500": "Server response error"
+  },
+  "navbar": {
+    "home": "Home",
+    "catalog": "Catalogue",
+    "about": "About us",
+    "delivery": "Prices & Delivery",
+    "contacts": "Contacts"
+  },
+  "work_hours": {
+    "short": "Пн-Пт: 10:00 — 19:00",
+    "long": [
+      "Mon-Fri: 10:00 — 19:00",
+      "Sat: 11:00 — 17:00",
+      "Sun: выходной"
+    ]
+  },
+  "contacts": {
+    "phone": "+7 (900) 123-45-67",
+    "email": "info{'@'}nascrystal.ru",
+    "address": "г. Москва, ул. Тисовая, д. 1",
+    "long": [
+      "+7 (900) 123-45-67",
+      "info{'@'}nascrystal.ru",
+      "г. Москва, ул. Тисовая, д. 1"
+    ]
+  },
+  "footer": {
+    "title": "NAS Crystal",
+    "description": "",
+    "navbar": "Explore",
+    "contact": "Contacts",
+    "work_hours": "Business Hours",
+    "copyright": "© 2026 NAS Crystal. All rights reserved."
+  }
+}

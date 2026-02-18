@@ -76,7 +76,6 @@ export default {
     height: 100%;
     font-size: 18px;
     padding: 20px 40px 0 20px;
-    font-weight: 100;
     color: $light-brown;
     &-item{
       margin-bottom: 8px;

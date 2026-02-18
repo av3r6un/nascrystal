@@ -71,11 +71,11 @@ export default {
     color: $brown;
     font-family: $title-font;
     font-size: 18px;
+    font-weight: bold;
     margin-bottom: 10px;
   }
   &_info{
     color: $light-brown;
-    font-weight: 100;
     font-size: 14px;
     text-align: center;
   }

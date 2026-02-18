@@ -46,7 +46,16 @@ html, div, p, body, article, input, button, textarea, select{
 	border: none;
 	background: none;
 }
-
+input, textarea{
+	outline: none;
+	border: none;
+	background: none;
+	color: inherit;
+}
+textarea{ resize: none; }
 .pre{
 	white-space: pre-wrap;
+}
+iframe{
+	border-radius: inherit;
 }

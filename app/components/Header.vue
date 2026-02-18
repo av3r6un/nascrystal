@@ -126,7 +126,7 @@ export default {
     &-item{
       &.logo{
         font-family: $title-font;
-        font-weight: 300;
+        font-weight: bold;
         font-size: 24px;
         text-transform: none;
         margin-right: auto;
@@ -150,7 +150,6 @@ export default {
         }
       }
       font-family: $text-font;
-      font-weight: 100;
       font-size: 18px;
       text-transform: uppercase;
       color: $light-brown;

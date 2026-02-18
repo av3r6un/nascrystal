@@ -80,7 +80,7 @@ const navbarItems = computed(() => Object.keys(tm('navbar')).slice(1));
       color: $brown;
       font-size: 20px;
       margin-bottom: 15px;
-      font-weight: 500;
+      font-weight: 600;
     }
     &-description{
       max-width: 274px;
@@ -110,7 +110,6 @@ const navbarItems = computed(() => Object.keys(tm('navbar')).slice(1));
     text-align: center;
     margin-top: 48px;
     color: $light-brown;
-    font-weight: 100;
     font-size: 14px;
   }
 }

@@ -128,7 +128,6 @@ export default {
     }
     &-info{
       font-size: 18px;
-      font-weight: 300;
       color: $light-brown;
       text-shadow: 1px 1px 10px rgba(black, 0.3);
       @media (max-width: 500px) {
@@ -224,19 +223,17 @@ export default {
     &-title{
       font-family: $title-font;
       font-size: 30px;
-      font-weight: 300;
+      font-weight: 600;
       color: $brown;
     }
     &-story{
       color: $light-brown;
       font-size: 16px;
-      font-weight: 100;
     }
     &-cta{
       color: #B49764;
       text-decoration: underline;
       font-size: 14px;
-      font-weight: 100;
     }
     &-image{
       width: 584px;
@@ -270,13 +267,13 @@ export default {
     &-title{
       font-family: $title-font;
       font-size: 30px;
+      font-weight: 600;
       color: $brown
     }
     &-description{
       max-width: 420px;
       text-align: center;
       color: $light-brown;
-      font-weight: 100;
     }
     &-cta{
       padding: 14px 32px;

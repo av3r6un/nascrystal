@@ -21,7 +21,9 @@
 </template>
 
 <script lang="ts" setup>
-
+definePageMeta({
+  pageKey: 'prices',
+});
 </script>
 
 <style lang="scss" scoped>

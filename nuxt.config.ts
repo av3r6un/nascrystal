@@ -18,6 +18,13 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
+    head: {
+      titleTemplate: '%s %separator %siteName',
+      templateParams: {
+        separator: '|',
+        siteName: 'NAS Crystal',
+      },
+    },
   },
   css: ['~/assets/main.scss'],
   site: {
@@ -109,6 +116,7 @@ export default defineNuxtConfig({
     ],
   },
   i18n: {
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
     strategy: 'no_prefix',
     defaultLocale: 'ru',
     locales: [

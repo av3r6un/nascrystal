@@ -7,7 +7,7 @@ export default defineAppConfig({
   seo: {
     titleTemplate: '%s - NAS Crystal',
     defaultTitle: 'NAS Crystal',
-    defaultDescription: 'NAS Crystal',
-    ogImage: '/img/nascrystal.png',
+    defaultDescription: 'Премиальные стразы и кристаллы для модных дизайнеров, ателье и танцевальных студий.',
+    ogImage: 'https://nascrystal.ru/img/nascrystal.png',
   },
 });

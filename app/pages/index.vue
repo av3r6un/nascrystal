@@ -68,13 +68,11 @@
   </article>
 </template>
 
-<script>
-export default {
-  name: 'Index',
-  data() {
-    return {};
-  },
-};
+<script lang="ts" setup>
+definePageMeta({
+  alias: ['/home'],
+  pageKey: 'home',
+});
 </script>
 
 <style lang="scss" scoped>

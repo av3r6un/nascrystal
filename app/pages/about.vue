@@ -4,7 +4,7 @@
       {{ $t('about_page.title') }}
     </div>
     <div class="about_slogan">
-      {{ $t('about_page.slogan') }}
+      {{ $t('about_page.description') }}
     </div>
     <div class="about_hero">
       <div class="about_hero-image">
@@ -31,13 +31,10 @@
   </article>
 </template>
 
-<script>
-export default {
-  name: 'About',
-  data() {
-    return {};
-  },
-};
+<script lang="ts" setup>
+definePageMeta({
+  pageKey: 'about',
+});
 </script>
 
 <style lang="scss" scoped>

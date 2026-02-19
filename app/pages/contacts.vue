@@ -80,30 +80,26 @@
   </article>
 </template>
 
-<script>
-export default {
-  name: 'Contacts',
-  data() {
-    return {
-      feedbackForm: {
-        name: null,
-        email: null,
-        message: null,
-      },
-    };
-  },
-  computed: {
-    mapIFrame() {
-      const domain = this.$t('contacts_page.map.domain');
-      const id = this.$t('contacts_page.map.id');
-      const slug = this.$t('contacts_page.map.slug');
-      return `https://${domain}${slug}${id}`;
-    },
-  },
-  methods: {
-    handleForm() {},
-  },
-};
+<script lang="ts" setup>
+const { t } = useI18n();
+definePageMeta({
+  pageKey: 'contacts',
+});
+
+const feedbackForm = reactive({
+  name: null as string | null,
+  email: null as string | null,
+  message: null as string | null,
+});
+
+const mapIFrame = computed(() => {
+  const domain = t('contacts_page.map.domain');
+  const id = t('contacts_page.map.id');
+  const slug = t('contacts_page.map.slug');
+  return `https://${domain}${slug}${id}`;
+});
+
+const handleForm = () => {};
 </script>
 
 <style lang="scss" scoped>

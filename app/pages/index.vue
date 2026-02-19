@@ -1,7 +1,7 @@
 <template>
   <article class="index">
     <div class="index_banner">
-      <img src="/img/banner.jpg" alt="banner" class="banner base_image">
+      <img src="/img/banner.png" alt="banner" class="banner base_image">
       <div class="index_banner-hero__wrapper">
         <div class="index_banner-hero">
           <div class="index_banner-title">

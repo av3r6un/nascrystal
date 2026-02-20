@@ -9,7 +9,7 @@
           {{ title }}
         </div>
         <div class="plate_text">
-          {{ caption }}
+          <slot />
         </div>
       </div>
     </div>
@@ -23,10 +23,6 @@ const props = defineProps({
     default: 'diamond',
   },
   title: {
-    type: String,
-    required: true,
-  },
-  caption: {
     type: String,
     required: true,
   },
@@ -55,9 +51,20 @@ const props = defineProps({
     color: $light-brown;
     font-size: 12px;
   }
+  &_icon{
+    display: flex;
+  }
   &_text{
     font-size: 14px;
     color: $brown;
+    display: flex;
+    gap: 10px;
+    @media screen {
+      @media (max-width: 415px) {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
   }
 }
 </style>

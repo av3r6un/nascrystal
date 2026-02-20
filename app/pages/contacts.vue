@@ -5,30 +5,58 @@
     </div>
     <div class="contacts_wrapper">
       <div class="contacts_info">
-        <BulletPlate
-          icon="phone-big"
-          :title="$t('contacts_page.phone')"
-          :caption="$t('contacts.phone')"
-          class="contacts_info-plate"
-        />
-        <BulletPlate
-          icon="email-big"
-          :title="$t('contacts_page.email')"
-          :caption="$t('contacts.email')"
-          class="contacts_info-plate"
-        />
-        <BulletPlate
-          icon="pinpoint"
-          :title="$t('contacts_page.address')"
-          :caption="$t('contacts.address')"
-          class="contacts_info-plate"
-        />
-        <BulletPlate
-          icon="clock"
-          :title="$t('contacts_page.work_hours')"
-          :caption="$t('work_hours.short')"
-          class="contacts_info-plate"
-        />
+        <BulletPlate icon="phone-big" :title="$t('contacts_page.phone')">
+          <div class="item">
+            <a :href="$t('contacts.phone.link')" class="base_link">
+              {{ $t('contacts.phone.text') }}
+            </a>
+          </div>
+          <div class="item">
+            <a :href="$t('contacts.extra_phone.link')" class="base_link">
+              {{ $t('contacts.extra_phone.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="email-big" :title="$t('contacts_page.email')">
+          <div class="item">
+            <a :href="$t('contacts.email.link')" class="base_link">
+              {{ $t('contacts.email.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="instagram" :title="$t('contacts_page.instagram')">
+          <div class="item">
+            <a :href="$t('contacts.instagram.link')" class="base_link">
+              {{ $t('contacts.instagram.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="mah" :title="$t('contacts_page.max')">
+          <div class="item">
+            <a :href="$t('contacts.max.link')" class="base_link">
+              {{ $t('contacts.max.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="whatsapp" :title="$t('contacts_page.whatsapp')">
+          <div class="item">
+            <a :href="$t('contacts.whatsapp.link')" class="base_link">
+              {{ $t('contacts.whatsapp.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="pinpoint" :title="$t('contacts_page.address')">
+          <div class="item">
+            <a :href="$t('contacts.address.link')" class="base_link">
+              {{ $t('contacts.address.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="clock" :title="$t('contacts_page.work_hours')">
+          <div class="item">
+            {{ $t('work_hours.short') }}
+          </div>
+        </BulletPlate>
       </div>
       <div class="contacts_feedback">
         <form class="contacts_form" @submit.prevent="handleForm">
@@ -108,7 +136,7 @@ const handleForm = () => {};
   &_wrapper{
     margin: 64px 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 48px;
     max-width: $wrapper-width;
     margin: $wrapper-pos;

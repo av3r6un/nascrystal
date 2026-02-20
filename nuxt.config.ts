@@ -135,7 +135,7 @@ export default defineNuxtConfig({
     ],
   },
   robots: {
-    sitemap: 'https://cyberquince.dev/sitemap.xml',
+    sitemap: 'https://nascrystal.ru/sitemap.xml',
     allow: process.env.NODE_ENV === 'production' ? '/' : [],
     disallow: process.env.NODE_ENV === 'production' ? [] : '/',
   },

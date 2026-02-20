@@ -29,6 +29,9 @@ body{
 .router-link-exact-active{
   color: $yellow-brown;
 }
+.logo .router-link-exact-active{
+  color: $brown;
+}
 
 main.content{
   margin-top: 97px;
@@ -100,4 +103,12 @@ ul>li{
   font-size: 256px;
   color: $brown;
   font-family: $title-font;
+}
+
+.plate_text {
+  .item {
+    .base_link{
+      user-select: none;
+    }
+  }
 }

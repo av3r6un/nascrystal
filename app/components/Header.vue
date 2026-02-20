@@ -4,14 +4,14 @@
       <div class="header_pre-wrapper">
         <div class="header_pre-item">
           <Icon name="nsc:phone" :size="15" />
-          <a :href="`tel:${$t('contacts.phone')}`" class="base_link">
-            {{ $t('contacts.phone') }}
+          <a :href="$t('contacts.phone.link')" class="base_link">
+            {{ $t('contacts.phone.text') }}
           </a>
         </div>
         <div class="header_pre-item email">
           <Icon name="nsc:email" :size="15" />
-          <a :href="`mailto:${$t('contacts.email')}`" class="base_link">
-            {{ $t('contacts.email') }}
+          <a :href="$t('contacts.email.link')" class="base_link">
+            {{ $t('contacts.email.text') }}
           </a>
         </div>
         <div class="header_pre-item">

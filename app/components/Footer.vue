@@ -22,7 +22,7 @@
           <div class="footer_contacts-item first">
             {{ t('footer.contacts') }}
           </div>
-          <div v-for="(c, idx) in tm('contacts.long')" :key="idx" class="footer_contacts-item">
+          <div v-for="(c, idx) in contactsLong" :key="idx" class="footer_contacts-item">
             {{ rt(c) }}
           </div>
         </div>
@@ -30,7 +30,7 @@
           <div class="footer_hours-item first">
             {{ t('footer.work_hours') }}
           </div>
-          <div v-for="(h, idx) in tm('work_hours.long')" :key="idx" class="footer_hours-item">
+          <div v-for="(h, idx) in workHoursLong" :key="idx" class="footer_hours-item">
             {{ rt(h) }}
           </div>
         </div>
@@ -44,7 +44,19 @@
 
 <script lang="ts" setup>
 const { t, tm, rt } = useI18n();
-const navbarItems = computed(() => Object.keys(tm('navbar')).slice(1));
+const navbar = computed(() => {
+  const value = tm('navbar');
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+});
+const navbarItems = computed(() => Object.keys(navbar.value).slice(1));
+const contactsLong = computed(() => {
+  const value = tm('contacts.long');
+  return Array.isArray(value) ? value : [];
+});
+const workHoursLong = computed(() => {
+  const value = tm('work_hours.long');
+  return Array.isArray(value) ? value : [];
+});
 </script>
 
 <style lang="scss" scoped>

@@ -8,8 +8,8 @@
       <Icon :name="burgerIcon" :size="24" />
     </div>
     <div v-if="state" class="burger_menu">
-      <div v-for="(n, l, idx) in $tm('navbar')" :key="idx" class="burger_menu-item">
-        <NuxtLink :to="`/${$rt(l)}`" class="base_link">{{ $rt(n) }}</NuxtLink>
+      <div v-for="(item, idx) in navbarItems" :key="idx" class="burger_menu-item">
+        <NuxtLink :to="`/${item.path}`" class="base_link">{{ item.label }}</NuxtLink>
       </div>
     </div>
   </div>
@@ -26,6 +26,17 @@ export default {
   computed: {
     burgerIcon() {
       return this.state ? 'nsc:burger-close' : 'nsc:burger';
+    },
+    navbarItems() {
+      const navbar = this.$tm('navbar');
+      if (!navbar || typeof navbar !== 'object' || Array.isArray(navbar)) {
+        return [];
+      }
+
+      return Object.entries(navbar).map(([path, label]) => ({
+        path: this.$rt(path),
+        label: this.$rt(label),
+      }));
     },
   },
   mounted() {

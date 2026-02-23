@@ -15,10 +15,11 @@
     "contacts": "Contacts"
   },
   "work_hours": {
-    "short": "Пн-Пт: 10:00 — 19:00",
+    "short": "Mon-Fri: 10:00 — 19:00",
     "long": [
       "Mon-Fri: 10:00 — 19:00",
-      "Sat-Sun: day off"
+      "Sat: day off",
+      "Sun: day off"
     ]
   },
   "contacts": {
@@ -68,7 +69,7 @@
   "index": {
     "title": "Premium rhinestones and crystals for designers and brands",
     "banner_info": "Rhinestones and decorative elements for fashion, dance costumes and ateliers",
-    "cta": "Перейти в каталог",
+    "cta": "Explore the catalogue",
     "description": "Premium rhinestones and crystals for designers and brands, decorative elements for fashion, dance costumes and ateliers."
   },
   "benefits": [
@@ -136,39 +137,39 @@
   },
   "prices_page": {
     "title": "Prices and Delivery",
-    "description": "NAS Crystal prices and delivery: wholesale terms, discounts up to 10%, delivery across Russia, courier in Moscow, pickup available. Minimum order from 5,000 ₽. Fast shipping within 1–2 days.",
+    "description": "NAS Crystal prices and delivery: wholesale terms, discounts up to 10%, delivery across Russia, courier in Moscow, pickup available. Minimum order from 5,000₽. Fast shipping within 1—2 days.",
     "blocks": [
       {
         "title": "Wholesale Terms",
         "bullets": [
-          "Minimum order — from 5,000 ₽",
-          "5% discount for orders from 15,000 ₽",
-          "10% discount for orders from 30,000 ₽",
+          "Minimum order — from 5,000₽",
+          "5% discount for orders from 15,000₽",
+          "10% discount for orders from 30,000₽",
           "Individual terms for regular customers"
         ]
       },
       {
         "title": "Delivery Across Russia",
         "bullets": [
-          "CDEK — from 350 ₽, 3–7 days",
-          "Russian Post — from 250 ₽, 5–14 days",
-          "Courier delivery in Moscow — 500 ₽",
-          "Free delivery for orders from 20,000 ₽"
+          "CDEK from 350₽, 3—7 days",
+          "Russian Post from 250₽, 5—14 days",
+          "Courier delivery in Moscow — 500₽",
+          "Free delivery for orders from 20,000₽"
         ]
       },
       {
         "title": "Pickup",
         "bullets": [
           "Moscow, Varshavskoye Highway 71k1",
-          "Mon–Fri: 10:00 – 19:00",
-          "Sat–Sun: Closed",
+          "Mon — Fri: 10:00 — 19:00",
+          "Sat—Sun: Closed",
           "Advance appointment by phone"
         ]
       },
       {
         "title": "Lead Times",
         "bullets": [
-          "In-stock items — shipped within 1–2 business days",
+          "In-stock items — shipped within 1-2 business days",
           "Made to order — 7 to 21 business days",
           "Please check availability with your manager"
         ]
@@ -176,3 +177,4 @@
     ]
   }
 }
+

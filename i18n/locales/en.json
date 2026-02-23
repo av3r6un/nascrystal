@@ -4,37 +4,175 @@
     "404": "Page not found",
     "500": "Server response error"
   },
+  "default": {
+    "loading": "Loading.."
+  }, 
   "navbar": {
     "home": "Home",
-    "catalog": "Catalogue",
+    "catalog": "Explore",
     "about": "About us",
-    "delivery": "Prices & Delivery",
+    "prices": "Price & Delivery",
     "contacts": "Contacts"
   },
   "work_hours": {
     "short": "Пн-Пт: 10:00 — 19:00",
     "long": [
       "Mon-Fri: 10:00 — 19:00",
-      "Sat: 11:00 — 17:00",
-      "Sun: выходной"
+      "Sat-Sun: day off"
     ]
   },
   "contacts": {
-    "phone": "+7 (900) 123-45-67",
-    "email": "info{'@'}nascrystal.ru",
-    "address": "г. Москва, ул. Тисовая, д. 1",
+    "phone": {
+      "text": "+7 (915) 418-57-70",
+      "link": "tel:+79154185770"
+    },
+    "extra_phone": {
+      "text": "+7 (910) 408-26-98",
+      "link": "tel:+79104082698"
+    },
+    "email": {
+      "text": "info{'@'}nascrystal.ru",
+      "link": "mailto:info{'@'}nascrystal.ru"
+    },
+    "address": {
+      "text": "Moscow, Varshavskoye Highway, 71/1",
+      "link": ""
+    },
+    "instagram": {
+      "text": "{'@'}crystal_nas96",
+      "link": "https://www.instagram.com/crystal_nas96"
+    },
+    "max": {
+      "text": "Join us",
+      "link": "https://max.ru/join/_B2H2Gye9UG4NmIppQpM45sz7ZL8tUR_K-qD21Ip2X0"
+    },
+    "whatsapp": {
+      "text": "+86 157 2793 9034",
+      "link": "https://wa.me/+8615727939034"
+    },
+    "telegram": "https://t.me/straziswarowski",
     "long": [
-      "+7 (900) 123-45-67",
+      "+7 (915) 418 57 70",
       "info{'@'}nascrystal.ru",
-      "г. Москва, ул. Тисовая, д. 1"
+      "Moscow, Varshavskoye Highway, 71/1"
     ]
   },
   "footer": {
     "title": "NAS Crystal",
-    "description": "",
     "navbar": "Explore",
-    "contact": "Contacts",
+    "description": "Premium rhinestones and crystals for fashion designers, ateliers and dance studios.",
+    "contacts": "Contacts",
     "work_hours": "Business Hours",
     "copyright": "© 2026 NAS Crystal. All rights reserved."
+  },
+  "index": {
+    "title": "Premium rhinestones and crystals for designers and brands",
+    "banner_info": "Rhinestones and decorative elements for fashion, dance costumes and ateliers",
+    "cta": "Перейти в каталог",
+    "description": "Premium rhinestones and crystals for designers and brands, decorative elements for fashion, dance costumes and ateliers."
+  },
+  "benefits": [
+    { "icon": "diamond", "title": "Premium Quality", "info": "Top-grade crystals with flawless cutting" },
+    { "icon": "truck", "title": "Direct Supply", "info": "We work directly with factories without intermediaries" },
+    { "icon": "people", "title": "Wholesale Terms", "info": "Special prices for regular customers" },
+    { "icon": "star", "title": "Individual Approach", "info": "Personal manager for every order" }
+  ],
+  "categories": {
+    "title": "Product Categories",
+    "list": [
+      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "For hand decoration" },
+      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "For costumes and dresses" },
+      { "icon": "diamond", "title": "Fancy Crystals", "info": "Unique shapes" },
+      { "icon": "diamond", "title": "New Collection", "info": "New collection" }
+    ]
+  },
+  "index_about": {
+    "image": null,
+    "title": "About the Company",
+    "story": "NAS Crystals is a reliable supplier of premium rhinestones and crystals for the fashion and dance sport industry. We work directly with leading factories, ensuring the highest quality at competitive prices.",
+    "cta": "Learn more →"
+  },
+  "index_telegram": {
+    "title": "Subscribe to Our Telegram",
+    "info": "Be the first to know about new arrivals, promotions, and special offers",
+    "cta": "Go to Telegram",
+    "link": "https://t.me/straziswarowski"
+  },
+  "about_page": {
+    "title": "About the Company",
+    "description": "NAS Crystal — your reliable partner in the world of premium rhinestones and crystals",
+    "image": null,
+    "text": [
+      "We specialize in supplying high-quality decorative crystals and rhinestones for professionals in the fashion, dance sport, and handicraft industries.",
+      "Our team carefully selects every batch, guaranteeing flawless cutting quality, accurate color rendering, and consistent sizing.",
+      "We cooperate with leading factories in Austria and Asia, offering an optimal balance of quality and price for our clients."
+    ],
+    "stats": [
+      { "number": "500+", "text": "Items in the catalog" },
+      { "number": "1000+", "text": "Satisfied customers" },
+      { "number": "7 years", "text": "On the market" }
+    ]
+  },
+  "contacts_page": {
+    "description": "NAS Crystal contacts: phone, email, Moscow address, working hours. Contact us for wholesale orders of rhinestones and crystals or send a message via the website form.",
+    "title": "Contacts",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "work_hours": "Working Hours",
+    "instagram": "Instagram",
+    "max": "Max",
+    "whatsapp": "WhatsApp",
+    "feedback": {
+      "title": "Write to Us",
+      "name": "Your Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send"
+    },
+    "map": {
+      "apply": false
+    }
+  },
+  "prices_page": {
+    "title": "Prices and Delivery",
+    "description": "NAS Crystal prices and delivery: wholesale terms, discounts up to 10%, delivery across Russia, courier in Moscow, pickup available. Minimum order from 5,000 ₽. Fast shipping within 1–2 days.",
+    "blocks": [
+      {
+        "title": "Wholesale Terms",
+        "bullets": [
+          "Minimum order — from 5,000 ₽",
+          "5% discount for orders from 15,000 ₽",
+          "10% discount for orders from 30,000 ₽",
+          "Individual terms for regular customers"
+        ]
+      },
+      {
+        "title": "Delivery Across Russia",
+        "bullets": [
+          "CDEK — from 350 ₽, 3–7 days",
+          "Russian Post — from 250 ₽, 5–14 days",
+          "Courier delivery in Moscow — 500 ₽",
+          "Free delivery for orders from 20,000 ₽"
+        ]
+      },
+      {
+        "title": "Pickup",
+        "bullets": [
+          "Moscow, Varshavskoye Highway 71k1",
+          "Mon–Fri: 10:00 – 19:00",
+          "Sat–Sun: Closed",
+          "Advance appointment by phone"
+        ]
+      },
+      {
+        "title": "Lead Times",
+        "bullets": [
+          "In-stock items — shipped within 1–2 business days",
+          "Made to order — 7 to 21 business days",
+          "Please check availability with your manager"
+        ]
+      }
+    ]
   }
 }

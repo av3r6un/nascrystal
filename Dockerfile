@@ -1,9 +1,10 @@
+# syntax=docker/dockerfile:1.7
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install dependencies first for better layer caching.
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Build Nuxt SSR output.
 COPY . .

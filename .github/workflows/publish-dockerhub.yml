@@ -1,11 +1,11 @@
 name: Publish Docker Image
 
 on:
-  push:
+  pull_request_target:
     branches:
       - master
-    tags:
-      - 'v*'
+    types:
+      - closed
   workflow_dispatch:
 
 permissions:
@@ -13,11 +13,15 @@ permissions:
 
 jobs:
   docker:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: publish
+
     steps:
-      - name: Checkout
+      - name: Checkout merged commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.pull_request.merge_commit_sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,10 +38,8 @@ jobs:
         with:
           images: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY || github.event.repository.name }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
+            type=sha,prefix=sha-
 
       - name: Build and push image
         uses: docker/build-push-action@v6

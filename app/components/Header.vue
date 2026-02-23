@@ -22,7 +22,7 @@
     <div class="header_nav">
       <div class="header_nav-item logo">
         <NuxtLink to="/" class="base_link">
-          NAS Crystal
+          НАС Кристал
         </NuxtLink>
       </div>
       <div class="header_navbar">

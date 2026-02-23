@@ -54,7 +54,10 @@
       "text": "+86 157 2793 9034",
       "link": "https://wa.me/+8615727939034"
     },
-    "telegram": "https://t.me/straziswarowski",
+    "telegram": {
+      "link": "https://t.me/straziswarowski",
+      "text": "{'@'}straziswarowski"
+    },
     "long": [
       "+7 (915) 418 57 70",
       "lovli_98{'@'}icloud.com",

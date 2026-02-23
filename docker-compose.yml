@@ -1,0 +1,16 @@
+services:
+  nuxt:
+    image: ${DOCKER_IMAGE:-nascrystal:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nuxt-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 400M

@@ -23,6 +23,9 @@ body{
     font-weight: bold;
     color: $brown;
     text-align: center;
+    &.a-left{
+      text-align: left;
+    }
   }
 }
 

@@ -32,8 +32,8 @@
       "link": "tel:+79104082698"
     },
     "email": {
-      "text": "info{'@'}nascrystal.ru",
-      "link": "mailto:info{'@'}nascrystal.ru"
+      "text": "lovli_98{'@'}icloud.com",
+      "link": "mailto:lovli_98{'@'}icloud.com"
     },
     "address": {
       "text": "Moscow, Varshavskoye Highway, 71/1",
@@ -51,10 +51,13 @@
       "text": "+86 157 2793 9034",
       "link": "https://wa.me/+8615727939034"
     },
-    "telegram": "https://t.me/straziswarowski",
+    "telegram": {
+      "link": "https://t.me/straziswarowski",
+      "text": "@straziswarowski"
+    },
     "long": [
       "+7 (915) 418 57 70",
-      "info{'@'}nascrystal.ru",
+      "lovli_98{'@'}icloud.com",
       "Moscow, Varshavskoye Highway, 71/1"
     ]
   },

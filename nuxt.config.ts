@@ -118,7 +118,7 @@ export default defineNuxtConfig({
   i18n: {
     baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
     lazy: true,
-    langDir: 'i18n/locales',
+    langDir: 'locales',
     strategy: 'no_prefix',
     defaultLocale: 'ru',
     locales: [

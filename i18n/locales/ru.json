@@ -30,10 +30,16 @@
       "text": "+7 (915) 418-57-70",
       "link": "tel:+79154185770"
     },
-    "extra_phone": {
-      "text": "+7 (910) 408-26-98",
-      "link": "tel:+79104082698"
-    },
+    "extra_phones": [
+      {
+        "text": "+7 (965) 482-64-76",
+        "link": "tel+79654826476"
+      },
+      {
+        "text": "+7 (910) 408-26-98",
+        "link": "tel:+79104082698"
+      }
+    ],
     "email": {
       "text": "lovli_98{'@'}icloud.com",
       "link": "mailto:lovli_98{'@'}icloud.com"
@@ -59,7 +65,9 @@
       "text": "{'@'}straziswarowski"
     },
     "long": [
-      "+7 (915) 418 57 70",
+      "+7 (915) 418-57-70",
+      "+7 (910) 408-26-98",
+      "+7 (965) 482-64-76",
       "lovli_98{'@'}icloud.com",
       "г. Москва, ш. Варшавское, 71к1"
     ]
@@ -98,11 +106,14 @@
     "story": "NAS Crystals — это надёжный поставщик премиальных страз и кристаллов для индустрии моды и танцевального спорта. Мы работаем напрямую с ведущими фабриками, обеспечивая высочайшее качество по выгодным ценам.",
     "cta": "Узнать больше →"
   },
-  "index_telegram": {
-    "title": "Подпишитесь на наш Telegram",
+  "index_socials": {
+    "title": "Мы в социальных сетях",
     "info": "Первыми узнавайте о новинках, акциях и специальных предложениях",
-    "cta": "Перейти в телеграм",
-    "link": "https://t.me/straziswarowski"
+    "links": [
+      { "icon": "telegram", "selector": "contacts.telegram.link" },
+      { "icon": "mah", "selector": "contacts.max.link" },
+      { "icon": "instagram", "selector": "contacts.instagram.link" }
+    ]
   },
   "about_page": {
     "title": "О компании",
@@ -122,11 +133,12 @@
   "contacts_page": {
     "description": "Контакты NAS Crystal: телефон, email, адрес в Москве, режим работы. Свяжитесь с нами для оптовых заказов страз и кристаллов или отправьте сообщение через форму на сайте.",
     "title": "Контакты",
-    "phone": "Телефон",
+    "phone": "Телефоны",
     "email": "Email",
     "address": "Адрес",
     "work_hours": "Режим работы",
     "instagram": "Instagram",
+    "telegram": "Telegram",
     "max": "Max",
     "whatsapp": "WhatsApp",
     "feedback": {

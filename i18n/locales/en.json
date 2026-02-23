@@ -22,15 +22,24 @@
       "Sun: day off"
     ]
   },
+  "catalog": {
+    "warning": "В нашем каталоге пока пусто"
+  },
   "contacts": {
     "phone": {
       "text": "+7 (915) 418-57-70",
       "link": "tel:+79154185770"
     },
-    "extra_phone": {
-      "text": "+7 (910) 408-26-98",
-      "link": "tel:+79104082698"
-    },
+    "extra_phones": [
+      {
+        "text": "+7 (965) 482-64-76",
+        "link": "tel+79654826476"
+      },
+      {
+        "text": "+7 (910) 408-26-98",
+        "link": "tel:+79104082698"
+      }
+    ],
     "email": {
       "text": "lovli_98{'@'}icloud.com",
       "link": "mailto:lovli_98{'@'}icloud.com"
@@ -56,14 +65,16 @@
       "text": "{'@'}straziswarowski"
     },
     "long": [
-      "+7 (915) 418 57 70",
+      "+7 (915) 418-57-70",
+      "+7 (910) 408-26-98",
+      "+7 (965) 482-64-76",
       "lovli_98{'@'}icloud.com",
       "Moscow, Varshavskoye Highway, 71/1"
     ]
   },
   "footer": {
     "title": "NAS Crystal",
-    "navbar": "Explore",
+    "navbar": "Navigation",
     "description": "Premium rhinestones and crystals for fashion designers, ateliers and dance studios.",
     "contacts": "Contacts",
     "work_hours": "Business Hours",
@@ -96,11 +107,14 @@
     "story": "NAS Crystals is a reliable supplier of premium rhinestones and crystals for the fashion and dance sport industry. We work directly with leading factories, ensuring the highest quality at competitive prices.",
     "cta": "Learn more →"
   },
-  "index_telegram": {
-    "title": "Subscribe to Our Telegram",
-    "info": "Be the first to know about new arrivals, promotions, and special offers",
-    "cta": "Go to Telegram",
-    "link": "https://t.me/straziswarowski"
+  "index_socials": {
+    "title": "Мы в социальных сетях",
+    "info": "Первыми узнавайте о новинках, акциях и специальных предложениях",
+    "links": [
+      { "icon": "telegram", "selector": "contacts.telegram.link" },
+      { "icon": "mah", "selector": "contacts.max.link" },
+      { "icon": "instagram", "selector": "contacts.instagram.link" }
+    ]
   },
   "about_page": {
     "title": "About the Company",
@@ -120,11 +134,12 @@
   "contacts_page": {
     "description": "NAS Crystal contacts: phone, email, Moscow address, working hours. Contact us for wholesale orders of rhinestones and crystals or send a message via the website form.",
     "title": "Contacts",
-    "phone": "Phone",
+    "phone": "Phones",
     "email": "Email",
     "address": "Address",
     "work_hours": "Working Hours",
     "instagram": "Instagram",
+    "telegram": "Telegram",
     "max": "Max",
     "whatsapp": "WhatsApp",
     "feedback": {

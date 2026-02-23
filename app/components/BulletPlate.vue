@@ -60,7 +60,7 @@ const props = defineProps({
     display: flex;
     gap: 10px;
     @media screen {
-      @media (max-width: 415px) {
+      @media (max-width: 576px) {
         flex-direction: column;
         gap: 5px;
       }

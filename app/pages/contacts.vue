@@ -11,9 +11,9 @@
               {{ $t('contacts.phone.text') }}
             </a>
           </div>
-          <div class="item">
-            <a :href="$t('contacts.extra_phone.link')" class="base_link">
-              {{ $t('contacts.extra_phone.text') }}
+          <div v-for="(p, idx) in $tm('contacts.extra_phones')" :key="idx" class="item">
+            <a :href="$rt(p.link)" class="base_link">
+              {{ $rt(p.text) }}
             </a>
           </div>
         </BulletPlate>
@@ -28,6 +28,13 @@
           <div class="item">
             <a :href="$t('contacts.instagram.link')" class="base_link">
               {{ $t('contacts.instagram.text') }}
+            </a>
+          </div>
+        </BulletPlate>
+        <BulletPlate icon="telegram" :title="$t('contacts_page.telegram')">
+          <div class="item">
+            <a :href="$t('contacts.telegram.link')" class="base_link">
+              {{ $t('contacts.telegram.text') }}
             </a>
           </div>
         </BulletPlate>
@@ -157,6 +164,9 @@ const handleForm = () => {};
     gap: 20px;
     @media (max-width: 770px) {
       width: 100%;
+    }
+    .base_link{
+      white-space: nowrap;
     }
   }
   &_feedback{

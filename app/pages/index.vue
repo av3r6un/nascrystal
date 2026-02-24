@@ -54,16 +54,18 @@
         </div>
       </div>
     </div>
-    <div class="index_telegram">
-      <div class="index_telegram-title">
-        {{ $t('index_telegram.title') }}
+    <div class="index_socials">
+      <div class="index_socials-title">
+        {{ $t('index_socials.title') }}
       </div>
-      <div class="index_telegram-description">
-        {{ $t('index_telegram.info') }}
+      <div class="index_socials-description">
+        {{ $t('index_socials.info') }}
       </div>
-      <a :href="$t('index_telegram.link')" class="base_link index_telegram-cta">
-        {{ $t('index_telegram.cta') }}
-      </a>
+      <div class="index_socials-links">
+        <a v-for="(link, idx) in $tm('index_socials.links')" :key="idx" :href="`${$t($rt(link.selector))}`" class="base_link social_link">
+          <Icon :name="`nsc:${$rt(link.icon)}`" :size="24" />
+        </a>
+      </div>
     </div>
   </article>
 </template>
@@ -253,7 +255,7 @@ definePageMeta({
       }
     }
   }
-  &_telegram{
+  &_socials{
     max-width: $wrapper-width;
     margin: $wrapper-pos;
     padding: $wrapper-px64;
@@ -273,14 +275,18 @@ definePageMeta({
       text-align: center;
       color: $light-brown;
     }
-    &-cta{
-      padding: 14px 32px;
-      border-radius: 8px;
-      background: $brown;
-      color: $white;
-      text-transform: uppercase;
-      font-weight: 100;
-      font-size: 14px;
+    &-links{
+      display: flex;
+      gap: 20px;
+      .social_link{
+        height: 48px;
+        width: 48px;
+        border-radius: 8px;
+        background: $brown;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 }

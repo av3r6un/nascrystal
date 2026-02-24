@@ -89,14 +89,15 @@
   "benefits": [
     { "icon": "diamond", "title": "Premium Quality", "info": "Top-grade crystals with flawless cutting" },
     { "icon": "truck", "title": "Direct Supply", "info": "We work directly with factories without intermediaries" },
-    { "icon": "people", "title": "Wholesale Terms", "info": "Special prices for regular customers" },
-    { "icon": "star", "title": "Individual Approach", "info": "Personal manager for every order" }
+    { "icon": "people", "title": "Wholesale Terms", "info": "Special prices for regular customers" }
   ],
   "categories": {
     "title": "Product Categories",
     "list": [
-      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "For hand decoration" },
-      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "For costumes and dresses" },
+      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "12 faces" },
+      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "16 faces (xirius)" },
+      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "12 faces" },
+      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "16 faces (xirius)" },
       { "icon": "diamond", "title": "Fancy Crystals", "info": "Unique shapes" },
       { "icon": "diamond", "title": "New Collection", "info": "New collection" }
     ]

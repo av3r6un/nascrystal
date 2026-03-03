@@ -33,6 +33,7 @@ export default defineNuxtConfig({
     description: 'NAS Crystal',
   },
   runtimeConfig: {
+    fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL || 'http://127.0.0.1:8000',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
       siteName: 'NAS Crystal',
@@ -89,6 +90,13 @@ export default defineNuxtConfig({
         provider: 'local',
         style: 'normal',
         global: true,
+        src: '/assets/fonts/Inter-Medium.ttf',
+        weight: 600,
+      },
+      { name: 'Inter',
+        provider: 'local',
+        style: 'normal',
+        global: true,
         src: '/assets/fonts/Inter-Bold.ttf',
         weight: 800,
       },
@@ -122,12 +130,16 @@ export default defineNuxtConfig({
     strategy: 'no_prefix',
     defaultLocale: 'ru',
     locales: [
-      { code: 'ru', name: 'Русский', file: 'ru.json' },
-      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'ru', name: 'Русский', file: 'ru.ts' },
+      { code: 'en', name: 'English', file: 'en.ts' },
     ],
     detectBrowserLanguage: false,
   },
   icon: {
+    clientBundle: {
+      scan: true,
+    },
+    provider: 'server',
     customCollections: [
       {
         prefix: 'nsc',

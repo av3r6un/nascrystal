@@ -66,7 +66,7 @@
         </BulletPlate>
       </div>
       <div class="contacts_feedback">
-        <form class="contacts_form" @submit.prevent="handleForm">
+        <form ref="feebackForm" class="contacts_form" @submit.prevent="handleForm">
           <h3 class="contacts_form-title">
             {{ $t('contacts_page.feedback.title') }}
           </h3>
@@ -90,9 +90,12 @@
             required
             class="input_wide-textarea contacts_form-textarea"
           />
-          <button type="submit" class="btn btn_submit">
+          <button type="submit" class="btn btn_submit" :disabled="isSubmitting">
             {{ $t('contacts_page.feedback.submit') }}
           </button>
+          <p class="contacts_form-status" :class="submitState">
+            {{ submitMessage }}
+          </p>
         </form>
       </div>
     </div>
@@ -121,11 +124,18 @@ definePageMeta({
   pageKey: 'contacts',
 });
 
-const feedbackForm = reactive({
-  name: null as string | null,
-  email: null as string | null,
-  message: null as string | null,
+const initialForm = () => reactive({
+  name: '',
+  email: '',
+  message: '',
 });
+
+const feedbackForm = reactive(initialForm());
+
+const isSubmitting = ref(false);
+const submitState = ref<'idle' | 'success' | 'error'>('idle');
+const submitMessage = ref('');
+const fbForm = ref<HTMLFormElement | null>(null);
 
 const mapIFrame = computed(() => {
   const domain = t('contacts_page.map.domain');
@@ -134,7 +144,30 @@ const mapIFrame = computed(() => {
   return `https://${domain}${slug}${id}`;
 });
 
-const handleForm = () => {};
+const handleForm = async () => {
+  if (isSubmitting.value) return;
+
+  submitState.value = 'idle';
+  isSubmitting.value = true;
+
+  try {
+    await $fetch('/api/contact', {
+      method: 'POST',
+      body: feedbackForm,
+    });
+
+    submitState.value = 'success';
+    fbForm.value?.reset();
+    Object.assign(feedbackForm, initialForm());
+  }
+  catch {
+    submitState.value = 'error';
+  }
+  finally {
+    submitMessage.value = t(`contacts_page.feedback.${submitState.value}`);
+    isSubmitting.value = false;
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -174,6 +207,20 @@ const handleForm = () => {};
     padding: 32px;
     background: $light-pink;
     border-radius: 8px;
+  }
+  &_form-status{
+    margin-top: 16px;
+    font-size: 14px;
+    &.success {
+      color: #2e7d32;
+    }
+    &.error {
+      color: #b71c1c;
+    }
+  }
+  .btn_submit:disabled{
+    opacity: 0.7;
+    cursor: not-allowed;
   }
   &_map{
     max-width: $wrapper-width;

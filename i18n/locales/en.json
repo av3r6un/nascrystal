@@ -148,7 +148,9 @@
       "name": "Your Name",
       "email": "Email",
       "message": "Message",
-      "submit": "Send"
+      "submit": "Send",
+      "success": "Message successfully sent",
+      "error": "Errors while sending message"
     },
     "map": {
       "apply": false

@@ -14,27 +14,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'BulletCard',
-  props: {
-    icon: {
-      type: String,
-      default: 'star',
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    info: {
-      type: String,
-    },
-    reversed: {
-      type: Boolean,
-      default: false,
-    },
+<script lang="ts" setup>
+import type { PropType } from 'vue';
+
+defineProps({
+  icon: {
+    type: String,
+    default: 'star',
   },
-};
+  title: {
+    type: [String, Object],
+    required: true,
+  },
+  info: {
+    type: String,
+  },
+  reversed: {
+    type: Boolean,
+    default: false,
+  },
+});
 </script>
 
 <style lang="scss" scoped>

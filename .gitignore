@@ -25,3 +25,4 @@ logs
 .vscode
 parking/
 *-structure.yml
+docker-compose.example.yml

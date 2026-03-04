@@ -240,7 +240,7 @@ const { data, pending, error, refresh } = await useAsyncData<Record<string, unkn
       });
     }
 
-    return await $fetch('/api/static/home', {
+    return await $fetch('/_nuxt/static/home', {
       params: { locale: locale.value },
       headers: auth.authHeader,
     });
@@ -325,7 +325,7 @@ const uploadImageIfNeeded = async (image: ImageLike) => {
     const formData = new FormData();
     formData.append('file', image);
 
-    const response = await $fetch<{ path: string }>('/api/upload', {
+    const response = await $fetch<{ path: string }>('/_nuxt/upload', {
       method: 'POST',
       body: formData,
       headers: auth.authHeader,
@@ -393,7 +393,7 @@ const savePage = async () => {
       },
     };
 
-    await $fetch('/api/static', {
+    await $fetch('/_nuxt/static', {
       method: 'POST',
       body: payload,
       headers: auth.authHeader,

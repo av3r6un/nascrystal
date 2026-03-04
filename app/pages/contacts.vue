@@ -151,7 +151,7 @@ const handleForm = async () => {
   isSubmitting.value = true;
 
   try {
-    await $fetch('/api/contact', {
+    await $fetch('/_nuxt/contact', {
       method: 'POST',
       body: feedbackForm,
     });

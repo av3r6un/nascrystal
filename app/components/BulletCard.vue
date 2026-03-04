@@ -15,8 +15,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue';
-
 defineProps({
   icon: {
     type: String,

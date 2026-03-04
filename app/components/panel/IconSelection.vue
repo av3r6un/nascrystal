@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-const { data: allIcons } = await useFetch('/api/icons');
+const { data: allIcons } = await useFetch('/_nuxt/icons');
 
 const emit = defineEmits(['update:modelValue']);
 const props = defineProps({

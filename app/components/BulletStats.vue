@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     required: true,

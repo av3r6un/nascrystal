@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { H3Event } from 'h3';
-import { callFastApiAsNitro } from '../../services/auth.service';
+import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
 type MessageTree = Record<string, unknown>;
 

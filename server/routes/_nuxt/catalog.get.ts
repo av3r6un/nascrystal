@@ -1,4 +1,4 @@
-import { callFastApiAsNitro } from '../services/auth.service';
+import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
 export default defineEventHandler(async (event) => {
   try {

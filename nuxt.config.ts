@@ -33,7 +33,7 @@ export default defineNuxtConfig({
     description: 'NAS Crystal',
   },
   runtimeConfig: {
-    fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL || 'http://127.0.0.1:8000',
+    fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL,
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
       siteName: 'NAS Crystal',

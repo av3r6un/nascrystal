@@ -35,6 +35,11 @@ jobs:
         env:
           NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/
           NUXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          NUXT_FASTAPI_BASE_URL: https://${{ vars.FASTAPI_BASE_URL }}
+          NUXT_FASTAPI_SERVER_EMAIL: ${{ secrets.FASTAPI_SERVER_EMAIL }}
+          NUXT_FASTAPI_SERVER_PASSWORD: ${{ secrets.FASTAPI_SERVER_PASSWORD }}
+          NITRO_PORT: 3000
+          NITRO_HOST: 0.0.0.0
         run: npm run generate
 
       - name: Upload artifact

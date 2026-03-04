@@ -22,7 +22,7 @@ const fallbackPage = {
 
 const { data } = await useAsyncData<Record<string, unknown>>(
   'static-about',
-  () => $fetch('/_nuxt/static/about', {
+  () => $fetch('/internal/static/about', {
     params: { locale: locale.value },
   }),
   {

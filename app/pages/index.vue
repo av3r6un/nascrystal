@@ -105,7 +105,7 @@ const fallbackPage = {
 
 const { data } = await useAsyncData<Record<string, unknown>>(
   'static-home',
-  () => $fetch('/_nuxt/static/home', {
+  () => $fetch('/internal/static/home', {
     params: { locale: locale.value },
   }),
   {

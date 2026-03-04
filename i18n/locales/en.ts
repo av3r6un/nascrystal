@@ -1,3 +1,3 @@
 export default defineI18nLocale(async () => {
-  return await $fetch('/api/i18n/en');
+  return await $fetch('/internal/i18n/en');
 });

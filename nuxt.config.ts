@@ -61,9 +61,6 @@ export default defineNuxtConfig({
     },
   },
   fonts: {
-    // assets: {
-    //   prefix: '~/assets/fonts/',
-    // },
     families: [
       { name: 'Inter',
         provider: 'local',
@@ -125,7 +122,6 @@ export default defineNuxtConfig({
   },
   i18n: {
     baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
-    lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
     defaultLocale: 'ru',

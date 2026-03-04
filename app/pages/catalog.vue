@@ -25,7 +25,7 @@ definePageMeta({
 
 const { data, loading, error } = await useAsyncData<CatalogItem[]>(
   'catalog-items',
-  () => $fetch('/_nuxt/catalog'),
+  () => $fetch('/internal/catalog'),
   {
     default: () => [],
   },

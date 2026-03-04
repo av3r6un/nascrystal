@@ -66,7 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const login = async (email: string, password: string) => {
-    const session = await $fetch<AuthSession>('/_nuxt/auth/login', {
+    const session = await $fetch<AuthSession>('/internal/auth/login', {
       method: 'POST',
       body: { email, password },
     });
@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       });
     }
 
-    const session = await $fetch<AuthSession>('/_nuxt/auth/refresh', {
+    const session = await $fetch<AuthSession>('/internal/auth/refresh', {
       method: 'POST',
       body: { refreshToken: refreshToken.value },
     });

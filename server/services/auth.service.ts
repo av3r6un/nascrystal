@@ -117,7 +117,7 @@ const parseSession = (response: ApiResponse<LoginBody>): AuthSession => {
 const loginByCredentials = async (event: H3Event | undefined, credentials: Credentials) => {
   validateCredentials(credentials);
 
-  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/api/auth/'), {
+  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/'), {
     method: 'POST',
     body: credentials,
   });
@@ -128,7 +128,7 @@ const loginByCredentials = async (event: H3Event | undefined, credentials: Crede
 const registerByCredentials = async (event: H3Event | undefined, credentials: Credentials) => {
   validateCredentials(credentials);
 
-  return await $fetch<ApiResponse<boolean>>(buildUrl(event, '/api/auth/register'), {
+  return await $fetch<ApiResponse<boolean>>(buildUrl(event, '/auth/register'), {
     method: 'POST',
     body: { ...credentials, role: 'internal' },
   });
@@ -142,7 +142,7 @@ const refreshByToken = async (event: H3Event | undefined, refreshToken: string) 
     });
   }
 
-  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/api/auth/refresh'), {
+  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/refresh'), {
     method: 'POST',
     body: {
       refresh_token: refreshToken,

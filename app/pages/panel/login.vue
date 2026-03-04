@@ -93,7 +93,7 @@ const handleForm = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: calc(100vh - 64px);
   @media screen {
     @media (max-width: 472px) {
       max-width: 95%;

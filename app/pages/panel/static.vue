@@ -79,10 +79,12 @@ const pages = computed<Record<string, string>>(() => {
   const items = (data.value?.items ?? []) as StaticItem[];
 
   return items.reduce<Record<string, string>>((acc, item) => {
-    if (typeof item.slug !== 'string' || !item.slug) return acc;
-    if (typeof item.title !== 'string' || !item.title) return acc;
+    if (item.slug !== 'home') {
+      if (typeof item.slug !== 'string' || !item.slug) return acc;
+      if (typeof item.title !== 'string' || !item.title) return acc;
 
-    acc[item.slug] = item.title;
+      acc[item.slug] = item.title;
+    }
     return acc;
   }, {});
 });

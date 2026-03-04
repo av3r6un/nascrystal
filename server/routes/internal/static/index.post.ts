@@ -17,6 +17,8 @@ export default defineEventHandler(async (event) => {
 
   const response = await $fetch<StaticEnvelope<Record<string, unknown>>>(`${baseUrl}/api/static/`, {
     method: 'POST',
+    retry: 0,
+    timeout: Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000),
     body: payload,
     headers: {
       'Content-Type': 'application/json',

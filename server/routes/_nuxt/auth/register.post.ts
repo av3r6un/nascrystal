@@ -1,4 +1,4 @@
-import { registerUser } from '../../services/auth.service';
+import { registerUser } from '@@/server/services/auth.service';
 
 type RegisterPayload = {
   email: string;

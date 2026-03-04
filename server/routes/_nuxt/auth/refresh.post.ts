@@ -1,4 +1,4 @@
-import { refreshUser } from '../../services/auth.service';
+import { refreshUser } from '@@/server/services/auth.service';
 
 type RefreshPayload = {
   refreshToken: string;

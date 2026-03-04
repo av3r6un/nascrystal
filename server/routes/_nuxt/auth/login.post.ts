@@ -1,4 +1,4 @@
-import { loginUser } from '../../services/auth.service';
+import { loginUser } from '@@/server/services/auth.service';
 
 type LoginPayload = {
   email: string;

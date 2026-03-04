@@ -48,16 +48,13 @@ export default defineEventHandler(async (event) => {
   const safeExt = EXT_BY_MIME[filePart.type] ?? (sourceExt || '.bin');
   const fileName = `${Date.now()}-${randomUUID()}${safeExt}`;
 
-  const publicBaseDir = process.env.NODE_ENV === 'production'
-    ? join(process.cwd(), '.output', 'public')
-    : join(process.cwd(), 'public');
-  const uploadDir = join(publicBaseDir, 'img');
+  const uploadDir = join(process.cwd(), 'storage', 'uploads');
   await mkdir(uploadDir, { recursive: true });
 
   const absolutePath = join(uploadDir, fileName);
   await writeFile(absolutePath, filePart.data);
 
   return {
-    path: `/img/${fileName}`,
+    path: `/uploads/${fileName}`,
   };
 });

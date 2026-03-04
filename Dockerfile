@@ -19,6 +19,7 @@ ENV NITRO_PORT=3000
 
 # Runtime only: Nitro server bundle and static assets.
 COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/i18n/locales ./i18n/locales
 
 EXPOSE 3000
 CMD ["node", ".output/server/index.mjs"]

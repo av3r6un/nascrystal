@@ -29,6 +29,7 @@ type AuthSession = {
 
 let nitroSession: AuthSession | null = null;
 let nitroBootstrapDone = false;
+const FASTAPI_TIMEOUT_MS = Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000);
 
 const isNonEmptyString = (value: unknown): value is string => {
   return typeof value === 'string' && value.trim().length > 0;
@@ -41,6 +42,14 @@ const getBaseUrl = (event?: H3Event) => {
 const buildUrl = (event: H3Event | undefined, path: string) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${getBaseUrl(event)}${normalizedPath}`;
+};
+
+const withFastApiOptions = <T extends FetchOptions<'json'>>(options: T): T => {
+  return {
+    retry: 0,
+    timeout: FASTAPI_TIMEOUT_MS,
+    ...options,
+  };
 };
 
 const decodeJwtExpMs = (token: string): number | null => {
@@ -117,10 +126,10 @@ const parseSession = (response: ApiResponse<LoginBody>): AuthSession => {
 const loginByCredentials = async (event: H3Event | undefined, credentials: Credentials) => {
   validateCredentials(credentials);
 
-  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/'), {
+  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/'), withFastApiOptions({
     method: 'POST',
     body: credentials,
-  });
+  }));
 
   return parseSession(response);
 };
@@ -128,10 +137,10 @@ const loginByCredentials = async (event: H3Event | undefined, credentials: Crede
 const registerByCredentials = async (event: H3Event | undefined, credentials: Credentials) => {
   validateCredentials(credentials);
 
-  return await $fetch<ApiResponse<boolean>>(buildUrl(event, '/auth/register'), {
+  return await $fetch<ApiResponse<boolean>>(buildUrl(event, '/auth/register'), withFastApiOptions({
     method: 'POST',
     body: { ...credentials, role: 'internal' },
-  });
+  }));
 };
 
 const refreshByToken = async (event: H3Event | undefined, refreshToken: string) => {
@@ -142,13 +151,13 @@ const refreshByToken = async (event: H3Event | undefined, refreshToken: string) 
     });
   }
 
-  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/refresh'), {
+  const response = await $fetch<ApiResponse<LoginBody>>(buildUrl(event, '/auth/refresh'), withFastApiOptions({
     method: 'POST',
     body: {
       refresh_token: refreshToken,
       refreshToken,
     },
-  });
+  }));
 
   return parseSession(response);
 };
@@ -203,10 +212,10 @@ export const callFastApiAsNitro = async <T>(
     const headers = new Headers(options.headers as HeadersInit | undefined);
     headers.set('Authorization', `Bearer ${token}`);
 
-    return await $fetch<T>(buildUrl(event, path), {
+    return await $fetch<T>(buildUrl(event, path), withFastApiOptions({
       ...options,
       headers,
-    });
+    }));
   };
 
   try {

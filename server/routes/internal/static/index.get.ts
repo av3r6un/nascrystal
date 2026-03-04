@@ -24,6 +24,8 @@ export default defineEventHandler(async (event) => {
   const baseUrl = useRuntimeConfig(event).fastApiBaseUrl.replace(/\/+$/, '');
   const response = await $fetch<StaticEnvelope<Record<string, unknown>>>(`${baseUrl}/api/static/`, {
     method: 'GET',
+    retry: 0,
+    timeout: Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000),
     query: { locale },
     headers: {
       Authorization: authHeader,

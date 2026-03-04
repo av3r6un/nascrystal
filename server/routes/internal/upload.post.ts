@@ -48,7 +48,10 @@ export default defineEventHandler(async (event) => {
   const safeExt = EXT_BY_MIME[filePart.type] ?? (sourceExt || '.bin');
   const fileName = `${Date.now()}-${randomUUID()}${safeExt}`;
 
-  const uploadDir = join(process.cwd(), 'public', 'img');
+  const publicBaseDir = process.env.NODE_ENV === 'production'
+    ? join(process.cwd(), '.output', 'public')
+    : join(process.cwd(), 'public');
+  const uploadDir = join(publicBaseDir, 'img');
   await mkdir(uploadDir, { recursive: true });
 
   const absolutePath = join(uploadDir, fileName);

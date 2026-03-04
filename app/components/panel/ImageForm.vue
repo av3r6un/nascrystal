@@ -25,7 +25,7 @@
       </label>
     </div>
     <div v-else class="image_form-preview" @click="clearFile">
-      <img v-if="fileUrl" :src="fileUrl" alt="image" class="base_image">
+      <img v-if="fileUrl" :src="localUrl" alt="image" class="base_image">
     </div>
   </div>
 </template>
@@ -47,17 +47,16 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 const openFilePicker = () => input.value?.click();
-const fileUrl = ref('');
-const localUrl = computed({
-  get() {
-    fileUrl.value = props.modelValue;
-    return props.modelValue;
-  },
-  set(val) {
-    fileUrl.value = val !== '' ? URL.createObjectURL(val) : null;
-    emit('update:modelValue', val);
-  },
+const localUrl = ref('');
+const fileUrl = computed({
+  get() { return props.modelValue; },
+  set(val) { emit('update:modelValue', val); },
 });
+watch(() => props.modelValue, (value) => {
+  if (typeof value === 'string') {
+    localUrl.value = value;
+  }
+}, { immediate: true });
 const dragOver = (e: unknown) => {
   e.dataTransfer.dropEffect = 'move';
   dragField.value?.classList.add('over');
@@ -69,12 +68,16 @@ const onDrop = (e: unknown) => {
   const file = e.dataTransfer.files[0];
   if (file && /image\/*/.test(file.type)) {
     localUrl.value = file;
+    fileUrl.value = URL.createObjectURL(file);
     dragField.value?.classList.remove('over');
   }
 };
 const onSelect = (e: unknown) => {
   const file = e.target.files[0];
-  if (file) localUrl.value = file;
+  if (file) {
+    fileUrl.value = file;
+    localUrl.value = URL.createObjectURL(file);
+  }
 };
 const clearFile = () => {
   input.value.value = null;

@@ -1,11 +1,12 @@
 <template>
   <div class="panel_wrapper">
-    <PanelMenu v-if="!isSystemPage" class="panel_menu" />
-    <PanelHeader v-if="!isSystemPage" class="panel_header" />
-    <main class="panel_content" :class="{ only_login: isSystemPage }">
-      <slot />
+    <PanelMenu v-if="showPanelChrome" class="panel_menu" />
+    <PanelHeader v-if="showPanelChrome" class="panel_header" />
+    <main class="panel_content" :class="{ only_login: isSystemPage || hideProtectedContent }">
+      <div v-if="hideProtectedContent" class="panel_loading" />
+      <slot v-else />
     </main>
-    <PanelMobileMenu v-if="!isSystemPage" class="panel_mobile-menu" />
+    <PanelMobileMenu v-if="showPanelChrome" class="panel_mobile-menu" />
   </div>
 </template>
 
@@ -13,7 +14,18 @@
 const route = useRoute();
 const { locale, t } = useI18n();
 const pageKey = computed(() => route.meta.pageKey);
-const isSystemPage = computed(() => route.path.startsWith('/panel/login'));
+const normalizedPath = computed(() => route.path.replace(/\/+$/, ''));
+const isSystemPage = computed(() => {
+  if (normalizedPath.value.startsWith('/panel/login')) return true;
+  return `${pageKey.value ?? ''}` === 'login';
+});
+const isProtectedPanelRoute = computed(() => route.path.startsWith('/panel') && !isSystemPage.value);
+const panelAuthPending = useState<boolean>(
+  'panel-auth-pending',
+  () => isProtectedPanelRoute.value,
+);
+const hideProtectedContent = computed(() => isProtectedPanelRoute.value && panelAuthPending.value);
+const showPanelChrome = computed(() => !isSystemPage.value && !hideProtectedContent.value);
 
 const title = computed(() => t(`panel.navbar.${pageKey.value}`) || t('default.loading'));
 useHead({
@@ -27,6 +39,9 @@ useHead({
 
 <style lang="scss" scoped>
 .panel{
+  &_loading{
+    min-height: 40vh;
+  }
   &_menu{
     position: fixed;
     width: 255px;

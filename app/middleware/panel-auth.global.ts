@@ -5,13 +5,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isLoginRoute = to.path === '/panel/login';
 
   if (!isPanelRoute || isLoginRoute) return;
-
-  if (import.meta.server) {
-    return navigateTo('/panel/login', {
-      replace: true,
-      query: { from: to.fullPath },
-    });
-  }
+  if (import.meta.server) return;
 
   const auth = useAuthStore();
   const ok = await auth.ensureValidAccessToken();

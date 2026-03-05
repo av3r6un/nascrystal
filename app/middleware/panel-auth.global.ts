@@ -1,16 +1,24 @@
 import { useAuthStore } from '~/stores/auth';
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const isPanelRoute = to.path.startsWith('/panel');
   const isLoginRoute = to.path === '/panel/login';
 
   if (!isPanelRoute || isLoginRoute) return;
-  if (import.meta.server) return;
+
+  if (import.meta.server) {
+    return navigateTo('/panel/login', {
+      replace: true,
+      query: { from: to.fullPath },
+    });
+  }
 
   const auth = useAuthStore();
-  return auth.ensureValidAccessToken().then((ok) => {
-    if (!ok) {
-      return navigateTo('/panel/login');
-    }
-  });
+  const ok = await auth.ensureValidAccessToken();
+  if (!ok) {
+    return navigateTo('/panel/login', {
+      replace: true,
+      query: { from: to.fullPath },
+    });
+  }
 });

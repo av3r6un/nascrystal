@@ -168,6 +168,7 @@
     "choose_icon": "Выбрать иконку",
     "empty_page": "Здесь пока пусто",
     "navbar": {
+      "login": "Авторизация",
       "dashboard": "Дэшборд",
       "main_page": "Главная страница",
       "static_pages": "Статические страницы",
@@ -237,6 +238,9 @@
       "meta_title": "Мета-заголовок",
       "meta_description": "Мета-описание",
       "og_image": "OG Image"
+    },
+    "login": {
+      "page_title": "Авторизация"
     }
   },
   "dates": {

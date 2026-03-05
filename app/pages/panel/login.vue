@@ -43,6 +43,7 @@ definePageMeta({
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const auth = useAuthStore();
 
 const initialForm = () => ({
@@ -60,7 +61,9 @@ const submitMessage = ref('');
 if (import.meta.client) {
   const ok = await auth.ensureValidAccessToken();
   if (ok) {
-    await router.push('/panel');
+    const from = `${route.query.from ?? '/panel'}`;
+    const target = from.startsWith('/panel') && from !== '/panel/login' ? from : '/panel';
+    await router.push(target);
   }
 }
 
@@ -76,7 +79,9 @@ const handleForm = async () => {
     submitState.value = 'success';
     lForm.value?.reset();
     Object.assign(loginForm, initialForm());
-    await router.push('/panel');
+    const from = `${route.query.from ?? '/panel'}`;
+    const target = from.startsWith('/panel') && from !== '/panel/login' ? from : '/panel';
+    await router.push(target);
   }
   catch {
     submitState.value = 'error';

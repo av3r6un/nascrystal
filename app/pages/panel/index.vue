@@ -5,8 +5,8 @@
     </div>
     <div class="dashboard_body">
       <div class="dashboard_info">
-        <PanelStat title="Товаров к каталоге" icon="box" :number="156" />
-        <PanelStat title="Заказов за месяц" icon="shopping-cart" :number="43" />
+        <PanelStat title="Товаров к каталоге" icon="box" :number="0" />
+        <PanelStat title="Заказов за месяц" icon="shopping-cart" :number="0" />
         <PanelStat title="Последнее обновление" icon="clock" :date="now" />
       </div>
       <div class="dashboard_row">
@@ -18,7 +18,7 @@
             </div>
             <div class="dashboard_actions-body">
               <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/stock?new" class="base_link">
+                <NuxtLink to="/panel/stock" class="base_link">
                   <Icon name="nsc:lightning" :size="24" />
                   {{ t('panel.dashboard.add_stock') }}
                 </NuxtLink>
@@ -30,13 +30,13 @@
                 </NuxtLink>
               </div>
               <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/home?edit" class="base_link">
+                <NuxtLink to="/panel/home" class="base_link">
                   <Icon name="nsc:lightning" :size="24" />
                   {{ t('panel.dashboard.edit_main_page') }}
                 </NuxtLink>
               </div>
               <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/settings?edit" class="base_link">
+                <NuxtLink to="/panel/settings" class="base_link">
                   <Icon name="nsc:lightning" :size="24" />
                   {{ t('panel.dashboard.change_contacts') }}
                 </NuxtLink>

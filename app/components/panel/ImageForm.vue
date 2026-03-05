@@ -107,12 +107,14 @@ const input = ref<HTMLInputElement | null>(null);
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 14px;
       flex-direction: column;
       justify-content: center;
-      color: $light-brown;
       cursor: pointer;
       .caption{
+        color: $light-brown;
+        font-family: $text-font;
+        font-weight: normal;
+        font-size: 14px;
         max-width: 75%;
         text-align: center;
       }

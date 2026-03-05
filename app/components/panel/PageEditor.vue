@@ -97,7 +97,6 @@ const savePage = () => emit('save');
       font-weight: bold;
       color: $brown;
       font-size: 24px;
-      margin-bottom: 24px;
     }
   }
 }

@@ -166,6 +166,7 @@
     "caption": "Описание",
     "description": "Основной текст",
     "choose_icon": "Выбрать иконку",
+    "empty_page": "Здесь пока пусто",
     "navbar": {
       "dashboard": "Дэшборд",
       "main_page": "Главная страница",
@@ -215,6 +216,27 @@
         "blocks": "Блоки",
         "add_blocks": "Добавить блок"
       }
+    },
+    "settings": {
+      "title": "Настройки",
+      "general": "Общие",
+      "contacts": "Контакты",
+      "socials": "Социальные сети",
+      "seo": "SEO-настройки",
+      "logo": "Логотип",
+      "site_name": "Название сайта",
+      "maintenance": "Режим обслуживания",
+      "maintenance_caption": "Скрыть сайт от посетителей на время обновления",
+      "phones": "Телефоны",
+      "address": "Адрес",
+      "email": "Почта",
+      "whatsapp": "WhatsApp",
+      "tg_channel": "Telegram-канал",
+      "instagram": "Instagram",
+      "max": "Макс",
+      "meta_title": "Мета-заголовок",
+      "meta_description": "Мета-описание",
+      "og_image": "OG Image"
     }
   },
   "dates": {

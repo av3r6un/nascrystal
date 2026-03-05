@@ -22,8 +22,14 @@
           <div class="footer_contacts-item first">
             {{ t('footer.contacts') }}
           </div>
-          <div v-for="(c, idx) in contactsLong" :key="idx" class="footer_contacts-item">
-            {{ rt(c) }}
+          <div v-for="(phone, idx) in phones" :key="idx" class="footer_contacts-item">
+            <a :href="`tel:${phone}`" class="base_link">{{ prettyPhone(phone) }}</a>
+          </div>
+          <div v-for="(em, idx) in emails" :key="idx" class="footer_contacts-item">
+            <a :href="`mailto:${em}`" class="base_link">{{ prettyPhone(em) }}</a>
+          </div>
+          <div class="footer_contacts-item">
+            <a href="" class="base_link">{{ settings.contacts.address }}</a>
           </div>
         </div>
         <div class="footer_hours">
@@ -44,6 +50,10 @@
 
 <script lang="ts" setup>
 const { t, tm, rt } = useI18n();
+const settings = useSettings();
+const phones = settings.value.contacts.phones;
+const emails = settings.value.contacts.emails;
+const prettyPhone = usePrettyPhone();
 const navbar = computed(() => {
   const value = tm('navbar');
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};

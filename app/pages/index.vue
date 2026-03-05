@@ -74,8 +74,13 @@
               {{ $t('index_socials.info') }}
             </div>
             <div class="index_socials-links">
-              <a v-for="(link, linkidx) in $tm('index_socials.links')" :key="linkidx" :href="`${t(rt(link.selector))}`" class="base_link social_link">
-                <Icon :name="`nsc:${rt(link.icon)}`" :size="24" />
+              <a
+                v-for="(ct, social) in settings.socials"
+                :key="social"
+                :href="ct.link"
+                class="base_link social_link"
+              >
+                <Icon :name="`nsc:${social}`" :size="24" />
               </a>
             </div>
           </div>
@@ -92,6 +97,7 @@ definePageMeta({
 });
 
 const { locale, t, rt } = useI18n();
+const settings = useSettings();
 
 const fallbackPage = {
   title: t('index_page.title'),

@@ -63,6 +63,13 @@ body{
     }
   }
 }
+.named_input-add{
+  .m-icon{
+    path {
+      stroke: $white;
+    }
+  }
+}
 
 
 main.content{
@@ -170,10 +177,38 @@ ul>li{
   font-family: $title-font;
 }
 
+.panel_section{
+  padding: 23px;
+  background: $light-pink;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 8px;
+  border: 1px solid $semi-grey;
+  min-width: 326px;
+  box-sizing: border-box;
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
+}
+
 .plate_text {
   .item {
     .base_link{
       user-select: none;
+    }
+  }
+}
+
+.empty{
+  &_title{
+    font-size: 24px;
+  }
+  &_action{
+    margin-top: 20px;
+    .btn_submit{
+      box-sizing: border-box;
+      padding: 10px;
     }
   }
 }

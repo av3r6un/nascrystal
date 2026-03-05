@@ -89,7 +89,7 @@ const pages = computed<Record<string, string>>(() => {
   }, {});
 });
 
-const selectedPage = ref<string | null>(null);
+const selectedPage = ref<string | null>('new');
 
 const initialForm = () => ({
   id: null,

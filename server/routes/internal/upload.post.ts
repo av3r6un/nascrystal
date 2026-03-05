@@ -8,6 +8,8 @@ const ALLOWED_MIME_TYPES = new Set([
   'image/webp',
   'image/gif',
   'image/svg+xml',
+  'image/x-icon',
+  'image/vnd.microsoft.icon',
 ]);
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -16,6 +18,8 @@ const EXT_BY_MIME: Record<string, string> = {
   'image/webp': '.webp',
   'image/gif': '.gif',
   'image/svg+xml': '.svg',
+  'image/vnd.microsoft.icon': '.ico',
+  'image/x-icon': '.ico',
 };
 
 export default defineEventHandler(async (event) => {
@@ -36,6 +40,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'File is required',
     });
   }
+  console.log(filePart.type);
 
   if (!filePart.type || !ALLOWED_MIME_TYPES.has(filePart.type)) {
     throw createError({

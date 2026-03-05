@@ -6,56 +6,41 @@
     <div class="contacts_wrapper">
       <div class="contacts_info">
         <BulletPlate icon="phone-big" :title="$t('contacts_page.phone')">
-          <div class="item">
-            <a :href="$t('contacts.phone.link')" class="base_link">
-              {{ $t('contacts.phone.text') }}
-            </a>
-          </div>
-          <div v-for="(p, idx) in $tm('contacts.extra_phones')" :key="idx" class="item">
-            <a :href="$rt(p.link)" class="base_link">
-              {{ $rt(p.text) }}
+          <div v-for="(p, idx) in settings.contacts.phones" :key="idx" class="item">
+            <a :href="`tel:${p}`" class="base_link">
+              {{ prettyPhone(p) }}
             </a>
           </div>
         </BulletPlate>
         <BulletPlate icon="email-big" :title="$t('contacts_page.email')">
-          <div class="item">
-            <a :href="$t('contacts.email.link')" class="base_link">
-              {{ $t('contacts.email.text') }}
+          <div v-for="(em, idx) in settings.contacts.emails" :key="idx" class="item">
+            <a :href="`mailto:${em}`" class="base_link">
+              {{ em }}
             </a>
           </div>
         </BulletPlate>
-        <BulletPlate icon="instagram" :title="$t('contacts_page.instagram')">
-          <div class="item">
-            <a :href="$t('contacts.instagram.link')" class="base_link">
-              {{ $t('contacts.instagram.text') }}
-            </a>
+        <div class="socials">
+          <div v-for="(content, social) in settings.socials" :key="social" class="social_wrapper">
+            <BulletPlate :icon="social" :title="$t(`contacts_page.${social}`)">
+              <div class="item">
+                <a :href="content.link" class="base_link">
+                  {{ content.text }}
+                </a>
+              </div>
+            </BulletPlate>
           </div>
-        </BulletPlate>
-        <BulletPlate icon="telegram" :title="$t('contacts_page.telegram')">
-          <div class="item">
-            <a :href="$t('contacts.telegram.link')" class="base_link">
-              {{ $t('contacts.telegram.text') }}
-            </a>
-          </div>
-        </BulletPlate>
-        <BulletPlate icon="mah" :title="$t('contacts_page.max')">
-          <div class="item">
-            <a :href="$t('contacts.max.link')" class="base_link">
-              {{ $t('contacts.max.text') }}
-            </a>
-          </div>
-        </BulletPlate>
+        </div>
         <BulletPlate icon="whatsapp" :title="$t('contacts_page.whatsapp')">
           <div class="item">
-            <a :href="$t('contacts.whatsapp.link')" class="base_link">
-              {{ $t('contacts.whatsapp.text') }}
+            <a :href="`//wa.me/${settings.contacts.whatsapp}`" class="base_link">
+              {{ prettyPhone(settings.contacts.whatsapp, 'international') }}
             </a>
           </div>
         </BulletPlate>
         <BulletPlate icon="pinpoint" :title="$t('contacts_page.address')">
           <div class="item">
-            <a :href="$t('contacts.address.link')" class="base_link">
-              {{ $t('contacts.address.text') }}
+            <a href="#" class="base_link">
+              {{ settings.contacts.address }}
             </a>
           </div>
         </BulletPlate>
@@ -129,6 +114,8 @@ const initialForm = () => reactive({
   email: '',
   message: '',
 });
+const settings = useSettings();
+const prettyPhone = usePrettyPhone();
 
 const feedbackForm = reactive(initialForm());
 
@@ -200,6 +187,14 @@ const handleForm = async () => {
     }
     .base_link{
       white-space: nowrap;
+    }
+    .socials:has(.plate) {
+      .social_wrapper{
+        margin-bottom: 20px;
+        &:last-child{
+          margin-bottom: 0;
+        }
+      }
     }
   }
   &_feedback{

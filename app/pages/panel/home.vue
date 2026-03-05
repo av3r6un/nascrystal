@@ -5,8 +5,8 @@
     </div>
     <div class="home_body">
       <div class="home_body-row">
-        <div class="home_section">
-          <div class="home_section-title">
+        <div class="home_section panel_section">
+          <div class="home_section-title title">
             {{ t('panel.main_page.hero_section') }}
           </div>
           <PanelNamedInput
@@ -31,8 +31,8 @@
             :caption="t('panel.img_placeholder_caption')"
           />
         </div>
-        <div class="home_section">
-          <div class="home_section-title">
+        <div class="home_section panel_section">
+          <div class="home_section-title title">
             {{ t('panel.main_page.benefits_title') }}
           </div>
           <div v-for="(b, idx) in pageInfo.benefits" :key="idx" class="benefit_row">
@@ -55,8 +55,8 @@
         </div>
       </div>
       <div class="home_body-row">
-        <div class="home_section">
-          <div class="home_section-title">
+        <div class="home_section panel_section">
+          <div class="home_section-title title">
             {{ t('panel.main_page.about') }}
           </div>
           <PanelNamedInput
@@ -80,8 +80,8 @@
             :caption="t('panel.img_placeholder_caption')"
           />
         </div>
-        <div class="home_section meta">
-          <div class="home_section-title">
+        <div class="home_section panel_section meta">
+          <div class="home_section-title title">
             {{ t('panel.static.forms.metatags') }}
           </div>
           <PanelNamedInput
@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="home_body-row">
-        <div class="home_section">
+        <div class="home_section panel_section">
           <PanelNamedCheckbox
             v-model="pageInfo.show_popular"
             :states="[true, false]"
@@ -112,7 +112,7 @@
         </div>
       </div>
       <div class="home_body-row">
-        <div class="home_section">
+        <div class="home_section panel_section">
           <PanelNamedCheckbox
             v-model="pageInfo.show_categories"
             :states="[true, false]"
@@ -122,7 +122,7 @@
         </div>
       </div>
       <div class="home_body-row">
-        <div class="home_section">
+        <div class="home_section panel_section">
           <PanelNamedCheckbox
             v-model="pageInfo.show_socials"
             :states="[true, false]"
@@ -439,17 +439,6 @@ const savePage = async () => {
   }
   &_section{
     width: 50%;
-    padding: 23px;
-    background: $light-pink;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-radius: 8px;
-    border: 1px solid $semi-grey;
-    min-width: 326px;
-    @media (max-width: 1024px) {
-      width: 100%;
-    }
     &-title{
       font: 600 20px $title-font;
       color: $brown;

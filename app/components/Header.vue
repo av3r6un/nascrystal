@@ -4,18 +4,18 @@
       <div class="header_pre-wrapper">
         <div class="header_pre-item">
           <Icon name="nsc:phone" :size="15" />
-          <a :href="$t('contacts.phone.link')" class="base_link">
-            {{ $t('contacts.phone.text') }}
+          <a :href="`tel:${phone}`" class="base_link">
+            {{ prettyPhone(phone) }}
           </a>
         </div>
         <div class="header_pre-item email">
           <Icon name="nsc:email" :size="15" />
-          <a :href="$t('contacts.email.link')" class="base_link">
-            {{ $t('contacts.email.text') }}
+          <a :href="`mailto:${email}`" class="base_link">
+            {{ email }}
           </a>
         </div>
         <div class="header_pre-item">
-          {{ $t('work_hours.short') }}
+          {{ t('work_hours.short') }}
         </div>
       </div>
     </div>
@@ -28,27 +28,27 @@
       <div class="header_navbar">
         <div class="header_navbar-item home">
           <NuxtLink to="/" class="base_link">
-            {{ $t('navbar.home') }}
+            {{ t('navbar.home') }}
           </NuxtLink>
         </div>
         <div class="header_navbar-item">
           <NuxtLink to="/catalog" class="base_link">
-            {{ $t('navbar.catalog') }}
+            {{ t('navbar.catalog') }}
           </NuxtLink>
         </div>
         <div class="header_navbar-item">
           <NuxtLink to="/about" class="base_link">
-            {{ $t('navbar.about') }}
+            {{ t('navbar.about') }}
           </NuxtLink>
         </div>
         <div class="header_navbar-item">
           <NuxtLink to="/prices" class="base_link">
-            {{ $t('navbar.prices') }}
+            {{ t('navbar.prices') }}
           </NuxtLink>
         </div>
         <div class="header_navbar-item">
           <NuxtLink to="/contacts" class="base_link">
-            {{ $t('navbar.contacts') }}
+            {{ t('navbar.contacts') }}
           </NuxtLink>
         </div>
       </div>
@@ -64,13 +64,12 @@
   </header>
 </template>
 
-<script>
-export default {
-  name: 'Header',
-  data() {
-    return {};
-  },
-};
+<script setup lang="ts">
+const { t } = useI18n();
+const prettyPhone = usePrettyPhone();
+const settings = useSettings();
+const phone = settings.value.contacts.phones[0];
+const email = settings.value.contacts.emails[0];
 </script>
 
 <style lang="scss" scoped>

@@ -1,12 +1,14 @@
 <template>
   <div class="panel_wrapper">
-    <PanelMenu v-if="showPanelChrome" class="panel_menu" />
-    <PanelHeader v-if="showPanelChrome" class="panel_header" />
-    <main class="panel_content" :class="{ only_login: isSystemPage || hideProtectedContent }">
-      <div v-if="hideProtectedContent" class="panel_loading" />
-      <slot v-else />
+    <PanelMenu v-show="showPanelChrome" class="panel_menu" />
+    <PanelHeader v-show="showPanelChrome" class="panel_header" />
+    <main class="panel_content" :class="{ only_login: isSystemPage }">
+      <div class="panel_page" :class="{ hidden: hideProtectedContent }">
+        <slot />
+      </div>
+      <div class="panel_loading" :class="{ visible: hideProtectedContent }" />
     </main>
-    <PanelMobileMenu v-if="showPanelChrome" class="panel_mobile-menu" />
+    <PanelMobileMenu v-show="showPanelChrome" class="panel_mobile-menu" />
   </div>
 </template>
 
@@ -14,19 +16,12 @@
 const route = useRoute();
 const { locale, t } = useI18n();
 const pageKey = computed(() => route.meta.pageKey);
+const panelAuthPending = useState<boolean>('panel-auth-pending', () => true);
 const normalizedPath = computed(() => route.path.replace(/\/+$/, ''));
-const isSystemPage = computed(() => {
-  if (normalizedPath.value.startsWith('/panel/login')) return true;
-  return `${pageKey.value ?? ''}` === 'login';
-});
+const isSystemPage = computed(() => route.meta.system === true || normalizedPath.value === '/panel/login');
 const isProtectedPanelRoute = computed(() => route.path.startsWith('/panel') && !isSystemPage.value);
-const panelAuthPending = useState<boolean>(
-  'panel-auth-pending',
-  () => isProtectedPanelRoute.value,
-);
 const hideProtectedContent = computed(() => isProtectedPanelRoute.value && panelAuthPending.value);
 const showPanelChrome = computed(() => !isSystemPage.value && !hideProtectedContent.value);
-
 const title = computed(() => t(`panel.navbar.${pageKey.value}`) || t('default.loading'));
 useHead({
   htmlAttrs: { lang: locale },
@@ -39,8 +34,17 @@ useHead({
 
 <style lang="scss" scoped>
 .panel{
+  &_page{
+    &.hidden{
+      visibility: hidden;
+    }
+  }
   &_loading{
     min-height: 40vh;
+    display: none;
+    &.visible{
+      display: block;
+    }
   }
   &_menu{
     position: fixed;

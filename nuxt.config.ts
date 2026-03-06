@@ -41,6 +41,9 @@ export default defineNuxtConfig({
     },
   },
   buildDir: '.nuxt/',
+  routeRules: {
+    '/panel/**': { ssr: false },
+  },
   devServer: {
     host: '127.0.0.1',
     port: 3000,

@@ -2,31 +2,37 @@ import { useAuthStore } from '~/stores/auth';
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const isPanelRoute = to.path.startsWith('/panel');
-  const isLoginRoute = to.path === '/panel/login';
-  const panelAuthPending = useState<boolean>(
-    'panel-auth-pending',
-    () => isPanelRoute && !isLoginRoute,
-  );
+  if (!isPanelRoute) return;
 
-  if (!isPanelRoute || isLoginRoute) {
-    panelAuthPending.value = false;
-    return;
-  }
+  const normalizedPath = to.path.replace(/\/+$/, '');
+  const isLoginRoute = normalizedPath === '/panel/login' || to.meta.system === true;
+  const panelAuthPending = useState<boolean>('panel-auth-pending', () => true);
+  const auth = useAuthStore();
+
   if (import.meta.server) {
     panelAuthPending.value = true;
     return;
   }
 
-  const auth = useAuthStore();
   panelAuthPending.value = true;
 
   try {
-    const ok = await auth.ensureValidAccessToken();
-    if (!ok) {
-      return navigateTo('/panel/login', {
-        replace: true,
+    const valid = await auth.ensureValidAccessToken();
+
+    if (!isLoginRoute && !valid) {
+      return navigateTo({
+        path: '/panel/login',
         query: { from: to.fullPath },
+        replace: true,
       });
+    }
+
+    if (isLoginRoute && valid) {
+      const from = `${to.query.from ?? '/panel'}`;
+      const target = from.startsWith('/panel') && from.replace(/\/+$/, '') !== '/panel/login'
+        ? from
+        : '/panel';
+      return navigateTo(target, { replace: true });
     }
   }
   finally {

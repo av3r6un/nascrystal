@@ -20,10 +20,11 @@ const seo = appConfig.seo as {
 };
 
 const canonical = computed(() => `${config.public.siteUrl}${route.path}`);
-const pageKey = computed(() => route.meta.pageKey);
+const fallbackSlug = computed(() => route.params.slug ? route.params.slug.join('.') : 'not_found');
+const pageKey = computed(() => route.meta.pageKey ?? fallbackSlug.value);
 const { t, te } = useI18n();
 
-const title = computed(() => t(`navbar.${pageKey.value}`) || t('default.loading'));
+const title = computed(() => te(`navbar.${pageKey.value}`) ? t(`navbar.${pageKey.value}`) : t('error.not_found'));
 const descr = computed(() => te(`${pageKey.value}_page.description`)
   ? t(`${pageKey.value}_page.description`)
   : seo.defaultDescription);

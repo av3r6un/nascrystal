@@ -1,14 +1,14 @@
 <template>
-  <div class="named_input">
-    <div class="named_input-header">
-      <div class="named_input-name">
+  <div class="input_list">
+    <div class="input_list-header">
+      <div class="input_list-name">
         {{ name }}
       </div>
-      <div class="named_input-add" @click="addEmpty">
+      <div class="input_list-add" @click="addEmpty">
         <Icon name="nsc:plus-sign" :size="18" />
       </div>
     </div>
-    <div v-for="(i, idx) in localValue" :key="idx" class="named_input-wrapper">
+    <div v-for="(i, idx) in localValue" :key="idx" class="input_list-wrapper">
       <input
         v-model="localValue[idx]"
         :type="type"
@@ -64,14 +64,12 @@ const localValue = computed({
   },
 });
 
-const cLength = computed(() => localValue.value.length);
-
 const removeInput = (idx: number) => localValue.value.splice(idx, 1);
 const addEmpty = () => localValue.value.push('');
 </script>
 
 <style lang="scss" scoped>
-.named_input{
+.input_list{
   &-header{
     display: flex;
     justify-content: space-between;
@@ -108,6 +106,9 @@ const addEmpty = () => localValue.value.push('');
     }
     .m-icon{
       cursor: pointer;
+    }
+    .input_wide{
+      margin-bottom: 0;
     }
   }
 }

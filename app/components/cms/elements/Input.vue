@@ -1,7 +1,7 @@
 <template>
-  <div class="named_input">
-    <div class="named_input-name">
-      {{ name }}
+  <div class="input">
+    <div class="input_name">
+      {{ t(`${name}`) }}
     </div>
     <input
       v-model="localValue"
@@ -18,6 +18,7 @@
 import type { PropType } from 'vue';
 
 const emit = defineEmits(['update:modelValue']);
+const { t } = useI18n();
 
 const props = defineProps({
   name: {
@@ -58,8 +59,8 @@ const localValue = computed({
 </script>
 
 <style lang="scss" scoped>
-.named_input{
-  &-name{
+.input{
+  &_name{
     color: $brown;
     font-size: 16px;
     margin-bottom: 10px;

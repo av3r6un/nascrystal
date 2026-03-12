@@ -73,7 +73,7 @@ const catalogItems = computed(() => data.value ?? []);
     align-items: center;
     .warning{
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 19px;
       color: $light-brown;
     }
     .btn_submit.big{

@@ -2,7 +2,9 @@
   "error": {
     "go_home": "Return to home page",
     "404": "Page not found",
-    "500": "Server response error"
+    "500": "Server response error",
+    "not_found": "Page not found",
+    "load_page": "Errors while loading page. Try again later."
   },
   "default": {
     "loading": "Loading.."
@@ -23,47 +25,9 @@
     ]
   },
   "catalog": {
-    "warning": "В нашем каталоге пока пусто"
+    "warning": "There are no items in out catalog yet."
   },
   "contacts": {
-    "phone": {
-      "text": "+7 (915) 418-57-70",
-      "link": "tel:+79154185770"
-    },
-    "extra_phones": [
-      {
-        "text": "+7 (965) 482-64-76",
-        "link": "tel:+79654826476"
-      },
-      {
-        "text": "+7 (910) 408-26-98",
-        "link": "tel:+79104082698"
-      }
-    ],
-    "email": {
-      "text": "lovli_98{'@'}icloud.com",
-      "link": "mailto:lovli_98{'@'}icloud.com"
-    },
-    "address": {
-      "text": "Moscow, Varshavskoye Highway, 71/1",
-      "link": ""
-    },
-    "instagram": {
-      "text": "{'@'}crystal_nas96",
-      "link": "https://www.instagram.com/crystal_nas96"
-    },
-    "max": {
-      "text": "Join us",
-      "link": "https://max.ru/join/_B2H2Gye9UG4NmIppQpM45sz7ZL8tUR_K-qD21Ip2X0"
-    },
-    "whatsapp": {
-      "text": "+86 157 2793 9034",
-      "link": "https://wa.me/+8615727939034"
-    },
-    "telegram": {
-      "link": "https://t.me/straziswarowski",
-      "text": "{'@'}straziswarowski"
-    },
     "long": [
       "+7 (915) 418-57-70",
       "+7 (910) 408-26-98",
@@ -80,57 +44,27 @@
     "work_hours": "Business Hours",
     "copyright": "© 2026 NAS Crystal. All rights reserved."
   },
-  "index": {
-    "title": "Premium rhinestones and crystals for designers and brands",
-    "banner_info": "Rhinestones and decorative elements for fashion, dance costumes and ateliers",
-    "cta": "Explore the catalogue",
-    "description": "Premium rhinestones and crystals for designers and brands, decorative elements for fashion, dance costumes and ateliers."
+  "index_page": {
+    "title": "Home",
+    "description": "Premium rhinestones and crystals for designers and brands, decorative elements for fashion, dance costumes and ateliers.",
+    "og_image": "/img/nascrystal.png"    
   },
-  "benefits": [
-    { "icon": "diamond", "title": "Premium Quality", "info": "Top-grade crystals with flawless cutting" },
-    { "icon": "truck", "title": "Direct Supply", "info": "We work directly with factories without intermediaries" },
-    { "icon": "people", "title": "Wholesale Terms", "info": "Special prices for regular customers" }
-  ],
   "categories": {
     "title": "Product Categories",
     "list": [
-      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "12 faces" },
-      { "icon": "diamond", "title": "Flatback Rhinestones", "info": "16 faces (xirius)" },
-      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "12 faces" },
-      { "icon": "diamond", "title": "Sew-On Rhinestones", "info": "16 faces (xirius)" },
+      { "icon": "diamond", "title": "Cold-fix rhinestones", "info": "12 faces" },
+      { "icon": "diamond", "title": "Cold-fix rhinestones", "info": "16 faces (xirius)" },
+      { "icon": "diamond", "title": "Hot-fix rhinestones", "info": "12 faces" },
+      { "icon": "diamond", "title": "Hot-fix rhinestones", "info": "16 faces (xirius)" },
+      { "icon": "diamond", "title": "Sewn-on rhinestones (K9)", "info": "For suits and dresses" },
       { "icon": "diamond", "title": "Fancy Crystals", "info": "Unique shapes" },
       { "icon": "diamond", "title": "Tools", "info": "Accessories for rhinestones and decorative elements" }
-    ]
-  },
-  "index_about": {
-    "image": null,
-    "title": "About the Company",
-    "story": "NAS Crystals is a reliable supplier of premium rhinestones and crystals for the fashion and dance sport industry. We work directly with leading factories, ensuring the highest quality at competitive prices.",
-    "cta": "Learn more →"
-  },
-  "index_socials": {
-    "title": "Мы в социальных сетях",
-    "info": "Первыми узнавайте о новинках, акциях и специальных предложениях",
-    "links": [
-      { "icon": "telegram", "selector": "contacts.telegram.link" },
-      { "icon": "mah", "selector": "contacts.max.link" },
-      { "icon": "instagram", "selector": "contacts.instagram.link" }
     ]
   },
   "about_page": {
     "title": "About the Company",
     "description": "NAS Crystal — your reliable partner in the world of premium rhinestones and crystals",
-    "image": null,
-    "text": [
-      "We specialize in supplying high-quality decorative crystals and rhinestones for professionals in the fashion, dance sport, and handicraft industries.",
-      "Our team carefully selects every batch, guaranteeing flawless cutting quality, accurate color rendering, and consistent sizing.",
-      "We cooperate with leading factories in Austria and Asia, offering an optimal balance of quality and price for our clients."
-    ],
-    "stats": [
-      { "number": "500+", "text": "Items in the catalog" },
-      { "number": "1000+", "text": "Satisfied customers" },
-      { "number": "7 years", "text": "On the market" }
-    ]
+    "image": null
   },
   "contacts_page": {
     "description": "NAS Crystal contacts: phone, email, Moscow address, working hours. Contact us for wholesale orders of rhinestones and crystals or send a message via the website form.",
@@ -139,9 +73,6 @@
     "email": "Email",
     "address": "Address",
     "work_hours": "Working Hours",
-    "instagram": "Instagram",
-    "telegram": "Telegram",
-    "max": "Max",
     "whatsapp": "WhatsApp",
     "feedback": {
       "title": "Write to Us",
@@ -156,46 +87,135 @@
       "apply": false
     }
   },
-  "prices_page": {
-    "title": "Prices and Delivery",
-    "description": "NAS Crystal prices and delivery: wholesale terms, discounts up to 10%, delivery across Russia, courier in Moscow, pickup available. Minimum order from 5,000₽. Fast shipping within 1—2 days.",
-    "blocks": [
-      {
-        "title": "Wholesale Terms",
-        "bullets": [
-          "Minimum order — from 5,000₽",
-          "5% discount for orders from 15,000₽",
-          "10% discount for orders from 30,000₽",
-          "Individual terms for regular customers"
-        ]
-      },
-      {
-        "title": "Delivery Across Russia",
-        "bullets": [
-          "CDEK from 350₽, 3—7 days",
-          "Russian Post from 250₽, 5—14 days",
-          "Courier delivery in Moscow — 500₽",
-          "Free delivery for orders from 20,000₽"
-        ]
-      },
-      {
-        "title": "Pickup",
-        "bullets": [
-          "Moscow, Varshavskoye Highway 71k1",
-          "Mon — Fri: 10:00 — 19:00",
-          "Sat—Sun: Closed",
-          "Advance appointment by phone"
-        ]
-      },
-      {
-        "title": "Lead Times",
-        "bullets": [
-          "In-stock items — shipped within 1-2 business days",
-          "Made to order — 7 to 21 business days",
-          "Please check availability with your manager"
-        ]
+  "login_page": {
+    "placeholders": {
+      "email": "E-mail",
+      "password": "Password"
+    },
+    "submit": "Sign in",
+    "success": "Authorization successful",
+    "error": "Failed to authorize"
+  },
+  "panel": {
+    "img_placeholder": "Image",
+    "img_placeholder_caption": "Drag & drop or click for load image",
+    "title": "Title",
+    "subtitle": "Subtitle",
+    "button_add": "Add",
+    "submit": "Submit",
+    "text": "Text",
+    "caption": "Caption",
+    "description": "Description",
+    "choose_icon": "Choose icon",
+    "empty_page": "An empty page",
+    "benefits": "Out benefits",
+    "add_block": "Add block",
+    "selection_placeholder": "Choose an option",
+    "slug": "Page address",
+    "meta_title": "Meta-title",
+    "meta_description": "Meta-description",
+    "main_page": "Main Page",
+    "navbar": {
+      "login": "Sign in",
+      "dashboard": "Dashboard",
+      "main_page": "Main Page",
+      "static_page": "Static Pages",
+      "catalog": "Catalog",
+      "stock": "Stock",
+      "purchases": "Purchases",
+      "settings": "Settings",
+      "user": "Administrator",
+      "custom_editor": "Custom setting"
+    },
+    "options": {
+      "full_width": {
+        "title": "Full width",
+        "caption": "Display block with full width"
       }
-    ]
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "add_stock": "Add a product",
+      "watch_purchases": "Manage purchases",
+      "edit_main_page": "Edit main page",
+      "change_contacts": "Edit contacts",
+      "quick_actions": "Quick Actions"
+    },
+    "static": {
+      "title": "Static Pages",
+      "forms": {
+        "description": "Page description",
+        "metatags": "Meta-tags"
+      },
+      "new": {
+        "add_page": "Add a page",
+        "draft": "Draft",
+        "draft_caption": "Do not display page on site"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "general": "General",
+      "contacts": "Contacts",
+      "socials": "Socials",
+      "seo": "SEO settings",
+      "logo": "Logotype",
+      "site_name": "Site name",
+      "maintenance": "Maintenance",
+      "maintenance_caption": "Hide site for maintenance time",
+      "phones": "Phones",
+      "address": "Address",
+      "email": "E-mail",
+      "whatsapp": "WhatsApp",
+      "tg_channel": "Telegram channel",
+      "instagram": "Instagram",
+      "max": "Max",
+      "meta_title": "Meta-title",
+      "meta_description": "Meta-description",
+      "og_image": "OG Image"
+    }
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow"
+  },
+  "editor": {
+    "title": "Block Editor",
+    "blockHero": "Hero",
+    "feature": "Features",
+    "switch": "Show block",
+    "badge": "Badge",
+    "categories": "Categories",
+    "socials": "Socials",
+    "section_caption": "Show section on main page",
+    "popular": "Popular pieces",
+    "stats": "Statistics",
+    "story": "Story",
+    "paragraphs": "Paragraphs",
+    "sections": "Sections",
+    "block_selection": "Select a block",
+    "home_title": "Main Page"
+  },
+  "content": {
+    "image": "Image",
+    "description": "Description",
+    "image_caption": "Drag & drop or click for load image",
+    "title": "Title",
+    "subtitle": "Subtitle",
+    "button_text": "Button text",
+    "button_to": "Button link"
+  },
+  "blocks": {
+    "socials": {
+      "title": "Join us on social",
+      "info": "Be the first to learn about new products, promotions and special offers."
+    },
+    "categories": {
+      "title": "Product Categories"
+    },
+    "popular": {
+      "title": "Popular pieces"
+    }
   }
 }
-

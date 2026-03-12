@@ -26,3 +26,6 @@ logs
 parking/
 *-structure.yml
 docker-compose.example.yml
+.unused
+.unused_locales
+.removed

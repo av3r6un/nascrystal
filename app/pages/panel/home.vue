@@ -1,141 +1,22 @@
 <template>
   <article class="home">
     <div class="home_title base_title">
-      {{ t('panel.main_page.title') }}
+      {{ t('panel.main_page') }}
     </div>
     <div class="home_body">
-      <div class="home_body-row">
-        <div class="home_section panel_section">
-          <div class="home_section-title title">
-            {{ t('panel.main_page.hero_section') }}
-          </div>
-          <PanelNamedInput
-            v-model="pageInfo.hero.title"
-            :name="t('panel.title')"
-            type="text"
-            required
-          />
-          <PanelNamedInput
-            v-model="pageInfo.hero.subtitle"
-            :name="t('panel.subtitle')"
-            required
-          />
-          <PanelNamedInput
-            v-model="pageInfo.hero.button_text"
-            :name="t('panel.main_page.button_text')"
-            required
-          />
-          <PanelImageForm
-            v-model="pageInfo.hero.image"
-            :name="t('panel.main_page.background_image')"
-            :caption="t('panel.img_placeholder_caption')"
-          />
-        </div>
-        <div class="home_section panel_section">
-          <div class="home_section-title title">
-            {{ t('panel.main_page.benefits_title') }}
-          </div>
-          <div v-for="(b, idx) in pageInfo.benefits" :key="idx" class="benefit_row">
-            <PanelBenefitEditor v-model="pageInfo.benefits[idx]" @delete="() => clearBenefit(idx)" />
-          </div>
-          <div class="home_section-add">
-            <button type="button" class="btn btn_add" @click="addBenefit">
-              <Icon name="nsc:plus-small" :size="16" />
-              {{ t('panel.button_add') }}
-            </button>
-          </div>
-        </div>
+      <div v-if="pending" class="home_state">
+        Loading...
       </div>
-      <div class="home_body-row">
-        <div v-if="isClient && pending" class="home_state">
-          Loading...
-        </div>
-        <div v-else-if="isClient && error" class="home_state">
-          Failed to load home page
-        </div>
+      <div v-else-if="error" class="home_state">
+        Failed to load home page
       </div>
-      <div class="home_body-row">
-        <div class="home_section panel_section">
-          <div class="home_section-title title">
-            {{ t('panel.main_page.about') }}
-          </div>
-          <PanelNamedInput
-            v-model="pageInfo.about.title"
-            :name="t('panel.title')"
-            required
-          />
-          <PanelNamedInput
-            v-model="pageInfo.about.description"
-            :name="t('panel.description')"
-            required
-          />
-          <PanelNamedInput
-            v-model="pageInfo.about.button_text"
-            :name="t('panel.main_page.button_text')"
-            required
-          />
-          <PanelImageForm
-            v-model="pageInfo.about.image"
-            :name="t('panel.img_placeholder')"
-            :caption="t('panel.img_placeholder_caption')"
-          />
-        </div>
-        <div class="home_section panel_section meta">
-          <div class="home_section-title title">
-            {{ t('panel.static.forms.metatags') }}
-          </div>
-          <PanelNamedInput
-            v-model="page.meta_title"
-            :name="t('panel.title')"
-            required
-          />
-          <PanelNamedInput
-            v-model="page.meta_description"
-            :name="t('panel.description')"
-            required
-          />
-          <PanelImageForm
-            v-model="page.og_image"
-            :name="t('panel.img_placeholder')"
-            :caption="t('panel.img_placeholder_caption')"
-          />
-        </div>
+      <div v-else class="home_body-row">
+        <CmsMetaEditor v-model="metaContent" />
+        <PanelBlockEditor :model-value="blocks" @update:model-value="updateContent" />
       </div>
-      <div class="home_body-row">
-        <div class="home_section panel_section">
-          <PanelNamedCheckbox
-            v-model="pageInfo.show_popular"
-            :states="[true, false]"
-            :title="t('panel.main_page.show_popular')"
-            :description="t('panel.main_page.show_section_caption')"
-          />
-        </div>
-      </div>
-      <div class="home_body-row">
-        <div class="home_section panel_section">
-          <PanelNamedCheckbox
-            v-model="pageInfo.show_categories"
-            :states="[true, false]"
-            :title="t('panel.main_page.show_categories')"
-            :description="t('panel.main_page.show_section_caption')"
-          />
-        </div>
-      </div>
-      <div class="home_body-row">
-        <div class="home_section panel_section">
-          <PanelNamedCheckbox
-            v-model="pageInfo.show_socials"
-            :states="[true, false]"
-            :title="t('panel.main_page.show_socials')"
-            :description="t('panel.main_page.show_section_caption')"
-          />
-        </div>
-      </div>
-      <div class="home_body-row">
-        <button type="button" class="btn btn_submit" :disabled="isSaving" @click="savePage">
-          {{ t('panel.submit') }}
-        </button>
-      </div>
+      <button type="button" class="btn btn_submit" :disabled="pending || isSaving || !data" @click="savePage">
+        {{ t('panel.submit') }}
+      </button>
     </div>
   </article>
 </template>
@@ -150,32 +31,7 @@ definePageMeta({
 
 const { t, locale } = useI18n();
 const auth = useAuthStore();
-const isClient = ref(false);
-
-onMounted(() => {
-  isClient.value = true;
-});
-
 type ImageLike = string | File | null | undefined;
-type Benefit = { text: string; icon: string; caption: string };
-type HomePayload = {
-  hero: {
-    title: string;
-    subtitle: string;
-    button_text: string;
-    image: ImageLike;
-  };
-  benefits: Benefit[];
-  about: {
-    title: string;
-    description: string;
-    button_text: string;
-    image: ImageLike;
-  };
-  show_popular: boolean;
-  show_categories: boolean;
-  show_socials: boolean;
-};
 
 type HomePagePayload = {
   id: number | null;
@@ -185,51 +41,45 @@ type HomePagePayload = {
   status: string;
   description: string;
   meta_title: string;
-  meta_desription: string | null;
+  meta_description: string | null;
   og_image: ImageLike;
   content: {
     blocks: Array<Record<string, unknown>>;
   };
 };
 
-const initialForm = () => ({
-  hero: {
-    title: '',
-    subtitle: '',
-    button_text: '',
-    image: null as ImageLike,
-  },
-  benefits: [
-    { text: '', icon: '', caption: '' },
-  ],
-  about: {
-    title: '',
-    description: '',
-    button_text: '',
-    image: null as ImageLike,
-  },
-  show_popular: false,
-  show_categories: true,
-  show_socials: true,
-});
-const pageInfo = ref<HomePayload>(initialForm());
-const page = reactive<HomePagePayload>({
+const createInitialForm = (): HomePagePayload => ({
   id: null,
-  title: t('navbar.home'),
+  title: t('editor.home_title'),
   slug: 'home',
   locale: locale.value,
   status: 'published',
   description: '',
   meta_title: '',
-  meta_desription: null,
-  og_image: null as ImageLike,
+  meta_description: null,
+  og_image: null,
   content: {
     blocks: [],
   },
 });
-const isSaving = ref(false);
+const initialForm = ref<HomePagePayload>(createInitialForm());
 
-const { data, pending, error, refresh } = await useAsyncData<Record<string, unknown> | null>(
+const normalizePayload = (value?: Partial<HomePagePayload> | null): HomePagePayload => ({
+  ...initialForm.value,
+  ...value,
+  content: {
+    blocks: Array.isArray(value?.content?.blocks)
+      ? [...value.content.blocks]
+      : [...initialForm.value.content.blocks],
+  },
+});
+const asRecord = (value: unknown): Record<string, unknown> | null => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+};
+
+const { data, pending, error, refresh } = await useAsyncData<HomePagePayload>(
   'panel-home-page',
   async () => {
     const ok = await auth.ensureValidAccessToken();
@@ -240,85 +90,30 @@ const { data, pending, error, refresh } = await useAsyncData<Record<string, unkn
       });
     }
 
-    return await $fetch('/internal/static/home', {
+    const response = await $fetch<Partial<HomePagePayload>>('/internal/static/home', {
       params: { locale: locale.value },
       headers: auth.authHeader,
     });
+    return normalizePayload(response);
   },
   {
     server: false,
     watch: [locale],
-    default: () => null,
+    default: () => createInitialForm(),
   },
 );
+const blocks = ref<Array<Record<string, unknown>>>([]);
+const isSaving = ref(false);
+watch(
+  () => data.value.content.blocks,
+  (next) => { blocks.value = Array.isArray(next) ? [...next] : []; },
+  { immediate: true },
+);
 
-const asRecord = (value: unknown): Record<string, unknown> | null => {
-  return typeof value === 'object' && value !== null ? value as Record<string, unknown> : null;
+const updateContent = (newContent: Array<Record<string, unknown>>) => {
+  blocks.value = [...newContent];
+  data.value.content.blocks = [...newContent];
 };
-
-const getBlockValue = (blocks: unknown[], key: string) => {
-  const block = blocks.find((item) => {
-    const record = asRecord(item);
-    return !!record && key in record;
-  });
-
-  const record = asRecord(block);
-  return record?.[key];
-};
-
-watch(data, (value) => {
-  const item = asRecord(value);
-  if (!item) return;
-
-  const content = asRecord(item.content) ?? {};
-  const blocks = Array.isArray(content.blocks) ? content.blocks : [];
-
-  const heroRaw = asRecord(getBlockValue(blocks, 'hero') ?? content.hero);
-  const aboutRaw = asRecord(getBlockValue(blocks, 'about') ?? content.about);
-  const showPopularRaw = getBlockValue(blocks, 'show_popular') ?? content.show_popular;
-  const benefitsRaw = getBlockValue(blocks, 'benefits') ?? content.benefits;
-
-  page.id = typeof item.id === 'number' ? item.id : null;
-  page.title = typeof item.title === 'string' ? item.title : t('navbar.home');
-  page.slug = typeof item.slug === 'string' ? item.slug : 'home';
-  page.locale = typeof item.locale === 'string' ? item.locale : locale.value;
-  page.status = typeof item.status === 'string' ? item.status : 'published';
-  page.description = typeof item.description === 'string' ? item.description : '';
-  page.meta_title = typeof item.meta_title === 'string' ? item.meta_title : '';
-  page.meta_description = typeof item.meta_description === 'string' ? item.meta_description : null;
-  page.og_image = typeof item.og_image === 'string' ? item.og_image : null;
-
-  pageInfo.value.hero = {
-    title: typeof heroRaw?.title === 'string' ? heroRaw.title : '',
-    subtitle: typeof heroRaw?.subtitle === 'string' ? heroRaw.subtitle : '',
-    button_text: typeof heroRaw?.button_text === 'string' ? heroRaw.button_text : '',
-    image: typeof heroRaw?.image === 'string' ? heroRaw.image : null,
-  };
-
-  pageInfo.value.about = {
-    title: typeof aboutRaw?.title === 'string' ? aboutRaw.title : '',
-    description: typeof aboutRaw?.description === 'string' ? aboutRaw.description : '',
-    button_text: typeof aboutRaw?.button_text === 'string' ? aboutRaw.button_text : '',
-    image: typeof aboutRaw?.image === 'string' ? aboutRaw.image : null,
-  };
-
-  pageInfo.value.benefits = Array.isArray(benefitsRaw) && benefitsRaw.length > 0
-    ? benefitsRaw
-        .map(item => asRecord(item))
-        .filter((item): item is Record<string, unknown> => !!item)
-        .map(item => ({
-          text: typeof item.text === 'string' ? item.text : '',
-          icon: typeof item.icon === 'string' ? item.icon : '',
-          caption: typeof item.caption === 'string' ? item.caption : '',
-        }))
-    : [{ text: '', icon: '', caption: '' }];
-
-  pageInfo.value.show_popular = typeof showPopularRaw === 'boolean' ? showPopularRaw : false;
-}, { immediate: true });
-
-const addBenefit = () => pageInfo.value.benefits.push(initialForm().benefits[0]);
-
-const clearBenefit = (index: number) => pageInfo.value.benefits.splice(index, 1);
 
 const uploadImageIfNeeded = async (image: ImageLike) => {
   if (image instanceof File) {
@@ -334,11 +129,20 @@ const uploadImageIfNeeded = async (image: ImageLike) => {
     return response.path;
   }
 
-  if (typeof image === 'string' && image.trim().length > 0) {
-    return image;
-  }
-
+  if (typeof image === 'string' && image.trim().length > 0) return image;
   return null;
+};
+
+const uploadFilesDeep = async (value: unknown): Promise<unknown> => {
+  if (value instanceof File) return await uploadImageIfNeeded(value);
+  if (Array.isArray(value)) return await Promise.all(value.map(item => uploadFilesDeep(item)));
+  if (typeof value === 'object' && value !== null) {
+    const entries = await Promise.all(
+      Object.entries(value).map(async ([k, v]) => [k, await uploadFilesDeep(v)] as const),
+    );
+    return Object.fromEntries(entries);
+  }
+  return value;
 };
 
 const savePage = async () => {
@@ -354,63 +158,59 @@ const savePage = async () => {
       });
     }
 
-    const heroImage = await uploadImageIfNeeded(pageInfo.value.hero.image);
-    const aboutImage = await uploadImageIfNeeded(pageInfo.value.about.image);
-
-    const metaOgImage = await uploadImageIfNeeded(page.og_image);
-    const blocks: Array<Record<string, unknown>> = [
-      {
-        hero: {
-          ...pageInfo.value.hero,
-          image: heroImage,
-        },
-      },
-      {
-        benefits: pageInfo.value.benefits.map(item => ({ ...item })),
-      },
-      {
-        show_categories: pageInfo.value.show_categories,
-      },
-      {
-        show_popular: pageInfo.value.show_popular,
-      },
-      {
-        about: {
-          ...pageInfo.value.about,
-          image: aboutImage,
-        },
-      },
-      {
-        show_socials: pageInfo.value.show_socials,
-      },
-    ];
-
+    const ogImage = await uploadImageIfNeeded(data.value.og_image);
+    const contentWithUploads = await uploadFilesDeep({ blocks: blocks.value });
     const payload: HomePagePayload = {
-      ...page,
-      og_image: metaOgImage,
-      content: {
-        blocks,
-      },
+      ...data.value,
+      locale: locale.value,
+      og_image: ogImage,
+      content: contentWithUploads as HomePagePayload['content'],
     };
-
     await $fetch('/internal/static', {
       method: 'POST',
       body: payload,
       headers: auth.authHeader,
     });
 
-    pageInfo.value.hero.image = heroImage;
-    pageInfo.value.about.image = aboutImage;
-    page.og_image = metaOgImage;
+    data.value.og_image = ogImage;
+    data.value.content = payload.content;
+    blocks.value = [...payload.content.blocks];
     await refresh();
   }
-  catch (error) {
-    console.error('Failed to save home page', error);
+  catch (e) {
+    console.error('Failed to save home page', e);
   }
   finally {
     isSaving.value = false;
   }
 };
+
+const extractMetaValue = <T>(value: unknown, key: string, fallback: T): T => {
+  const source = asRecord(value);
+  const field = asRecord(source?.[key]);
+  const candidate = field?.value;
+  return (candidate as T | undefined) ?? fallback;
+};
+
+const metaContent = computed({
+  get: () => {
+    return {
+      description: { comp: 'Input', value: data.value.description },
+      meta_title: { comp: 'Input', value: data.value.meta_title },
+      meta_description: { comp: 'Input', value: data.value.meta_description },
+      og_image: { comp: 'Image', value: data.value.og_image, caption: 'panel.img_placeholder_caption', name: 'panel.img_placeholder' },
+    };
+  },
+  set: (val) => {
+    data.value = {
+      ...data.value,
+      description: extractMetaValue<string>(val, 'description', data.value.description),
+      meta_title: extractMetaValue<string>(val, 'meta_title', data.value.meta_title),
+      meta_description: extractMetaValue<string | null>(val, 'meta_description', data.value.meta_description),
+      og_image: extractMetaValue<ImageLike>(val, 'og_image', data.value.og_image),
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
@@ -420,28 +220,13 @@ const savePage = async () => {
     padding: 6px 0;
   }
   &_body{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 32px;
-    width: 100%;
-    &-row{
-      width: 100%;
-      display: flex;
-      align-items: flex-start;
-      gap: 32px;
-      @media screen {
-        @media (max-width: 1024px) {
-          flex-direction: column;
-        }
-      }
+    .btn_submit{
+      margin-top: 32px;
     }
-  }
-  &_section{
-    width: 50%;
-    &-title{
-      font: 600 20px $title-font;
-      color: $brown;
+    &-row{
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
   }
 }

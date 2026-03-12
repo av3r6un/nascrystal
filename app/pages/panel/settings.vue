@@ -15,12 +15,12 @@
           <div class="settings_section-title">
             {{ t('panel.settings.general') }}
           </div>
-          <PanelNamedInput
+          <CmsElementsInput
             v-model="settings.general.site_name"
             :name="t('panel.settings.site_name')"
             required
           />
-          <PanelImageForm
+          <CmsElementsImage
             v-model="settings.general.logo_url"
             :name="t('panel.settings.logo')"
             :caption="t('panel.img_placeholder_caption')"
@@ -33,16 +33,16 @@
           <div class="settings_section-title">
             {{ t('panel.settings.socials') }}
           </div>
-          <SocialLinkInput
+          <CmsElementsEntity
             v-model="settings.socials.telegram"
             :name="t('panel.settings.tg_channel')"
             required
           />
-          <SocialLinkInput
+          <CmsElementsEntity
             v-model="settings.socials.instagram"
             :name="t('panel.settings.instagram')"
           />
-          <SocialLinkInput
+          <CmsElementsEntity
             v-model="settings.socials.max"
             :name="t('panel.settings.max')"
           />
@@ -56,22 +56,22 @@
           <div class="settings_section-title">
             {{ t('panel.settings.contacts') }}
           </div>
-          <PanelNamedMultiInput
+          <CmsElementsInputList
             v-model="settings.contacts.phones"
             placeholder="+79000000000"
             :name="t('panel.settings.phones')"
           />
-          <PanelNamedMultiInput
+          <CmsElementsInputList
             v-model="settings.contacts.emails"
             type="email"
             :name="t('panel.settings.email')"
           />
-          <PanelNamedInput
+          <CmsElementsInput
             v-model="settings.contacts.whatsapp"
             type="text"
             :name="t('panel.settings.whatsapp')"
           />
-          <PanelNamedInput
+          <CmsElementsInput
             v-model="settings.contacts.address"
             type="text"
             :name="t('panel.settings.address')"
@@ -84,15 +84,15 @@
           <div class="settings_section-title">
             {{ t('panel.settings.seo') }}
           </div>
-          <PanelNamedInput
+          <CmsElementsInput
             v-model="settings.seo.title"
             :name="t('panel.settings.meta_title')"
           />
-          <PanelNamedInput
+          <CmsElementsInput
             v-model="settings.seo.description"
             :name="t('panel.settings.meta_description')"
           />
-          <PanelImageForm
+          <CmsElementsImage
             v-model="settings.seo.og_image"
             :name="t('panel.settings.og_image')"
           />
@@ -103,7 +103,7 @@
       </div>
       <div class="settings_body-row">
         <div class="settings_section panel_section">
-          <NamedCheckbox
+          <CmsElementsCheckbox
             v-model="settings.maintenance"
             :title="t('panel.settings.maintenance')"
             :description="t('panel.settings.maintenance_caption')"
@@ -115,8 +115,6 @@
 </template>
 
 <script lang="ts" setup>
-import NamedCheckbox from '~/components/panel/NamedCheckbox.vue';
-import SocialLinkInput from '~/components/panel/SocialLinkInput.vue';
 import { useAuthStore } from '~/stores/auth';
 
 definePageMeta({

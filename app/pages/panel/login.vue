@@ -39,6 +39,8 @@ import { useAuthStore } from '~/stores/auth';
 definePageMeta({
   pageKey: 'login',
   layout: 'panel',
+  guest: true,
+  system: true,
 });
 
 const { t } = useI18n();
@@ -67,6 +69,14 @@ if (import.meta.client) {
   }
 }
 
+const redirectAfterLogin = () => {
+  const from = `${route.query.from ?? '/panel'}`;
+  const target = from.startsWith('/panel') && from !== 'panel/login'
+    ? from
+    : '/panel';
+  router.push(target);
+};
+
 const handleForm = async () => {
   if (isSubmitting.value) return;
 
@@ -79,9 +89,7 @@ const handleForm = async () => {
     submitState.value = 'success';
     lForm.value?.reset();
     Object.assign(loginForm, initialForm());
-    const from = `${route.query.from ?? '/panel'}`;
-    const target = from.startsWith('/panel') && from !== '/panel/login' ? from : '/panel';
-    await router.push(target);
+    redirectAfterLogin();
   }
   catch {
     submitState.value = 'error';

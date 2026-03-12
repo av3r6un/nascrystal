@@ -1,7 +1,7 @@
 <template>
   <div class="image_form">
     <div class="image_form-title">
-      {{ name }}
+      {{ t(`${name}`) }}
     </div>
     <input
       ref="input"
@@ -21,11 +21,11 @@
     >
       <label class="image_form-droparea__caption" @click.prevent="openFilePicker">
         <Icon name="nsc:upload" :size="32" />
-        <span class="caption">{{ caption }}</span>
+        <span class="caption">{{ t(`${caption}`) }}</span>
       </label>
     </div>
     <div v-else class="image_form-preview" @click="clearFile">
-      <img v-if="fileUrl" :src="localUrl" alt="image" class="base_image">
+      <img v-if="fileUrl || localUrl" :src="localUrl" alt="image" class="base_image">
     </div>
   </div>
 </template>
@@ -46,45 +46,63 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:modelValue']);
+const { t } = useI18n();
 const openFilePicker = () => input.value?.click();
 const localUrl = ref('');
+let objectUrl: string | null = null;
+const cleanupObjectUrl = () => {
+  if (!objectUrl) return;
+  URL.revokeObjectURL(objectUrl);
+  objectUrl = null;
+};
 const fileUrl = computed({
   get() { return props.modelValue; },
   set(val) { emit('update:modelValue', val); },
 });
 watch(() => props.modelValue, (value) => {
   if (typeof value === 'string') {
+    cleanupObjectUrl();
     localUrl.value = value;
+    return;
   }
+  if (value instanceof File) {
+    cleanupObjectUrl();
+    objectUrl = URL.createObjectURL(value);
+    localUrl.value = objectUrl;
+    return;
+  }
+  cleanupObjectUrl();
+  localUrl.value = '';
 }, { immediate: true });
-const dragOver = (e: unknown) => {
-  e.dataTransfer.dropEffect = 'move';
+const dragOver = (e: DragEvent) => {
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
   dragField.value?.classList.add('over');
 };
 const dragLeave = () => {
-  dragField.value.classList.remove('over');
+  dragField.value?.classList.remove('over');
 };
-const onDrop = (e: unknown) => {
-  const file = e.dataTransfer.files[0];
+const onDrop = (e: DragEvent) => {
+  const file = e.dataTransfer?.files?.[0];
   if (file && /image\/*/.test(file.type)) {
-    localUrl.value = file;
-    fileUrl.value = URL.createObjectURL(file);
+    fileUrl.value = file;
     dragField.value?.classList.remove('over');
   }
 };
-const onSelect = (e: unknown) => {
-  const file = e.target.files[0];
+const onSelect = (e: Event) => {
+  const target = e.target as HTMLInputElement | null;
+  const file = target?.files?.[0];
   if (file) {
     fileUrl.value = file;
-    localUrl.value = URL.createObjectURL(file);
   }
 };
 const clearFile = () => {
-  input.value.value = null;
+  if (input.value) input.value.value = '';
+  fileUrl.value = null;
   localUrl.value = '';
 };
 const dragField = ref<HTMLDivElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
+onBeforeUnmount(() => cleanupObjectUrl());
 </script>
 
 <style lang="scss" scoped>

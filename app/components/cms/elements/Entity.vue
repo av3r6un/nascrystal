@@ -1,9 +1,9 @@
 <template>
-  <div class="named_input">
-    <div class="named_input-name">
+  <div class="entity">
+    <div class="entity-name">
       {{ name }}
     </div>
-    <div class="named_input-wrapper">
+    <div class="entity-wrapper">
       <input
         v-model="localValue.text"
         type="text"
@@ -64,7 +64,7 @@ const localValue = computed({
 </script>
 
 <style lang="scss" scoped>
-.named_input{
+.entity{
   container-type: inline-size;
   @container (max-width: 315px) {
     &-wrapper{
@@ -81,7 +81,9 @@ const localValue = computed({
     display: flex;
     align-items: center;
     gap: 10px;
-
+    .input_wide{
+      margin-bottom: 0;
+    }
   }
 }
 </style>

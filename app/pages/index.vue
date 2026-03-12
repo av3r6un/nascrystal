@@ -4,88 +4,7 @@
       {{ t('index_page.error') }}
     </div>
     <div v-else class="index_page">
-      <div v-for="(b, idx) in page.content?.blocks" :key="idx" class="block">
-        <div v-for="(content, name, i) in b" :key="i" :class="`index_${name}_wrapper`">
-          <div v-if="name === 'hero'" class="index_banner">
-            <img :src="content.image" alt="banner" class="base_image banner">
-            <div class="index_banner-hero__wrapper">
-              <div class="index_banner-hero">
-                <div class="index_banner-title">
-                  {{ content.title }}
-                </div>
-                <p class="index_banner-info">
-                  {{ content.subtitle }}
-                </p>
-                <NuxtLink to="/catalog" class="base_link index_banner-cta">{{ content.button_text }}</NuxtLink>
-              </div>
-            </div>
-          </div>
-          <div v-else-if="name === 'benefits'" class="index_benefits">
-            <div v-for="(benefit, index) in content" :key="index" class="index_benefits-benefit">
-              <BulletCard :title="benefit.title ?? benefit.text ?? ''" :icon="benefit.icon" :info="benefit.caption" />
-            </div>
-          </div>
-          <div v-else-if="name === 'about'" class="index_about">
-            <div class="index_about-wrapper">
-              <div class="index_about-image">
-                <img
-                  v-if="content.image"
-                  :src="content.image"
-                  class="base_link"
-                >
-                <div v-else class="index_about-image__blank">
-                  <Icon name="nsc:diamond" :size="64" />
-                </div>
-              </div>
-              <div class="index_about-info">
-                <div class="index_about-title">
-                  {{ content.title }}
-                </div>
-                <p class="index_about-story">
-                  {{ content.description }}
-                </p>
-                <NuxtLink to="/about" class="index_about-cta base_link">
-                  {{ content.button_text }}
-                </NuxtLink>
-              </div>
-            </div>
-          </div>
-          <div v-else-if="name === 'show_categories'" class="index_categories">
-            <div class="index_categories-title">
-              {{ $t('categories.title') }}
-            </div>
-            <div class="index_categories-wrapper">
-              <div v-for="(c, in_) in $tm('categories.list')" :key="in_" class="index_categories-category">
-                <BulletCard
-                  v-if="rt(c.title)"
-                  :title="rt(c.title)"
-                  :info="rt(c.info)"
-                  :icon="rt(c.icon)"
-                  reversed
-                />
-              </div>
-            </div>
-          </div>
-          <div v-else-if="name === 'show_socials'" class="index_socials">
-            <div class="index_socials-title">
-              {{ $t('index_socials.title') }}
-            </div>
-            <div class="index_socials-description">
-              {{ $t('index_socials.info') }}
-            </div>
-            <div class="index_socials-links">
-              <a
-                v-for="(ct, social) in settings.socials"
-                :key="social"
-                :href="ct.link"
-                class="base_link social_link"
-              >
-                <Icon :name="`nsc:${social}`" :size="24" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CmsBlockRenderer v-if="page.content?.blocks" :blocks="page.content?.blocks" parent="index" />
     </div>
   </article>
 </template>
@@ -96,7 +15,7 @@ definePageMeta({
   pageKey: 'home',
 });
 
-const { locale, t, rt } = useI18n();
+const { locale, t } = useI18n();
 const settings = useSettings();
 
 const fallbackPage = {

@@ -1,16 +1,16 @@
 <template>
-  <div class="named_checkbox">
-    <div class="named_checkbox-info">
-      <div class="named_checkbox-title">
-        {{ title }}
+  <div class="checkbox">
+    <div class="checkbox_info">
+      <div class="checkbox_title">
+        {{ t(title) }}
       </div>
-      <div class="named_checkbox-description">
-        {{ description }}
+      <div class="checkbox_description">
+        {{ t(description) }}
       </div>
     </div>
-    <div class="named_checkbox-checkbox" :class="{ checked: isChecked }" @click="toggle">
-      <input type="checkbox" class="inv_input named_checkbox-check" :checked="isChecked">
-      <div class="named_checkbox-check" />
+    <div class="checkbox_checkbox" :class="{ checked: isChecked }" @click="toggle">
+      <input type="checkbox" class="inv_input checkbox_check" :checked="isChecked">
+      <div class="checkbox_check" />
     </div>
   </div>
 </template>
@@ -43,6 +43,8 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
+
 const stateOn = computed(() => props.states?.[0] ?? true);
 const stateOff = computed(() => props.states?.[1] ?? false);
 const isChecked = computed(() => props.modelValue === stateOn.value);
@@ -53,30 +55,30 @@ const toggle = () => {
 </script>
 
 <style lang="scss" scoped>
-.named_checkbox{
+.checkbox{
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0 5px;
-  &-title{
+  &_title{
     font-size: 22px;
     font-family: $title-font;
     color: $brown;
     font-weight: bold;
     margin-bottom: 4px;
   }
-  &-info{
+  &_info{
     @media screen {
       @media (max-width: 408px) {
         max-width: calc(100% - 50px);
       }
     }
   }
-  &-description{
+  &_description{
     color: $light-brown;
   }
-  &-checkbox{
+  &_checkbox{
     cursor: pointer;
     height: 24px;
     width: 44px;
@@ -87,13 +89,13 @@ const toggle = () => {
     background: $pinky;
     &.checked{
       background: $brown;
-      .named_checkbox-check{
+      .checkbox_check{
         left: calc(100% - 21px);
         background: $white;
       }
     }
   }
-  &-check{
+  &_check{
     position: absolute;
     left: 1px;
     width: 20px;

@@ -24,6 +24,9 @@ export type AppSettings = {
     description: string;
     og_image: string;
   };
+  map: {
+    link: string;
+  };
   maintenance: boolean;
 };
 
@@ -47,6 +50,9 @@ const initialSettings = (): AppSettings => ({
     title: '',
     description: '',
     og_image: '',
+  },
+  map: {
+    link: '',
   },
   maintenance: false,
 });
@@ -100,6 +106,7 @@ const normalizeSettings = (value: unknown): AppSettings => {
   const contactsFromApi = asRecord(parseJsonString(root.contacts));
   const socialsFromApi = asRecord(parseJsonString(root.socials));
   const seoFromApi = asRecord(parseJsonString(root.seo));
+  const mapFromApi = asRecord(parseJsonString(root.map));
 
   return {
     general: {
@@ -121,6 +128,9 @@ const normalizeSettings = (value: unknown): AppSettings => {
       title: asString(seoFromApi?.title),
       description: asString(seoFromApi?.description),
       og_image: asString(seoFromApi?.og_image),
+    },
+    map: {
+      link: asString(mapFromApi?.link),
     },
     maintenance: asBoolean(root.maintenance),
   };

@@ -73,6 +73,9 @@
     "email": "Email",
     "address": "Адрес",
     "work_hours": "Режим работы",
+    "telegram": "Телеграм",
+    "instagram": "IG",
+    "max": "Макс",
     "whatsapp": "WhatsApp",
     "feedback": {
       "title": "Напишите нам",
@@ -172,7 +175,9 @@
       "max": "Макс",
       "meta_title": "Мета-заголовок",
       "meta_description": "Мета-описание",
-      "og_image": "OG Image"
+      "og_image": "OG Image",
+      "map": "Карта",
+      "map_link": "Ссылка на карту"
     }
   },
   "dates": {

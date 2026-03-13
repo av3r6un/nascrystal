@@ -86,13 +86,12 @@
     </div>
     <div class="contacts_map">
       <iframe
-        v-if="$tm('contacts_page.map.apply')"
-        :src="mapIFrame"
+        v-if="settings.map.link"
+        :src="settings.map.link"
         frameborder="0"
         height="100%"
         width="100%"
       />
-      <!-- <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Ae17fe4b6b174ed81e6dcbde44d6cb7bf84b9066b24283e717c13e86c705653f8&amp;source=constructor" width="100%" height="100%" frameborder="0" /> -->
       <div v-else class="contacts_map-behind">
         <Icon name="nsc:pinpoint" :size="32" />
         <span class="contacts_map-text">
@@ -123,13 +122,6 @@ const isSubmitting = ref(false);
 const submitState = ref<'idle' | 'success' | 'error'>('idle');
 const submitMessage = ref('');
 const fbForm = ref<HTMLFormElement | null>(null);
-
-const mapIFrame = computed(() => {
-  const domain = t('contacts_page.map.domain');
-  const id = t('contacts_page.map.id');
-  const slug = t('contacts_page.map.slug');
-  return `https://${domain}${slug}${id}`;
-});
 
 const handleForm = async () => {
   if (isSubmitting.value) return;

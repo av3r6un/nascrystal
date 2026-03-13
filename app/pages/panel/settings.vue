@@ -102,6 +102,18 @@
         </form>
       </div>
       <div class="settings_body-row">
+        <form class="settings_section panel_section" @submit.prevent="saveMap">
+          <div class="settings_section-title">
+            {{ t('panel.settings.map') }}
+          </div>
+          <CmsElementsInput
+            v-model="settings.map.link"
+            :name="t('panel.settings.map_link')"
+          />
+          <button type="submit" class="btn btn_submit">
+            {{ t('panel.submit') }}
+          </button>
+        </form>
         <div class="settings_section panel_section">
           <CmsElementsCheckbox
             v-model="settings.maintenance"
@@ -165,11 +177,16 @@ type MSettingsPayload = {
   og_image: string | File | null;
 };
 
+type NSettingsPayload = {
+  link: string;
+};
+
 type SettingsPayload = {
   general: GSettingsPayload;
   contacts: CSettingsPayload;
   socials: SSettingsPayload;
   seo: MSettingsPayload;
+  map: NSettingsPayload;
   maintenance: boolean;
 };
 
@@ -202,6 +219,9 @@ const initialForm = (): SettingsPayload => ({
     title: '',
     description: '',
     og_image: '',
+  },
+  map: {
+    link: '',
   },
   maintenance: false,
 });
@@ -302,6 +322,7 @@ watch(data, (value) => {
   const generalFromApi = asRecord(parseJsonString(root.general));
   const contactsFromApi = asRecord(parseJsonString(root.contacts));
   const socialsFromApi = asRecord(parseJsonString(root.socials));
+  const mapFromApi = asRecord(parseJsonString(root.map));
   const seoFromApi = asRecord(parseJsonString(root.seo));
 
   settings.value = {
@@ -324,6 +345,9 @@ watch(data, (value) => {
       title: asString(seoFromApi?.title),
       description: asString(seoFromApi?.description),
       og_image: asString(seoFromApi?.og_image),
+    },
+    map: {
+      link: asString(mapFromApi?.link),
     },
     maintenance: asBoolean(root.maintenance),
   };
@@ -369,6 +393,7 @@ const saveGeneral = async () => {
 
 const saveSocials = () => updateSettings('socials', settings.value.socials);
 const saveContacts = () => updateSettings('contacts', settings.value.contacts);
+const saveMap = () => updateSettings('map', settings.value.map);
 const saveMeta = async () => {
   const ogImage = await uploadImageIfNeeded(settings.value.seo.og_image);
   await updateSettings('seo', {

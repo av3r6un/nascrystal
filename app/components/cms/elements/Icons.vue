@@ -51,7 +51,7 @@ const select = (i: string) => {
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 .selection{
   width: 100%;
-  min-width: 160px;
+  min-width: 165px;
   border: 1px solid #E0DAD1;
   border-radius: 6px;
   font-family: $text-font;
@@ -61,6 +61,8 @@ const select = (i: string) => {
   padding: 0 16px;
   color: $brown;
   position: relative;
+  display: flex;
+  align-items: center;
   &.opened{
     z-index: 3;
     .selection_default:after{

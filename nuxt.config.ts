@@ -64,6 +64,15 @@ export default defineNuxtConfig({
     },
   },
   fonts: {
+    providers: {
+      adobe: false,
+      bunny: false,
+      fontshare: false,
+      fontsource: false,
+      google: false,
+      googleicons: false,
+      npm: false,
+    },
     families: [
       { name: 'Inter',
         provider: 'local',

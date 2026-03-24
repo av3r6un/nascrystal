@@ -31,6 +31,12 @@ body{
     }
   }
 }
+.small_title{
+  font-family: $title-font;
+  font-size: 20px;
+  font-weight: bold;
+  color: $brown;
+}
 
 .panel_content .base_title{
   font-size: 32px;

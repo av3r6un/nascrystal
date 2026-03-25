@@ -16,9 +16,32 @@
             {{ t('panel.catalog.categories') }}
           </div>
           <div v-if="categories.length >= 1" class="catalog_categories-body">
-            <div v-for="cat in categories" :key="cat.uid" class="catalog_categories-item">
+            <div
+              v-for="cat in categories"
+              :key="cat.uid"
+              class="catalog_categories-item"
+              :class="{
+                'is-dragging': draggedCategoryUid === `${cat.uid}`,
+                'is-drag-target': dragOverCategoryUid === `${cat.uid}` && draggedCategoryUid !== `${cat.uid}`,
+              }"
+              @dragover="onCategoryDragOver(cat.uid, $event)"
+              @drop="onCategoryDrop(cat.uid, $event)"
+            >
               <div class="catalog_category">
-                <input v-model="cat.name" type="text" class="input_wide">
+                <button
+                  type="button"
+                  class="catalog_category-handle"
+                  draggable="true"
+                  @dragstart="onCategoryHandleDragStart(cat.uid, $event)"
+                  @dragend="onCategoryHandleDragEnd"
+                >
+                  <Icon name="nsc:rgrid" :size="16" />
+                </button>
+                <div class="inputs">
+                  <input v-model="cat.name" type="text" class="input_wide">
+                  <CmsElementsIcons v-model="cat.icon" />
+                </div>
+                <Icon name="nsc:copy" :size="16" @click="toClipboard(cat.uid)" />
                 <Icon name="nsc:trash" :size="16" @click="removeCategory(cat.uid)" />
               </div>
             </div>
@@ -44,6 +67,7 @@
               <CmsElementsIcons v-model="newCategory.icon" />
               <button type="submit" class="btn btn_submit small" :disabled="isCreatingCategory">
                 <Icon name="nsc:check" :size="24" />
+                <span class="button_text">{{ t('panel.submit') }}</span>
               </button>
             </form>
             <div class="catalog_categories-new__button">
@@ -123,6 +147,7 @@
               >
               <button type="submit" class="btn btn_submit small" :disabled="isCreatingSize">
                 <Icon name="nsc:check" :size="24" />
+                <span class="button_text">{{ t('panel.submit') }}</span>
               </button>
             </form>
             <div class="catalog_sizes-new__button">
@@ -162,6 +187,7 @@
               <input v-model="newColor.name" :placeholder="t('panel.catalog.name')" required class="input_wide">
               <button type="submit" class="btn btn_submit small" :disabled="isCreatingColor">
                 <Icon name="nsc:check" :size="24" />
+                <span class="button_text">{{ t('panel.submit') }}</span>
               </button>
             </form>
             <div class="catalog_colors-new__button">
@@ -249,11 +275,60 @@ const newColor = ref({
 
 const cloneItems = (items: unknown) => JSON.parse(JSON.stringify(Array.isArray(items) ? items : []));
 const stringifyItems = (items: unknown) => JSON.stringify(items ?? []);
+const draggedCategoryUid = ref<string | null>(null);
+const dragOverCategoryUid = ref<string | null>(null);
+
+const getCategorySortIndex = (item: Record<string, unknown>, fallback: number) => {
+  const index = Number(item.index);
+  return Number.isFinite(index) ? index : fallback;
+};
+
+const syncCategoryIndexes = (items: Record<string, unknown>[]) => items.map((item, index) => ({
+  ...item,
+  index,
+}));
+
+const normalizeCategories = (items: unknown) => {
+  const cloned = cloneItems(items) as Record<string, unknown>[];
+
+  return syncCategoryIndexes(
+    cloned
+      .map((item, position) => ({
+        item,
+        position,
+        sortIndex: getCategorySortIndex(item, position),
+      }))
+      .sort((left, right) => left.sortIndex - right.sortIndex || left.position - right.position)
+      .map(({ item }) => item),
+  );
+};
+
+const resetCategoryDragState = () => {
+  draggedCategoryUid.value = null;
+  dragOverCategoryUid.value = null;
+};
+
+const moveCategory = (sourceUid: string, targetUid: string) => {
+  const sourceIndex = categories.value.findIndex(cat => `${cat.uid ?? ''}` === sourceUid);
+  const targetIndex = categories.value.findIndex(cat => `${cat.uid ?? ''}` === targetUid);
+
+  if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+
+  const next = [...categories.value];
+  const [movedCategory] = next.splice(sourceIndex, 1);
+  const insertionIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+
+  if (!movedCategory) return;
+
+  next.splice(insertionIndex, 0, movedCategory);
+  categories.value = syncCategoryIndexes(next);
+};
 
 watch(data, (value) => {
-  categories.value = cloneItems(value?.categories);
+  categories.value = normalizeCategories(value?.categories);
   sizes.value = cloneItems(value?.sizes);
   colors.value = cloneItems(value?.colors);
+  resetCategoryDragState();
 
   initialCategories.value = stringifyItems(categories.value);
   initialSizes.value = stringifyItems(sizes.value);
@@ -374,7 +449,7 @@ const updateCategories = async () => {
   try {
     await ensureAuthorized();
 
-    await $fetch('/internal/catalog/category', {
+    await $fetch('/internal/catalog/categories', {
       method: 'PUT',
       body: categories.value,
       headers: auth.authHeader,
@@ -397,7 +472,7 @@ const updateSizes = async () => {
   try {
     await ensureAuthorized();
 
-    await $fetch('/internal/catalog/size', {
+    await $fetch('/internal/catalog/sizes', {
       method: 'PUT',
       body: sizes.value,
       headers: auth.authHeader,
@@ -420,7 +495,7 @@ const updateColors = async () => {
   try {
     await ensureAuthorized();
 
-    await $fetch('/internal/catalog/color', {
+    await $fetch('/internal/catalog/colors', {
       method: 'PUT',
       body: colors.value,
       headers: auth.authHeader,
@@ -436,13 +511,61 @@ const updateColors = async () => {
   }
 };
 
+const onCategoryHandleDragStart = (uid: unknown, event: DragEvent) => {
+  const categoryUid = `${uid ?? ''}`;
+  if (!categoryUid) return;
+
+  draggedCategoryUid.value = categoryUid;
+  dragOverCategoryUid.value = categoryUid;
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.setData('text/plain', categoryUid);
+  }
+};
+
+const onCategoryHandleDragEnd = () => {
+  resetCategoryDragState();
+};
+
+const onCategoryDragOver = (uid: unknown, event: DragEvent) => {
+  if (!draggedCategoryUid.value) return;
+
+  event.preventDefault();
+
+  const categoryUid = `${uid ?? ''}`;
+  if (!categoryUid) return;
+
+  dragOverCategoryUid.value = categoryUid;
+
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move';
+  }
+};
+
+const onCategoryDrop = (uid: unknown, event: DragEvent) => {
+  event.preventDefault();
+
+  const targetUid = `${uid ?? ''}`;
+  const sourceUid = draggedCategoryUid.value || event.dataTransfer?.getData('text/plain') || '';
+
+  if (!sourceUid || !targetUid) {
+    resetCategoryDragState();
+    return;
+  }
+
+  moveCategory(sourceUid, targetUid);
+  resetCategoryDragState();
+};
+
 const removeCategory = async (uid: unknown) => {
   try {
     await ensureAuthorized();
 
     await $fetch('/internal/catalog/category', {
       method: 'DELETE',
-      body: { uid },
+      params: { uid },
       headers: auth.authHeader,
     });
 
@@ -459,7 +582,7 @@ const removeSize = async (id: unknown) => {
 
     await $fetch('/internal/catalog/size', {
       method: 'DELETE',
-      body: { id },
+      params: { id },
       headers: auth.authHeader,
     });
 
@@ -476,7 +599,7 @@ const removeColor = async (id: unknown) => {
 
     await $fetch('/internal/catalog/color', {
       method: 'DELETE',
-      body: { id },
+      params: { id },
       headers: auth.authHeader,
     });
 
@@ -486,6 +609,10 @@ const removeColor = async (id: unknown) => {
     console.error('Failed to remove color', e);
   }
 };
+
+const toClipboard = (val: string) => {
+  navigator.clipboard.writeText(val);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -494,13 +621,21 @@ const removeColor = async (id: unknown) => {
     &-content{
       display: grid;
       max-width: 1440px;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: .6fr .4fr;
       grid-auto-rows: auto;
       gap: 20px;
       align-items: start;
+      @media screen {
+        @media (max-width: 1153px) {
+          grid-template-columns: 1fr;
+        }
+      }
       .long{
         grid-column: 2;
         grid-row: span 2;
+        @media (max-width: 1153px) {
+          grid-column: 1;
+        }
       }
     }
     &-sizes{
@@ -527,6 +662,7 @@ const removeColor = async (id: unknown) => {
         align-items: center;
         gap: 12px;
         margin-bottom: 12px;
+        .button_text { display: none; }
         .selection{
           width: 200px;
         }
@@ -542,6 +678,15 @@ const removeColor = async (id: unknown) => {
             width: 100px;
           }
         }
+        @media (max-width: 560px) {
+          flex-direction: column;
+          padding: 0 10px;
+          .button_text { display: block; }
+          .selection{ width: 100%; }
+          .btn_submit.small{ width: 100%; display: flex; align-items: center; justify-content: center;}
+          .btn_submit.small .m-icon { display: none; }
+          .input_wide.sku { width: 100%;}
+        }
       }
     }
   }
@@ -556,10 +701,46 @@ const removeColor = async (id: unknown) => {
       cursor: pointer;
     }
   }
+  &_category{
+    &-handle{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: grab;
+      .m-icon{
+        cursor: inherit;
+      }
+    }
+    .selection {
+      width: 150px;
+    }
+  }
   &_categories,
   &_sizes,
   &_colors{
     &-item{
+      transition: border-color .2s ease, opacity .2s ease, background-color .2s ease;
+      .inputs{
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        @media (max-width: 660px) {
+          flex-direction: column;
+          .selection { width: 100%; }
+        }
+      }
+      &.is-dragging{
+        opacity: .55;
+      }
+      &.is-drag-target{
+        background: rgba($brown, .06);
+        border-radius: 10px;
+      }
       .input_wide{
         margin-bottom: 0;
         &.sku{

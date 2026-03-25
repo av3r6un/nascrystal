@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const spec = getRouterParam(event, 'spec');
-  if (!spec || !['category', 'size', 'color'].includes(spec)) {
+  if (!spec || !['categories', 'sizes', 'colors'].includes(spec)) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Catalog endpoint not found',
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     method: 'PUT',
     retry: 0,
     timeout: Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000),
-    body: payload,
+    body: { items: payload },
     headers: {
       'Content-Type': 'application/json',
       'Authorization': authHeader,

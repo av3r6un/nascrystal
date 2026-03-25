@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     'dragon-editor',
     'nuxt-svgo-loader',
   ],
+  plugins: ['~/plugins/relativeDatePlugin'],
   ssr: true,
   devtools: { enabled: false },
   app: {

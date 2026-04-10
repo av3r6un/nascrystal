@@ -93,7 +93,7 @@ onMounted(() => {
 const stockSlug = computed(() => String(route.params.slug ?? ''));
 
 type StockItem = Record<string, unknown> & {
-  primary_image?: string | null;
+  images?: Array<string>[];
 };
 
 const { data, pending, error } = await useAsyncData<StockItem | null>(
@@ -109,12 +109,13 @@ const { data, pending, error } = await useAsyncData<StockItem | null>(
 const stock = computed(() => data.value ?? {});
 
 const imageSrc = computed(() => {
-  const image = stock.value.primary_image;
+  if (!stock.value.images.length) return;
+  const image = stock.value.images.find((image: object) => image.is_primary).path;
   if (!image || typeof image !== 'string') return '';
   if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/')) {
     return image;
   }
-  return `/uploads/${image}`;
+  return `/img/${image}`;
 });
 
 const showLoading = computed(() => {

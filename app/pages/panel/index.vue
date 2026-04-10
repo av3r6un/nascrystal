@@ -7,7 +7,7 @@
       <div class="dashboard_info">
         <PanelStat title="Товаров к каталоге" icon="box" :number="0" />
         <PanelStat title="Заказов за месяц" icon="shopping-cart" :number="0" />
-        <PanelStat title="Последнее обновление" icon="clock" :date="now" />
+        <PanelStat title="Последнее обновление" icon="clock" :date="lastUpdateTs ?? undefined" />
       </div>
       <div class="dashboard_row">
         <div class="dashboard_history panel_section">
@@ -100,7 +100,9 @@ type ChangeEventsResponse = {
   items: ChangeEventItem[];
 };
 
-const now = new Date().getTime() / 1000;
+type LastUpdateResponse = {
+  last_update_ts: number | null;
+};
 
 const { data, pending, error } = await useAsyncData<ChangeEventsResponse>(
   'panel-dashboard-changes',
@@ -131,7 +133,35 @@ const { data, pending, error } = await useAsyncData<ChangeEventsResponse>(
   },
 );
 
+const { data: lastUpdateData } = await useAsyncData<LastUpdateResponse>(
+  'panel-dashboard-last-update',
+  async () => {
+    const ok = await auth.ensureValidAccessToken();
+    if (!ok) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized',
+      });
+    }
+
+    return await $fetch('/internal/changes/last_update', {
+      method: 'GET',
+      headers: auth.authHeader,
+    });
+  },
+  {
+    server: false,
+    default: () => ({
+      last_update_ts: null,
+    }),
+  },
+);
+
 const changes = computed(() => Array.isArray(data.value?.items) ? data.value.items : []);
+const lastUpdateTs = computed(() => {
+  const value = lastUpdateData.value?.last_update_ts;
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+});
 const smoothPayload = (payload: object) => {
   let res = '';
   Object.entries(payload).forEach(([v, k]) => {

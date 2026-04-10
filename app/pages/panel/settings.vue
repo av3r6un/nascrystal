@@ -17,12 +17,12 @@
           </div>
           <CmsElementsInput
             v-model="settings.general.site_name"
-            :name="t('panel.settings.site_name')"
+            name="panel.settings.site_name"
             required
           />
           <CmsElementsImage
             v-model="settings.general.logo_url"
-            :name="t('panel.settings.logo')"
+            name="panel.settings.logo"
             :caption="t('panel.img_placeholder_caption')"
           />
           <button type="submit" class="btn btn_submit">
@@ -69,12 +69,12 @@
           <CmsElementsInput
             v-model="settings.contacts.whatsapp"
             type="text"
-            :name="t('panel.settings.whatsapp')"
+            name="panel.settings.whatsapp"
           />
           <CmsElementsInput
             v-model="settings.contacts.address"
             type="text"
-            :name="t('panel.settings.address')"
+            name="panel.settings.address"
           />
           <button type="submit" class="btn btn_submit">
             {{ t('panel.submit') }}
@@ -86,15 +86,15 @@
           </div>
           <CmsElementsInput
             v-model="settings.seo.title"
-            :name="t('panel.settings.meta_title')"
+            name="panel.settings.meta_title"
           />
           <CmsElementsInput
             v-model="settings.seo.description"
-            :name="t('panel.settings.meta_description')"
+            name="panel.settings.meta_description"
           />
           <CmsElementsImage
             v-model="settings.seo.og_image"
-            :name="t('panel.settings.og_image')"
+            name="panel.settings.og_image"
           />
           <button type="submit" class="btn btn_submit">
             {{ t('panel.submit') }}
@@ -108,18 +108,37 @@
           </div>
           <CmsElementsInput
             v-model="settings.map.link"
-            :name="t('panel.settings.map_link')"
+            name="panel.settings.map_link"
           />
           <button type="submit" class="btn btn_submit">
             {{ t('panel.submit') }}
           </button>
         </form>
-        <div class="settings_section panel_section">
-          <CmsElementsCheckbox
-            v-model="settings.maintenance"
-            :title="t('panel.settings.maintenance')"
-            :description="t('panel.settings.maintenance_caption')"
-          />
+        <div class="settings_body-column">
+          <div class="settings_section panel_section limit">
+            <div class="settings_section-left">
+              <div class="settings_section-title">
+                {{ t('panel.settings.products_page_limit') }}
+              </div>
+              <div class="settings_section-caption">
+                {{ t('panel.settings.products_page_caption') }}
+              </div>
+            </div>
+            <div class="settings_section-right">
+              <PanelSelection
+                v-model="settings.products_page_limit"
+                :options="pageLimitOptions"
+                placeholder="panel.settings.limit_placeholder"
+              />
+            </div>
+          </div>
+          <div class="settings_section panel_section">
+            <CmsElementsCheckbox
+              v-model="settings.maintenance"
+              title="panel.settings.maintenance"
+              description="panel.settings.maintenance_caption"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -140,6 +159,7 @@ const { $refreshSettings } = useNuxtApp();
 const isSaving = ref(false);
 const isClient = ref(false);
 const isApplyingRemote = ref(false);
+const pageLimitOptions = ref(['5', '10', '25', '50', '100']);
 
 onMounted(() => {
   isClient.value = true;
@@ -188,6 +208,7 @@ type SettingsPayload = {
   seo: MSettingsPayload;
   map: NSettingsPayload;
   maintenance: boolean;
+  products_page_limit: string;
 };
 
 const initialForm = (): SettingsPayload => ({
@@ -224,6 +245,7 @@ const initialForm = (): SettingsPayload => ({
     link: '',
   },
   maintenance: false,
+  products_page_limit: '',
 });
 
 const settings = ref<SettingsPayload>(initialForm());
@@ -350,6 +372,7 @@ watch(data, (value) => {
       link: asString(mapFromApi?.link),
     },
     maintenance: asBoolean(root.maintenance),
+    products_page_limit: asString(root.products_page_limit),
   };
   isApplyingRemote.value = false;
 }, { immediate: true });
@@ -409,6 +432,13 @@ watch(() => settings.value.maintenance, (next, prev) => {
   if (pending.value) return;
   void updateSettings('maintenance', next);
 });
+
+watch(() => settings.value.products_page_limit, (next, prev) => {
+  if (next === prev) return;
+  if (isApplyingRemote.value) return;
+  if (pending.value) return;
+  void updateSettings('products_page_limit', next);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -434,6 +464,15 @@ watch(() => settings.value.maintenance, (next, prev) => {
         }
       }
     }
+    &-column{
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      gap: 12px;
+      .settings_section{
+        width: 100%;
+      }
+    }
   }
   &_section{
     width: 50%;
@@ -443,6 +482,19 @@ watch(() => settings.value.maintenance, (next, prev) => {
     &-title{
       font: 600 20px $title-font;
       color: $brown;
+    }
+    &.limit{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .settings_section-title{
+        font-size: 22px;
+      }
+      .settings_section-caption{
+        font-size: 15px;
+        color: $light-brown;
+      }
+      align-items: center;
     }
   }
 }

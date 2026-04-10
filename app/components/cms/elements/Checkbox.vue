@@ -77,6 +77,7 @@ const toggle = () => {
   }
   &_description{
     color: $light-brown;
+    font-size: 15px;
   }
   &_checkbox{
     cursor: pointer;

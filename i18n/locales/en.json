@@ -7,14 +7,16 @@
     "load_page": "Errors while loading page. Try again later."
   },
   "default": {
-    "loading": "Loading.."
+    "loading": "Loading..",
+    "more": "More"
   }, 
   "navbar": {
     "home": "Home",
     "catalog": "Explore",
     "about": "About us",
     "prices": "Price & Delivery",
-    "contacts": "Contacts"
+    "contacts": "Contacts",
+    "stock_page": "Stock"
   },
   "work_hours": {
     "short": "Mon-Fri: 10:00 — 19:00",
@@ -25,7 +27,16 @@
     ]
   },
   "catalog": {
-    "warning": "There are no items in out catalog yet."
+    "warning": "There are no items in out catalog yet.",
+    "filters": {
+      "size": "Size",
+      "category": "Category",
+      "color": "Color",
+      "form": "Form",
+      "cuts": "Cuts"
+    },
+    "filter": "Filters",
+    "clear_filters": "Clear filters"
   },
   "contacts": {
     "long": [
@@ -96,6 +107,21 @@
     "success": "Authorization successful",
     "error": "Failed to authorize"
   },
+  "stock": {
+    "description": "Description",
+    "attributes": "Attributes",
+    "size": "Size",
+    "color": "Color",
+    "form": "Form",
+    "cuts": "Cuts",
+    "fixation": "Fixation",
+    "quantity": "Amount",
+    "price_placeholder": "Choose size",
+    "submit": "Add to cart",
+    "category": {
+      "gems": "Rhinestones"
+    }
+  },
   "panel": {
     "img_placeholder": "Image",
     "img_placeholder_caption": "Drag & drop or click for load image",
@@ -115,6 +141,7 @@
     "meta_title": "Meta-title",
     "meta_description": "Meta-description",
     "main_page": "Main Page",
+    "property_name": "Название",
     "navbar": {
       "login": "Sign in",
       "dashboard": "Dashboard",
@@ -153,6 +180,22 @@
         "draft_caption": "Do not display page on site"
       }
     },
+    "catalog": {
+      "title": "Catalog",
+      "categories": "Categories",
+      "sizes": "Sizes",
+      "colors": "Colors",
+      "add_category": "Add category",
+      "add_size": "Add size",
+      "add_color": "Add color",
+      "submit": "Submit",
+      "sku": "SKU",
+      "name": "Name",
+      "size_placeholder": "Size (mm)",
+      "categories_empty": "There is no one category yet.",
+      "sizes_empty": "There is no one size yet.",
+      "colors_empty": "There is no one color yet."
+    },
     "settings": {
       "title": "Settings",
       "general": "General",
@@ -172,7 +215,26 @@
       "max": "Max",
       "meta_title": "Meta-title",
       "meta_description": "Meta-description",
-      "og_image": "OG Image"
+      "og_image": "OG Image",
+      "map": "Карта",
+      "map_link": "Ссылка на карту",
+      "products_page_limit": "Лимит отображения",
+      "products_page_caption": "Количество товаров для отображения на странице",
+      "limit_placeholder": "Выберите лимит"
+    },
+    "stock": {
+      "title": "Stock",
+      "load_error": "Error while loading stock",
+      "image": "Image",
+      "name": "Name",
+      "price": "Price",
+      "category": "Category",
+      "status": "Statis",
+      "active": "Active",
+      "not_active": "Draft",
+      "amount": "Amount",
+      "prev_page": "Prev",
+      "next_page": "Next"
     }
   },
   "dates": {
@@ -216,6 +278,25 @@
     },
     "popular": {
       "title": "Popular pieces"
+    }
+  },
+  "changes": {
+    "catalog": {
+      "category": {
+        "deleted": "Deleted category"
+      }
+    },
+    "auth": {
+      "user": {
+        "registered": "Registered user"
+      }
+    },
+    "settings": {
+      "created": "New setting created:",
+      "updated": "Settings updated:"
+    },
+    "property_options": {
+      "updated": "Updated attribute:"
     }
   }
 }

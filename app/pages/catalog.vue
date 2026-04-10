@@ -2,60 +2,140 @@
   <article class="catalog">
     <div class="catalog_wrapper">
       <div class="catalog_title base_title a-left">
-        {{ $t('navbar.catalog') }}
+        {{ t('navbar.catalog') }}
       </div>
-      <div v-if="!catalogItems.length" class="catalog_body go_home">
-        <div class="warning">
-          {{ $t('catalog.warning') }}
+      <div class="catalog_body">
+        <div v-if="showLoading" class="catalog_state">
+          {{ t('default.loading') }}
         </div>
-        <NuxtLink to="/" class="base_link btn_submit big">
-          {{ $t('error.go_home') }}
-        </NuxtLink>
+        <div v-else-if="showError" class="catalog_state">
+          <div class="warning">
+            {{ t('catalog.warning') }}
+          </div>
+          {{ stockError }} {{ filtersError }}
+          <NuxtLink to="/" class="base_link btn_submit big">
+            {{ t('error.go_home') }}
+          </NuxtLink>
+        </div>
+        <div v-else class="catalog_body-content">
+          <CatalogFilters v-model="filtersQuery" :filters="allFilters" />
+          <div class="catalog_body-stock">
+            <div class="catalog_grid">
+              <div v-for="item in stockItems" :key="item.id" class="catalog_item">
+                <StockCard :product="item" />
+              </div>
+            </div>
+            <div v-if="hasNextPage || pageIndex > 0" class="catalog_pages">
+              <button type="button" class="btn" :disabled="pageIndex <= 0" @click="prevPage">
+                <Icon name="nsc:arrow-left" :size="24" />
+              </button>
+              <div class="catalog_pages-page">
+                {{ pageIndex + 1 }}
+              </div>
+              <button type="button" class="btn" :disabled="!hasNextPage" @click="nextPage">
+                <Icon name="nsc:arrow-right" :size="24" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </article>
 </template>
 
 <script lang="ts" setup>
-type CatalogItem = Record<string, unknown>;
-
 definePageMeta({
   pageKey: 'catalog',
 });
 
-const { data, loading, error } = await useAsyncData<CatalogItem[]>(
-  'catalog-items',
-  () => $fetch('/internal/catalog'),
+const { t } = useI18n();
+const auth = useAuthStore();
+const isClient = ref(false);
+const filtersQuery = ref<Record<string, string>>({});
+const currentPageIndex = ref(0);
+const previousScrollRestoration = ref<ScrollRestoration | null>(null);
+
+const stockQuery = computed(() => ({
+  ...filtersQuery.value,
+  page_index: String(currentPageIndex.value),
+}));
+
+const scrollToPageTop = () => {
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
+};
+
+onMounted(() => {
+  isClient.value = true;
+
+  if ('scrollRestoration' in window.history) {
+    previousScrollRestoration.value = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+  }
+
+  scrollToPageTop();
+});
+
+onBeforeUnmount(() => {
+  if (previousScrollRestoration.value && 'scrollRestoration' in window.history) {
+    window.history.scrollRestoration = previousScrollRestoration.value;
+  }
+});
+
+const { data: filtersData, pending: filtersPending, error: filtersError } = await useAsyncData(
+  'catalog-filters',
+  () => $fetch('/internal/stock/filters', {
+    headers: auth.authHeader,
+  }),
   {
-    default: () => [],
+    server: false,
+    default: () => null,
   },
 );
 
-const catalogItems = computed(() => data.value ?? []);
+const { data: stockData, pending: stockPending, error: stockError } = await useAsyncData(
+  'catalog-items',
+  () => $fetch('/internal/stock', {
+    headers: auth.authHeader,
+    query: stockQuery.value, // add currentPage query params to endpoint
+  }),
+  {
+    server: false,
+    watch: [stockQuery],
+    default: () => null,
+  },
+);
 
-// const getItemKey = (item: CatalogItem, idx: number) => {
-//   const key = item.id ?? item.uuid ?? item.slug;
-//   return typeof key === 'string' || typeof key === 'number' ? key : idx;
-// };
+watch(filtersQuery, () => {
+  currentPageIndex.value = 0;
+});
 
-// const getItemTitle = (item: CatalogItem, idx: number) => {
-//   const title = item.title ?? item.name;
-//   if (typeof title === 'string' && title.trim()) return title.trim();
-//   return `Item ${idx + 1}`;
-// };
+const showLoading = computed(() => {
+  if (!isClient.value) return true;
+  return (filtersPending.value && !filtersData.value) || (stockPending.value && !stockData.value);
+});
+const showError = computed(() => {
+  if (!isClient.value) return false;
+  return (Boolean(filtersError.value) && !filtersData.value) || (Boolean(stockError.value) && !stockData.value);
+});
 
-// const getItemDescription = (item: CatalogItem) => {
-//   const description = item.description ?? item.details;
-//   if (typeof description === 'string' && description.trim()) return description.trim();
-//   return '';
-// };
+const allFilters = computed(() => filtersData.value?.filters ?? {});
+const stockItems = computed(() => Array.isArray(stockData.value?.stock) ? stockData.value.stock : []);
+const pageIndex = computed(() => stockData.value?.pageIndex ?? currentPageIndex.value);
+const hasNextPage = computed(() => Boolean(stockData.value?.hasNextPage));
 
-// const getItemPrice = (item: CatalogItem) => {
-//   const price = item.price ?? item.amount;
-//   if (typeof price === 'number') return `${price}`;
-//   if (typeof price === 'string' && price.trim()) return price.trim();
-//   return '';
-// };
+const prevPage = () => {
+  if (pageIndex.value <= 0) return;
+  currentPageIndex.value = pageIndex.value - 1;
+  scrollToPageTop();
+};
+
+const nextPage = () => {
+  if (!hasNextPage.value) return;
+  currentPageIndex.value = pageIndex.value + 1;
+  scrollToPageTop();
+};
 </script>
 
 <style lang="scss" scoped>
@@ -67,9 +147,8 @@ const catalogItems = computed(() => data.value ?? []);
     padding: $wrapper-px0;
   }
   &_body{
-    margin: 48px 0 129px 0;
+    margin: 48px 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     .warning{
       text-align: center;
@@ -79,6 +158,71 @@ const catalogItems = computed(() => data.value ?? []);
     .btn_submit.big{
       padding: 0px 14px;
       box-sizing: border-box;
+    }
+    &-content{
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      @media (max-width: 630px) {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    &-stock{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: $light-brown;
+      gap: 24px;
+    }
+  }
+  &_grid{
+    width: 100%;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  }
+  &_item{
+    display: flex;
+    justify-content: center;
+  }
+  &_pages{
+    display: flex;
+    align-items: center;
+    &-page{
+      font-size: 15px;
+      margin-top: -5px;
+    }
+    .btn{
+      &:disabled{
+        cursor: not-allowed;
+        opacity: .3;
+      }
+    }
+  }
+  &_filters{
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: $light-pink;
+    border-radius: 8px;
+    min-width: 256px;
+    &-title{
+      color: $light-brown;
+      font-weight: 300;
+      user-select: none;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .btn_add{
+      justify-content: center;
     }
   }
 }

@@ -5,7 +5,6 @@ type StaticEnvelope<T> = {
 
 export default defineEventHandler(async (event) => {
   const baseUrl = useRuntimeConfig(event).fastApiBaseUrl.replace(/\/+$/, '');
-  const locale = `${getQuery(event).locale ?? 'ru'}`.toLowerCase();
 
   const authHeader = getHeader(event, 'authorization');
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
@@ -16,11 +15,10 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await $fetch<StaticEnvelope<Record<string, unknown>>>(`${baseUrl}/api/warehouse/specs`, {
+    const response = await $fetch<StaticEnvelope<Record<string, unknown>>>(`${baseUrl}/api/catalog/`, {
       method: 'GET',
       retry: 0,
       timeout: Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000),
-      query: { locale },
       headers: {
         Authorization: authHeader,
       },

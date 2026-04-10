@@ -16,7 +16,6 @@ const local = computed({
   get: () => props.modelValue ?? {},
   set: val => emit('update:modelValue', val),
 });
-console.log(local.value.show);
 </script>
 
 <style>

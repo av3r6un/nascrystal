@@ -17,7 +17,10 @@ type LoginBody = {
     rfsh_token?: string;
   };
   access_token?: string;
+  accessToken?: string;
   token?: string;
+  refresh_token?: string;
+  refreshToken?: string;
   expires_in?: number;
 };
 
@@ -36,7 +39,15 @@ const isNonEmptyString = (value: unknown): value is string => {
 };
 
 const getBaseUrl = (event?: H3Event) => {
-  return useRuntimeConfig(event).fastApiBaseUrl.replace(/\/+$/, '');
+  const baseUrl = useRuntimeConfig(event).fastApiBaseUrl?.trim();
+  if (!baseUrl) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'FastAPI base URL is not configured',
+    });
+  }
+
+  return baseUrl.replace(/\/+$/, '');
 };
 
 const buildUrl = (event: H3Event | undefined, path: string) => {
@@ -104,6 +115,7 @@ const parseSession = (response: ApiResponse<LoginBody>): AuthSession => {
 
   const accessToken = response.body?.tokens?.accs_token
     ?? response.body?.access_token
+    ?? response.body?.accessToken
     ?? response.body?.token;
 
   if (!isNonEmptyString(accessToken)) {
@@ -114,7 +126,9 @@ const parseSession = (response: ApiResponse<LoginBody>): AuthSession => {
   }
 
   const expiresAt = decodeJwtExpMs(accessToken) ?? Date.now() + (((response.body?.expires_in) ?? 3600) * 1000);
-  const refreshToken = response.body?.tokens?.rfsh_token;
+  const refreshToken = response.body?.tokens?.rfsh_token
+    ?? response.body?.refresh_token
+    ?? response.body?.refreshToken;
 
   return {
     accessToken,

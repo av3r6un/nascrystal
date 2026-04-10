@@ -41,6 +41,7 @@ const contentToText = computed(() => {
 });
 
 const formatSmartDate = (input: number) => {
+  let dateTime = '';
   const date = new Date(input * 1000);
   if (Number.isNaN(date.getTime())) return '';
   const now = new Date();
@@ -49,14 +50,22 @@ const formatSmartDate = (input: number) => {
   const diffDays = Math.round(
     (startOfDay(date).getTime() - startOfDay(now).getTime()) / dayMs,
   );
-  if (diffDays === 0) return t('dates.today');
-  if (diffDays === -1) return t('dates.yesterday');
 
-  return new Intl.DateTimeFormat(locale.value, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(date);
+  if (diffDays === 0) {
+    dateTime = t('dates.today');
+  }
+  else if (diffDays === -1) {
+    dateTime = t('dates.yesterday');
+  }
+  else {
+    dateTime = new Intl.DateTimeFormat(locale.value, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  }
+  const timeOfDate = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  return `${dateTime}, ${timeOfDate}`;
 };
 </script>
 

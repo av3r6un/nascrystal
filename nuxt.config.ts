@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     'dragon-editor',
     'nuxt-svgo-loader',
   ],
+  plugins: ['~/plugins/relativeDatePlugin'],
   ssr: true,
   devtools: { enabled: false },
   app: {
@@ -33,7 +34,7 @@ export default defineNuxtConfig({
     description: 'NAS Crystal',
   },
   runtimeConfig: {
-    fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL,
+    fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL || process.env.NUXT_FAST_API_BASE_URL,
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
       siteName: 'NAS Crystal',
@@ -64,6 +65,15 @@ export default defineNuxtConfig({
     },
   },
   fonts: {
+    providers: {
+      adobe: false,
+      bunny: false,
+      fontshare: false,
+      fontsource: false,
+      google: false,
+      googleicons: false,
+      npm: false,
+    },
     families: [
       { name: 'Inter',
         provider: 'local',

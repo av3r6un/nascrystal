@@ -26,7 +26,6 @@ const props = defineProps({
 });
 
 const content = computed(() => props.modelValue.content);
-console.log(content.value);
 const options = computed(() => props.modelValue.options);
 </script>
 

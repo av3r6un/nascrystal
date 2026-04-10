@@ -4,13 +4,13 @@
       <div class="selection_options-scroll">
         <div v-for="(o, idx) in options" :key="idx" class="selection_options-option">
           <div class="option" @click="select(o)">
-            {{ t(`${o.name}`) }}
+            {{ te(getOptionLabel(o)) ? t(getOptionLabel(o)) : getOptionLabel(o) }}
           </div>
         </div>
       </div>
     </div>
     <div v-if="localValue" class="selection_default selected">
-      {{ t(`${localText}`) }}
+      {{ te(displayText) ? t(displayText) : displayText }}
     </div>
     <div v-else class="selection_default">
       {{ te(`${placeholder}`) ? t(`${placeholder}`) : placeholder }}
@@ -19,20 +19,20 @@
 </template>
 
 <script lang="ts" setup>
+type SelectionOption = string | {
+  id: string;
+  name: string;
+};
+
 const { t, te } = useI18n();
 const emit = defineEmits(['update:modelValue']);
-const props = defineProps({
-  modelValue: {
-    type: [String, null],
-    required: true,
-  },
-  options: {
-    type: Array<object>,
-  },
-  placeholder: {
-    type: String,
-    default: 'panel.selection_placeholder',
-  },
+const props = withDefaults(defineProps<{
+  modelValue: string | null;
+  options?: SelectionOption[];
+  placeholder?: string;
+}>(), {
+  options: () => [],
+  placeholder: 'panel.selection_placeholder',
 });
 
 const localValue = computed({
@@ -41,14 +41,30 @@ const localValue = computed({
 });
 
 const opened = ref(false);
-const localText = ref('');
 
-const select = (option: object) => {
-  localValue.value = option.id;
-  localText.value = option.name;
+const getOptionLabel = (option: SelectionOption) => {
+  return typeof option === 'string' ? option : option.name;
+};
+
+const selectedOption = computed(() => props.options.find((option) => {
+  if (typeof option === 'string') return option === localValue.value;
+  return option.id === localValue.value;
+}));
+
+const displayText = computed(() => {
+  if (!selectedOption.value) return localValue.value;
+  return getOptionLabel(selectedOption.value);
+});
+
+const select = (option: SelectionOption) => {
+  if (typeof option === 'object') {
+    localValue.value = option.id;
+  }
+  else {
+    localValue.value = option;
+  }
 };
 const toggle = () => opened.value = !opened.value;
-const refresh = () => emit('update:modelValue', null);
 </script>
 
 <style lang="scss" scoped>

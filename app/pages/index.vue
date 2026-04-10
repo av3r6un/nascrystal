@@ -21,9 +21,9 @@ const settings = useSettings();
 const fallbackPage = {
   title: t('index_page.title'),
   description: t('index_page.description'),
-  meta_title: t('index_page.title'),
-  meta_description: t('index_page.description'),
-  og_image: t('index_page.image'),
+  meta_title: settings.value.seo.title,
+  meta_description: settings.value.seo.description,
+  og_image: settings.value.seo.og_image,
   content: null,
   error: t('index_page.error'),
 };

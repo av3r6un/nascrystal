@@ -1,7 +1,7 @@
 <template>
   <div class="product">
     <div class="product_image">
-      <img v-if="product.primary_image" :src="`/uploads/${product.primary_image}`" alt="product_image" class="base_image">
+      <img v-if="getProductImage" :src="getProductImage" alt="product_image" class="base_image">
       <div v-else class="product_image-placehoolder">
         <Icon name="nsc:diamond" :size="24" />
       </div>
@@ -56,6 +56,15 @@ const getProductCategory = (options: Array<object>) => {
 };
 
 const manyOffers = computed(() => props.product.offers.length > 1);
+
+const getProductImage = computed(() => {
+  if (!props.product.images.length) return;
+  const image = props.product.images.find((image: object) => image.is_primary).path;
+  if (image.startsWith('http://') || image.startsWith('https://')) {
+    return image;
+  }
+  return `/img/${image}`;
+});
 </script>
 
 <style lang="scss" scoped>

@@ -88,6 +88,9 @@
     "instagram": "IG",
     "max": "Макс",
     "whatsapp": "WhatsApp",
+    "legal_title": "Юридическая информация",
+    "legal_inn": "ИНН",
+    "legal_ogrnip": "ОГРНИП",
     "feedback": {
       "title": "Напишите нам",
       "name": "Ваше имя",

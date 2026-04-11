@@ -85,6 +85,9 @@
     "address": "Address",
     "work_hours": "Working Hours",
     "whatsapp": "WhatsApp",
+    "legal_title": "Legal information",
+    "legal_inn": "INN",
+    "legal_ogrnip": "OGRNIP",
     "feedback": {
       "title": "Write to Us",
       "name": "Your Name",

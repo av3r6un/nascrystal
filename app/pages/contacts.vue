@@ -82,6 +82,28 @@
             {{ submitMessage }}
           </p>
         </form>
+        <div class="contacts_legal">
+          <div class="contacts_legal-title">
+            {{ $t('contacts_page.legal_title') }}
+          </div>
+          <div class="contacts_legal-body">
+            <p class="legal_info">
+              Индивидуальный предприниматель Коваленко Дарья Александровна
+            </p>
+            <div class="contacts_legal-item">
+              <span class="legal_info-title">{{ $t('contacts_page.legal_inn') }}</span>
+              <p class="legal_info">
+                425302378306
+              </p>
+            </div>
+            <div class="contacts_legal-item">
+              <span class="legal_info-title">{{ $t('contacts_page.legal_ogrnip') }}</span>
+              <p class="legal_info">
+                325237500565977
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="contacts_map">
@@ -191,18 +213,45 @@ const handleForm = async () => {
   }
   &_feedback{
     flex: 1;
+  }
+  &_form{
     padding: 32px;
     background: $light-pink;
     border-radius: 8px;
-  }
-  &_form-status{
-    margin-top: 16px;
-    font-size: 14px;
-    &.success {
-      color: #2e7d32;
+    &-status{
+      margin-top: 16px;
+      font-size: 14px;
+      &.success {
+        color: #2e7d32;
+      }
+      &.error {
+        color: #b71c1c;
+      }
     }
-    &.error {
-      color: #b71c1c;
+  }
+  &_legal{
+    padding: 32px;
+    background: $light-pink;
+    border-radius: 8px;
+    margin-top: 24px;
+    &-title{
+      font-family: $title-font;
+      font-size: 22px;
+      font-weight: 600;
+      color: $brown;
+      margin-bottom: 28px;
+    }
+    .legal_info{
+      &-title {
+        display: block;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        color: $light-brown;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      margin-bottom: 10px;
+      color: $brown;
     }
   }
   .btn_submit:disabled{

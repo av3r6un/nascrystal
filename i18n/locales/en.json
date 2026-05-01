@@ -237,7 +237,11 @@
       "not_active": "Draft",
       "amount": "Amount",
       "prev_page": "Prev",
-      "next_page": "Next"
+      "next_page": "Next",
+      "purge": "Purge stock",
+      "purge_confirm": "Are you sure you want to purge all products?",
+      "purge_success": "Products were purged successfully",
+      "purge_error": "Failed to purge products"
     }
   },
   "dates": {

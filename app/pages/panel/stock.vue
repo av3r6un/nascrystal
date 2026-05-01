@@ -2,6 +2,16 @@
   <article class="stock">
     <div class="stock_title base_title">
       {{ t('panel.stock.title') }}
+      <div class="stock_title-btn">
+        <button
+          type="button"
+          class="btn btn_submit"
+          :disabled="purgePending"
+          @click="purgeProducts"
+        >
+          {{ $t('panel.stock.purge') }}
+        </button>
+      </div>
     </div>
     <div class="stock_body">
       <div v-if="pending" class="stock_state">
@@ -41,8 +51,10 @@
                 </div>
               </div>
               <div class="stock_table-data name">
-                {{ pr.name }}
-                <span class="attributes">{{ nameAttrs(pr.attributes) }}</span>
+                <NuxtLink :to="`/stock/${pr.id}`" class="base_link">
+                  {{ pr.name }}
+                  <span class="attributes">{{ nameAttrs(pr.attributes) }}</span>
+                </NuxtLink>
                 <Icon name="nsc:copy" :size="16" @click="toClipboard(pr.sku)" />
               </div>
               <div class="stock_table-data price">
@@ -108,7 +120,9 @@ const ensureAuthorized = async () => {
   }
 };
 
-const { data, pending, error } = await useAsyncData(
+const purgePending = ref(false);
+
+const { data, pending, error, refresh } = await useAsyncData(
   'panel-stock-page',
   async () => {
     await ensureAuthorized();
@@ -150,15 +164,33 @@ const nameAttrs = (attributes: Array<object>) => {
 const toClipboard = (val: string) => {
   navigator.clipboard.writeText(val);
 };
+const purgeProducts = async () => {
+  if (purgePending.value) return;
 
-const goNext = () => {
-  console.log(currentPage.value);
-  currentPage.value += 1;
+  const confirmed = window.confirm(t('panel.stock.purge_confirm'));
+  if (!confirmed) return;
+
+  purgePending.value = true;
+  try {
+    await ensureAuthorized();
+    await $fetch('/internal/products/purge', {
+      method: 'POST',
+      headers: auth.authHeader,
+    });
+    await refresh();
+    window.alert(t('panel.stock.purge_success'));
+  }
+  catch (error) {
+    console.error('Products purge failed', error);
+    window.alert(t('panel.stock.purge_error'));
+  }
+  finally {
+    purgePending.value = false;
+  }
 };
-const goPrev = () => {
-  console.log(currentPage.value);
-  currentPage.value -= 1;
-};
+
+const goNext = () => currentPage.value += 1;
+const goPrev = () => currentPage.value -= 1;
 </script>
 
 <style lang="scss" scoped>
@@ -265,6 +297,11 @@ const goPrev = () => {
           margin-left: auto;
           cursor: pointer;
         }
+        .base_link{
+          &:hover{
+            text-decoration: underline;
+          }
+        }
       }
       &.category{
         color: $light-brown;
@@ -285,6 +322,17 @@ const goPrev = () => {
             background: $semi-grey;
           }
         }
+      }
+    }
+  }
+  &_title{
+    position: relative;
+    &-btn{
+      position: absolute;
+      right: 0;
+      top: calc(50% - 24px);
+      .btn_submit{
+        padding: 0 7px;
       }
     }
   }

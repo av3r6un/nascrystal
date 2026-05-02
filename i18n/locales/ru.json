@@ -63,11 +63,11 @@
   "categories": { 
     "title": "Категории товаров",
     "list":[
-      { "icon": "diamond", "title": "Стразы холодной фиксации", "info": "12 граней" },
-      { "icon": "diamond", "title": "Стразы холодной фиксации", "info": "16 граней (xirius)" },
-      { "icon": "diamond", "title": "Стразы горячей фиксации", "info": "12 граней" },
-      { "icon": "diamond", "title": "Стразы горячей фиксации", "info": "16 граней (xirius)" },
-      { "icon": "diamond", "title": "Пришивные стразы (K9)", "info": "Для костюмов и платьев" },
+      { "icon": "diamond", "title": "Стразы холодной фиксации", "info": "12 граней", "href": "/catalog?0=Non&1=12cut" },
+      { "icon": "diamond", "title": "Стразы холодной фиксации", "info": "16 граней (xirius)", "href": "/catalog?0=Non&1=16cut" },
+      { "icon": "diamond", "title": "Стразы горячей фиксации", "info": "12 граней", "href": "/catalog?0=Hot&1=12cut"},
+      { "icon": "diamond", "title": "Стразы горячей фиксации", "info": "16 граней (xirius)", "href": "/catalog?0=Hot&1=16cut" },
+      { "icon": "diamond", "title": "Пришивные стразы (K9)", "info": "Для костюмов и платьев", "href": "/catalog?0=K9" },
       { "icon": "diamond", "title": "Фигурные стразы", "info": "Уникальные формы" },
       { "icon": "diamond", "title": "Инструменты", "info": "Аксессуары для страз и прочие элементы декора" }
     ]

@@ -35,6 +35,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  name: {
+    type: String,
+    default: '',
+  },
 });
 
 const localValue = computed({
@@ -60,7 +64,9 @@ const isSelected = computed(() => (option: Record<string, string>) => {
 
   return localValue.value.includes(key);
 });
+
 const totalHeight = computed(() => {
+  if (props.name === 'catalog.filters.color') return 'auto';
   const totalItems = props.options?.length;
   if (!totalItems || props.framed) return '66px';
   return `${(totalItems / 3) * 39}px`;

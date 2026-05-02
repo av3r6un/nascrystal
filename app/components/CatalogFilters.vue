@@ -116,6 +116,27 @@ const filtersMap = ref([
   },
 ]);
 
+const normalizeModelValue = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.flatMap(normalizeModelValue);
+  }
+
+  if (typeof value !== 'string') return [];
+
+  return value
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
+};
+
+const syncFiltersFromModelValue = (modelValue: Record<string, unknown>) => {
+  filtersMap.value.forEach((filter) => {
+    filter.modelValue = normalizeModelValue(modelValue[String(filter.propertyIndex)]);
+  });
+
+  filtersMap.value.forEach((_, idx) => resetInvalidDependents(idx));
+};
+
 const filtersQuery = computed(() => {
   const query: Record<string, string> = {};
 
@@ -199,6 +220,12 @@ const resetInvalidDependents = (idx: number) => {
     resetInvalidDependents(filterIdx);
   });
 };
+
+watch(
+  () => props.modelValue,
+  modelValue => syncFiltersFromModelValue(modelValue as Record<string, unknown>),
+  { immediate: true, deep: true },
+);
 
 const toggleFilters = () => showFilters.value = !showFilters.value;
 </script>

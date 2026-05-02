@@ -49,11 +49,34 @@ definePageMeta({
 });
 
 const { t } = useI18n();
+const route = useRoute();
 const auth = useAuthStore();
 const isClient = ref(false);
-const filtersQuery = ref<Record<string, string>>({});
 const currentPageIndex = ref(0);
 const previousScrollRestoration = ref<ScrollRestoration | null>(null);
+
+const normalizeQueryValue = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item): item is string => typeof item === 'string' && item.length > 0)
+      .join(',');
+  }
+
+  return typeof value === 'string' ? value : '';
+};
+
+const filtersQuery = ref<Record<string, string>>(
+  Object.entries(route.query).reduce<Record<string, string>>((query, [key, value]) => {
+    if (key === 'page_index') return query;
+
+    const normalizedValue = normalizeQueryValue(value);
+    if (normalizedValue) {
+      query[key] = normalizedValue;
+    }
+
+    return query;
+  }, {}),
+);
 
 const stockQuery = computed(() => ({
   ...filtersQuery.value,

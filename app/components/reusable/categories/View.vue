@@ -5,17 +5,19 @@
     </div>
     <div class="categories_wrapper wp-px0">
       <div v-for="(c, idx) in categories?.list" :key="idx" class="categories_category">
-        <div class="categories_category-wrapper">
-          <div class="categories_category-icon">
-            <Icon :name="`nsc:${c.icon}`" :size="24" />
+        <NuxtLink :to="c.href" class="base_link">
+          <div class="categories_category-wrapper">
+            <div class="categories_category-icon">
+              <Icon :name="`nsc:${c.icon}`" :size="24" />
+            </div>
+            <div class="categories_category-title">
+              {{ c.title }}
+            </div>
+            <div class="categories_category-info">
+              {{ c.info }}
+            </div>
           </div>
-          <div class="categories_category-title">
-            {{ c.title }}
-          </div>
-          <div class="categories_category-info">
-            {{ c.info }}
-          </div>
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </div>

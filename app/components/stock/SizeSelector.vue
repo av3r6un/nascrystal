@@ -34,7 +34,6 @@ const localValue = computed({
 
 const select = (idx: number) => {
   localValue.value = idx;
-  console.log(idx);
 };
 </script>
 
@@ -50,6 +49,7 @@ const select = (idx: number) => {
   &_sizes{
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
     &-item{
       cursor: pointer;
       & > span{

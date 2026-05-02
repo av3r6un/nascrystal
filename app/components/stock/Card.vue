@@ -19,7 +19,7 @@
           <span v-else>от {{ getPrice(product.offers) }} ₽</span>
         </div>
         <div class="product_more">
-          <NuxtLink :to="`/stock/${product.offers[0].id}`" class="base_link">
+          <NuxtLink :to="`/stock/${product.id}`" class="base_link">
             {{ t('default.more') }}
           </NuxtLink>
         </div>

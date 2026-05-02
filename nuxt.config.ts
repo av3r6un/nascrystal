@@ -145,10 +145,11 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
   },
   icon: {
+    provider: 'server',
+    localApiEndpoint: '/_nuxt_icon',
     clientBundle: {
       scan: true,
     },
-    provider: 'server',
     customCollections: [
       {
         prefix: 'nsc',

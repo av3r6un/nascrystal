@@ -13,12 +13,13 @@
         v-for="(filter, idx) in filtersMap"
         v-show="filter.alwaysDisplay || meetsCondition(filter.dependsOn, filter.displayCondition)"
         :key="idx"
+        style="max-width: 230px;"
       >
         <div class="filters_title" @click="toggleFilter(idx)">
           <span class="title">{{ t(filter.name) }}</span>
           <Icon v-if="!filter.framed" :name="`nsc:toggle-${filter.initialState ? 'up' : 'down'}`" />
         </div>
-        <FilterOption v-if="filter" v-bind="filter" @update:model-value="(n) => updateState(idx, n)" />
+        <FilterOption v-if="filter" v-bind="filter" ref="filterCont" @update:model-value="(n) => updateState(idx, n)" />
       </div>
       <button v-show="filtersApplied" type="button" class="btn btn_add" @click="clearFilters">
         {{ t('catalog.clear_filters') }}
@@ -41,6 +42,7 @@ const props = defineProps({
   },
 });
 const { t } = useI18n();
+const filterCont = ref(null);
 
 const localValue = computed({
   get: () => { return props.modelValue; },
@@ -173,6 +175,9 @@ const clearFilters = () => {
 const toggleFilter = (idx: number) => {
   if (idx > filtersMap.value.length) return;
   filtersMap.value[idx].initialState = !filtersMap.value[idx]?.initialState;
+  if (!filtersMap.value[idx].initialState) {
+    filterCont.value?.[idx].scrollToTop();
+  }
 };
 
 const buildOptions = (idx: number, appendToStart: string | null = null) => {

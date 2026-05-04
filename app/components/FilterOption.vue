@@ -1,5 +1,10 @@
 <template>
-  <div class="filter_options" :class="{ collapsed: !initialState }" :style="{ maxHeight: totalHeight }">
+  <div
+    ref="scrollCont"
+    class="filter_options"
+    :class="[{ opened: isOpened, scrollable: isScrollable }, partialName]"
+    @transitionend="onTransitionEnd"
+  >
     <div
       v-for="(option, idx) in options"
       :key="idx"
@@ -46,6 +51,9 @@ const localValue = computed({
   set: (val) => { emit('update:modelValue', val); },
 });
 
+const scrollCont = ref(null);
+const isScrollable = ref(false);
+
 const select = (val: number | string) => {
   if (props.single) {
     localValue.value = [val];
@@ -65,27 +73,67 @@ const isSelected = computed(() => (option: Record<string, string>) => {
   return localValue.value.includes(key);
 });
 
-const totalHeight = computed(() => {
-  if (props.name === 'catalog.filters.color') return 'auto';
-  const totalItems = props.options?.length;
-  if (!totalItems || props.framed) return '66px';
-  return `${(totalItems / 3) * 39}px`;
+const isOpened = computed(() => props.initialState);
+
+const partialName = computed(() => {
+  const name = props.name?.split('.');
+  if (!name.length) return '';
+  return name[name.length - 1];
+});
+
+const updateScrollableState = () => {
+  if (!scrollCont.value) return;
+  isScrollable.value = props.initialState && scrollCont.value.scrollHeight > 309;
+};
+
+const onTransitionEnd = (event: object) => {
+  if (event.propertyName !== 'max-height') return;
+  updateScrollableState();
+};
+
+watch(isOpened, () => {
+  isScrollable.value = false;
+});
+
+function scrollToTop() {
+  scrollCont.value?.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+defineExpose({
+  scrollToTop,
 });
 </script>
 
 <style lang="scss" scoped>
 .filter{
   &_options{
-    max-width: 210px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     user-select: none;
     height: auto;
-    overflow: hidden;
-    transition: all .4s ease;
-    &.collapsed{
-      max-height: 66px !important;
+    width: 100%;
+    transition: max-height .5s ease;
+    overflow-y: hidden;
+    max-height: 66px;
+    &::-webkit-scrollbar{
+      -webkit-appearance: none;
+    }
+    &.opened{
+      max-height: 310px;
+    }
+    &.scrollable {
+      overflow-y: auto;
+      &::-webkit-scrollbar{
+        -webkit-appearance: none;
+        width: 4px;
+        border-radius: 8px;
+        background: $pinky;
+        &-thumb{
+          background: $light-brown;
+          border-radius: 8px;
+        }
+      }
     }
   }
   &_option{

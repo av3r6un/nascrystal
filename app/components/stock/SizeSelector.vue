@@ -35,6 +35,9 @@ const localValue = computed({
 const select = (idx: number) => {
   localValue.value = idx;
 };
+onMounted(() => {
+  localValue.value = 0;
+});
 </script>
 
 <style lang="scss" scoped>

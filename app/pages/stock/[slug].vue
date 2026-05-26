@@ -294,6 +294,10 @@ const buildAttrs = computed(() => {
   }
   &_description{
     width: 50%;
+    .description{
+      margin-top: 13px;
+      white-space: pre-wrap;
+    }
   }
   &_attribute{
     padding: 8px 12px;

@@ -14,10 +14,12 @@ export default defineEventHandler(async (event) => {
     });
 
     const items = Array.isArray(response?.body.items) ? response.body.items : [];
+    const filters = response?.body.filters ?? null;
     const pageIndex = response?.body.page_index ?? 0;
     const hasNextPage = response?.body.has_next_page ?? false;
     return {
       stock: items,
+      filters,
       pageIndex,
       hasNextPage,
     };

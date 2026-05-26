@@ -12,7 +12,7 @@
           <div class="warning">
             {{ t('catalog.warning') }}
           </div>
-          {{ stockError }} {{ filtersError }}
+          {{ stockError }}
           <NuxtLink to="/" class="base_link btn_submit big">
             {{ t('error.go_home') }}
           </NuxtLink>
@@ -106,17 +106,6 @@ onBeforeUnmount(() => {
   }
 });
 
-const { data: filtersData, pending: filtersPending, error: filtersError } = await useAsyncData(
-  'catalog-filters',
-  () => $fetch('/internal/stock/filters', {
-    headers: auth.authHeader,
-  }),
-  {
-    server: false,
-    default: () => null,
-  },
-);
-
 const { data: stockData, pending: stockPending, error: stockError } = await useAsyncData(
   'catalog-items',
   () => $fetch('/internal/stock', {
@@ -136,14 +125,14 @@ watch(filtersQuery, () => {
 
 const showLoading = computed(() => {
   if (!isClient.value) return true;
-  return (filtersPending.value && !filtersData.value) || (stockPending.value && !stockData.value);
+  return stockPending.value && !stockData.value;
 });
 const showError = computed(() => {
   if (!isClient.value) return false;
-  return (Boolean(filtersError.value) && !filtersData.value) || (Boolean(stockError.value) && !stockData.value);
+  return Boolean(stockError.value) && !stockData.value;
 });
 
-const allFilters = computed(() => filtersData.value?.filters ?? {});
+const allFilters = computed(() => stockData.value?.filters ?? {});
 const stockItems = computed(() => Array.isArray(stockData.value?.stock) ? stockData.value.stock : []);
 const pageIndex = computed(() => stockData.value?.pageIndex ?? currentPageIndex.value);
 const hasNextPage = computed(() => Boolean(stockData.value?.hasNextPage));

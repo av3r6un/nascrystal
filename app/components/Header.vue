@@ -53,7 +53,8 @@
         </div>
       </div>
       <div class="header_nav-item cart">
-        <NuxtLink to="/" class="base_link">
+        <NuxtLink to="/cart" class="base_link">
+          <div v-if="cartSize > 0" class="cart_size">{{ cartSize }}</div>
           <Icon name="nsc:cart" :size="24" />
         </NuxtLink>
       </div>
@@ -70,6 +71,8 @@ const prettyPhone = usePrettyPhone();
 const settings = useSettings();
 const phone = settings.value.contacts.phones[0];
 const email = settings.value.contacts.emails[0];
+const cart = useCart();
+const cartSize = computed(() => cart.cartItems.value.length);
 </script>
 
 <style lang="scss" scoped>
@@ -121,6 +124,21 @@ const email = settings.value.contacts.emails[0];
     height: 64px;
     .cart{
       margin-left: auto;
+      position: relative;
+      .cart_size{
+        position: absolute;
+        background: $brown;
+        color: $white;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        right: -5px;
+        bottom: -3px;
+      }
     }
     &-item{
       &.logo{

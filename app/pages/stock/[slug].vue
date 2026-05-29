@@ -42,7 +42,7 @@
               </div>
               <StockQuantity v-model="selectedAmount" :max="selectedMaxQ" />
             </div>
-            <button class="btn btn_submit">
+            <button class="btn btn_submit" @click="addToCart">
               {{ t('stock.submit') }}
             </button>
           </div>
@@ -84,6 +84,7 @@ definePageMeta({
 
 const route = useRoute();
 const { t } = useI18n();
+const cart = useCart();
 const isClient = ref(false);
 
 onMounted(() => {
@@ -163,6 +164,33 @@ const buildAttrs = computed(() => {
   }
   return attributes;
 });
+
+const selectedSize = computed(() => {
+  const offer = stock.value.offers[selectedOffer.value]?.variant;
+  let size = '';
+  Object.entries(offer).forEach(([_, info]) => {
+    size = info.name || info.value;
+  });
+  return size;
+});
+
+const addToCart = () => {
+  const cartItem = {
+    id: stock.value.offers[selectedOffer.value]?.id,
+    name: stock.value.offers[selectedOffer.value]?.name,
+    properties: [
+      stock.value.options[2].name || stock.value.options[2].value,
+      selectedSize.value,
+    ],
+    price: stock.value.offers[selectedOffer.value]?.amount,
+    image: stock.value.offers[selectedOffer.value]?.primary_image,
+    quantity: {
+      value: selectedAmount.value,
+      max: selectedMaxQ.value,
+    },
+  };
+  cart.add(cartItem);
+};
 </script>
 
 <style lang="scss" scoped>

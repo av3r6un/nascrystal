@@ -16,7 +16,8 @@
     "about": "About us",
     "prices": "Price & Delivery",
     "contacts": "Contacts",
-    "stock_page": "Stock"
+    "stock_page": "Stock",
+    "cart": "Cart"
   },
   "work_hours": {
     "short": "Mon-Fri: 10:00 — 19:00",
@@ -124,6 +125,33 @@
     "category": {
       "gems": "Rhinestones"
     }
+  },
+  "cart": {
+    "title": "Cart",
+    "delivery_way": "Delivery",
+    "delivery_placeholder": "Choose delivery way",
+    "delivery_ways": {
+      "cdek": "СДЭК - от 350 ₽",
+      "post": "Почта России - от 250 ₽",
+      "courier": "Курьер по Москве - 500 ₽"
+    },
+    "payment_way": "Payment",
+    "payment_placeholder": "Choose payment method",
+    "payment_ways": {
+      "cash": "Cash",
+      "card": "Online payment (card)"
+    },
+    "form": {
+      "phone": "Phone",
+      "name": "Your name"
+    },
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "delivery": "Delivery",
+    "submit": "Make order",
+    "caption": "Payment is made after the order is confirmed by the manager",
+    "empty": "The shopping cart is empty. Add products by selecting them from our catalog.",
+    "to_catalog": "Visit catalog"
   },
   "panel": {
     "img_placeholder": "Image",
@@ -242,6 +270,29 @@
       "purge_confirm": "Are you sure you want to purge all products?",
       "purge_success": "Products were purged successfully",
       "purge_error": "Failed to purge products"
+    },
+    "purchases": {
+      "title": "Purchases",
+      "table": {
+        "index": "Num",
+        "date": "Date",
+        "contacts": "Contact",
+        "product": "Product",
+        "price": "Price",
+        "delivery": "Delivery",
+        "status": "Status"
+      },
+      "statuses": {
+        "created": "created",
+        "processing": "processing",
+        "delivering": "delivering",
+        "finished": "finished"
+      },
+      "deliveries": {
+        "courier": "Courier",
+        "post":"Post",
+        "cdek": "CDEK"
+      }
     }
   },
   "dates": {

@@ -1,4 +1,7 @@
 <template>
+  <div v-if="isDoc" class="redaction_date">
+    {{ t('default.redaction') }} {{ d(redactionDate, 'document') }}
+  </div>
   <component
     :is="resolve(block)"
     v-for="(block, i) in blocks"
@@ -21,9 +24,20 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  updated: {
+    type: Number,
+    required: false,
+  },
 });
 const getBlockName = (block: object) => Object.keys(block)[0];
 
+const { t, d } = useI18n();
+
+const isDoc = computed(() => props.blocks.some(b => Object.keys(b).includes('terms')));
+const redactionDate = computed(() => {
+  const date = new Date(props.updated * 1000);
+  return date.toISOString();
+});
 const resolve = (block: object) => {
   const name = getBlockName(block);
   const schema = blocksRegistry[name];
@@ -43,6 +57,9 @@ const showSwitch = (block: object) => {
 };
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.redaction_date{
+  text-align: right;
+  color: $light-brown;
+}
 </style>

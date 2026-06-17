@@ -14,8 +14,20 @@
           <div class="footer_navbar-item first">
             {{ t('footer.navbar') }}
           </div>
-          <div v-for="(n, idx) in navbarItems" :key="idx" class="footer_navbar-item">
-            <NuxtLink class="base_link" :to="`/${rt(n)}`">{{ t(`navbar.${rt(n)}`) }}</NuxtLink>
+          <div class="footer_navbar-item">
+            <NuxtLink to="/catalog" class="base_link">{{ t('navbar.catalog') }}</NuxtLink>
+          </div>
+          <div class="footer_navbar-item">
+            <NuxtLink to="/about" class="base_link">{{ t('navbar.about') }}</NuxtLink>
+          </div>
+          <div class="footer_navbar-item">
+            <NuxtLink to="/prices" class="base_link">{{ t('navbar.prices') }}</NuxtLink>
+          </div>
+          <div class="footer_navbar-item">
+            <NuxtLink to="/contacts" class="base_link">{{ t('navbar.contacts') }}</NuxtLink>
+          </div>
+          <div class="footer_navbar-item">
+            <NuxtLink to="/privacy-policy" class="base_link">{{ t('navbar.privacy') }}</NuxtLink>
           </div>
         </div>
         <div class="footer_contacts">

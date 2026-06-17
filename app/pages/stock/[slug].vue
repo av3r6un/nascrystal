@@ -174,6 +174,12 @@ const selectedSize = computed(() => {
   return size;
 });
 
+const primaryImage = computed(() => {
+  if (!stock.value.images?.length) return '';
+  const image = stock.value.images.find((item: object) => item.is_primary)?.path;
+  return typeof image === 'string' ? image : '';
+});
+
 const addToCart = () => {
   const cartItem = {
     id: stock.value.offers[selectedOffer.value]?.id,
@@ -183,7 +189,7 @@ const addToCart = () => {
       selectedSize.value,
     ],
     price: stock.value.offers[selectedOffer.value]?.amount,
-    image: stock.value.offers[selectedOffer.value]?.primary_image,
+    image: stock.value.offers[selectedOffer.value]?.primary_image || primaryImage.value,
     quantity: {
       value: selectedAmount.value,
       max: selectedMaxQ.value,

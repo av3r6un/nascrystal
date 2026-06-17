@@ -37,7 +37,7 @@
           </div>
           <div class="purchases_table-body">
             <div v-for="pur in data.items" :key="pur.id" class="purchases_table-row tr">
-              <div class="purchases_table-data td index">
+              <div class="purchases_table-data td index toggle" @click="toggleRow(pur.id)">
                 {{ makeNASID(pur.id) }}
               </div>
               <div class="purchases_table-data td date">
@@ -51,7 +51,7 @@
                 </span>
               </div>
               <div class="purchases_table-data td product">
-                <span v-for="(pr, idx) in pur.products" :key="pr.id" :title="pr.sku" @click="toClipboard(pr.sku)">
+                <span v-for="(pr, idx) in pur.products" :key="pr.id" :title="pr.sku" @click.stop="toClipboard(pr.sku)">
                   {{ pr.name }} (x{{ pr.quantity }})<span v-if="idx < pur.products.length - 1">, </span>
                 </span>
               </div>
@@ -64,6 +64,35 @@
               <div class="purchases_table-data td status" :class="pur.status">
                 <div class="purchase_status">
                   {{ t(`panel.purchases.statuses.${pur.status}`) }}
+                </div>
+              </div>
+
+              <div v-if="expandedRows.has(pur.id)" class="purchases_table-details">
+                <div class="detailts_contacts">
+                  {{ t('panel.purchases.table.contacts') }}: {{ pur.contact_info.name }} / {{ pur.contact_info.phone }}
+                </div>
+                <div v-if="pur.contact_info.username" class="details_username">
+                  Telegram/MAX: {{ pur.contact_info.username }}
+                </div>
+                <div class="details_date">
+                  {{ t('panel.purchases.table.date') }}: {{ d(new Date(pur.created_ts * 1000), 'long') }}
+                </div>
+                <div class="details_delivery">
+                  {{ t('panel.purchases.table.delivery') }}: {{ t(`panel.purchases.deliveries.${pur.contact_info.delivery}`) }}
+                </div>
+                <div class="details_price">
+                  {{ t('panel.purchases.table.price') }}: {{ pur.final_price }} ₽
+                </div>
+                <div class="details_items">
+                  <div class="details_items-title">
+                    {{ t('panel.purchases.table.goods') }}:
+                  </div>
+                  <div v-for="i in pur.products" :key="i.sku" class="details_item">
+                    {{ i.name }} <span :title="i.sku" @click.stop="toClipboard(i.sku)">({{ i.sku }})</span> {{ i.quantity }} {{ t('default.pieces') }}
+                    <div v-for="(iPr, prIdx) in i.properties" :key="prIdx" class="details_properties">
+                      {{ iPr.property.name }} {{ iPr.value || iPr.name }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -80,7 +109,7 @@ definePageMeta({
   layout: 'panel',
 });
 
-const { t } = useI18n();
+const { d, t } = useI18n();
 
 const auth = useAuthStore();
 
@@ -108,6 +137,8 @@ const { data, pending, error, refresh } = await useAsyncData(
 
 console.log(data.value.items);
 
+const expandedRows = ref(new Set<number>());
+
 const toNormalDate = (timestamp: number) => {
   const date = new Date(timestamp * 1000);
   const day = date.getDate().toString().padStart(2, '0');
@@ -122,6 +153,13 @@ const makeNASID = (id: number) => {
 
 const toClipboard = (val: string) => {
   navigator.clipboard.writeText(val);
+};
+
+const toggleRow = (id: number) => {
+  const next = new Set(expandedRows.value);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  expandedRows.value = next;
 };
 </script>
 
@@ -173,6 +211,20 @@ const toClipboard = (val: string) => {
       display: flex;
       flex-direction: column;
     }
+    &-details{
+      .details{
+        &_properties{
+          color: $light-brown;
+          margin-left: 10px;
+        }
+        &_item{
+          margin-left: 10px;
+          span{
+            cursor: pointer;
+          }
+        }
+      }
+    }
     &-row{
       display: grid;
       grid-template-columns: var(--stock-columns);
@@ -183,6 +235,16 @@ const toClipboard = (val: string) => {
         border-bottom: 1px solid $pinky;
       }
     }
+    &-details{
+      grid-column: 1 / -1;
+      padding: 12px 24px 16px;
+      border-top: 1px solid $pinky;
+      color: $brown;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: $light-pink;
+    }
     &-index{
       text-align: center;
     }
@@ -192,10 +254,14 @@ const toClipboard = (val: string) => {
     }
     &-data{
       color: $light-brown;
+      padding: 20px 0;
       &.index{
         color: $brown;
         font-weight: 600;
         text-align: center;
+        &.toggle{
+          cursor: pointer;
+        }
       }
       &.contacts{
         color: $brown;

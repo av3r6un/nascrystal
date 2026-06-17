@@ -7,7 +7,7 @@
       {{ page.description }}
     </div>
     <div v-if="hasContent" class="static_content">
-      <CmsBlockRenderer :blocks="pageBlocks" :parent="finalSlug" />
+      <CmsBlockRenderer :blocks="pageBlocks" :parent="finalSlug" :updated="pageUpdated" />
     </div>
     <div v-else class="static_content error">
       {{ page.error }}
@@ -46,6 +46,7 @@ const page = computed(() => data.value ?? fallBack);
 
 const hasContent = computed(() => Boolean(page.value?.content));
 const pageBlocks = computed(() => page.value?.content?.blocks ?? []);
+const pageUpdated = computed(() => page.value?.updated);
 </script>
 
 <style lang="scss" scoped>

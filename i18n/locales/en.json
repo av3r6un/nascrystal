@@ -8,7 +8,10 @@
   },
   "default": {
     "loading": "Loading..",
-    "more": "More"
+    "more": "More",
+    "redaction": "Last redacted on",
+    "pieces": "pcs",
+    "and": "and"
   }, 
   "navbar": {
     "home": "Home",
@@ -17,6 +20,8 @@
     "prices": "Price & Delivery",
     "contacts": "Contacts",
     "stock_page": "Stock",
+    "terms": "User Agreement",
+    "privacy": "Privacy policy",
     "cart": "Cart"
   },
   "work_hours": {
@@ -143,13 +148,23 @@
     },
     "form": {
       "phone": "Phone",
-      "name": "Your name"
+      "name": "Your name",
+      "username": "Telegram/MAX username",
+      "consent": {
+        "start": "I'm acquinted",
+        "privacy": "Privacy Policy",
+        "terms": "User Agreement",
+        "public_offer": "Public Offer",
+        "return": "Return and Exchange Policy",
+        "end": "and accept them."
+      }
     },
     "subtotal": "Subtotal",
     "total": "Total",
     "delivery": "Delivery",
     "submit": "Make order",
     "caption": "Payment is made after the order is confirmed by the manager",
+    "subcaption": "After placing the order, the manager will check the availability of the goods and, if necessary, clarify the details of the order. The total cost and terms of delivery will be confirmed before payment.",
     "empty": "The shopping cart is empty. Add products by selecting them from our catalog.",
     "to_catalog": "Visit catalog"
   },
@@ -278,6 +293,7 @@
         "date": "Date",
         "contacts": "Contact",
         "product": "Product",
+        "goods": "Products",
         "price": "Price",
         "delivery": "Delivery",
         "status": "Status"
@@ -315,7 +331,8 @@
     "paragraphs": "Paragraphs",
     "sections": "Sections",
     "block_selection": "Select a block",
-    "home_title": "Main Page"
+    "home_title": "Main Page",
+    "terms": "Document"
   },
   "content": {
     "image": "Image",

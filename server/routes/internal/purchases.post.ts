@@ -15,6 +15,7 @@ type PurchasePayload = {
   name?: unknown;
   payment?: unknown;
   phone?: unknown;
+  username?: string;
   price?: unknown;
 };
 
@@ -76,6 +77,7 @@ export default defineEventHandler(async (event) => {
         phone: body.phone.trim(),
         delivery: body.delivery.trim(),
         payment: body.payment.trim(),
+        username: isNonEmptyString(body.username) ? body.username.trim() : undefined,
         items,
         price: body.price,
       },

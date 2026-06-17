@@ -1,0 +1,49 @@
+- id: 1
+  locale: ru
+  title: Главная
+  description:
+  meta_title: Главная
+  meta_description: Премиальные стразы и кристаллы для дизайнеров и брендов, декоративные элементы для моды, танцевальных костюмов и ателье.
+  og_image: /img/home_og_image.png
+  content:
+    blocks:
+      - blockHero:
+          content:
+            image: /img/1772539925123-a87acfe4-0560-4361-9397-a111b072a59c.png
+            title: Премиальные стразы и кристаллы для дизайнеров и брендов
+            subtitle: |
+              Стразы и декоративные элементов для моды, танцевальных костюмов и
+              ателье
+            button_to: /catalog
+            button_text: Перейти в каталог
+          options:
+            full_width: true
+      - feature:
+          content:
+            - icon: diamond
+              info: Кристаллы высочайшего класса с безупречной огранкой
+              title: Премиальное качество
+            - icon: truck
+              info: Работаем напрямую с фабриками без посредников
+              title: Прямые поставки
+            - icon: people
+              info: Специальные цены для постоянных клиентов
+              title: Оптовые условия
+      - switch:
+          show: true
+          block: categories
+      - switch:
+          show: false
+          block: popular
+      - badge:
+          image: null
+          title: О компании
+          button_to: /about
+          button_text: Узнать больше
+          description: |
+            NAS Crystals — это надёжный поставщик премиальных страз и кристаллов для
+            индустрии моды и танцевального спорта. Мы работаем напрямую с ведущими
+            фабриками, обеспечивая высочайшее качество по выгодным ценам.
+      - switch:
+          show: true
+          block: socials

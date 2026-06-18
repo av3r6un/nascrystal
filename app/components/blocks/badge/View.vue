@@ -8,7 +8,7 @@
           alt="image"
           class="base_image"
         >
-        <div class="badge_image-blank">
+        <div v-else class="badge_image-blank">
           <Icon name="nsc:diamond" :size="64" />
         </div>
       </div>

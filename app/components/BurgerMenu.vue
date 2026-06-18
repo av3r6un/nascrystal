@@ -8,8 +8,30 @@
       <Icon :name="burgerIcon" :size="24" />
     </div>
     <div v-if="state" class="burger_menu">
-      <div v-for="(item, idx) in navbarItems" :key="idx" class="burger_menu-item">
-        <NuxtLink :to="`/${item.path}`" class="base_link">{{ item.label }}</NuxtLink>
+      <div class="burger_menu-item">
+        <NuxtLink to="/" class="base_link" @click="closeMenu">
+          {{ $t('navbar.home') }}
+        </NuxtLink>
+      </div>
+      <div class="burger_menu-item">
+        <NuxtLink to="/catalog" class="base_link" @click="closeMenu">
+          {{ $t('navbar.catalog') }}
+        </NuxtLink>
+      </div>
+      <div class="burger_menu-item">
+        <NuxtLink to="/about" class="base_link" @click="closeMenu">
+          {{ $t('navbar.about') }}
+        </NuxtLink>
+      </div>
+      <div class="burger_menu-item">
+        <NuxtLink to="/prices" class="base_link" @click="closeMenu">
+          {{ $t('navbar.prices') }}
+        </NuxtLink>
+      </div>
+      <div class="burger_menu-item">
+        <NuxtLink to="/contacts" class="base_link" @click="closeMenu">
+          {{ $t('navbar.contacts') }}
+        </NuxtLink>
       </div>
     </div>
   </div>
@@ -48,6 +70,9 @@ export default {
   methods: {
     toggleMenu() {
       this.state = !this.state;
+    },
+    closeMenu() {
+      this.state = false;
     },
     handleClickOutside(event) {
       const target = event.target;

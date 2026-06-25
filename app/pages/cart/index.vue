@@ -166,7 +166,7 @@ const makeOrder = async () => {
 
   isSubmitting.value = true;
   try {
-    await $fetch('/internal/purchases', {
+    const response = await $fetch('/internal/purchases', {
       method: 'POST',
       body: newOrder,
     });
@@ -179,6 +179,11 @@ const makeOrder = async () => {
       consent: false,
       privacy: false,
     };
+    if (response.payment_method === 'card') {
+      setTimeout(() => {
+        window.location.href = response?.payment.confirmation_url;
+      }, 1500);
+    }
   }
   finally {
     isSubmitting.value = false;

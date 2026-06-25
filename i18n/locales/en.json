@@ -168,6 +168,31 @@
     "empty": "The shopping cart is empty. Add products by selecting them from our catalog.",
     "to_catalog": "Visit catalog"
   },
+  "purchase": {
+    "title": {
+      "succeeded": "Order is confirmed",
+      "errored": "Errored order"
+    },
+    "caption": {
+      "succeeded": "Your order has been successfully paid for and submitted for processing. Our manager will contact you to confirm the delivery details.",
+      "errored": ""
+    },
+    "info_title": "Order info",
+    "purchase": {
+      "id": "Order ID",
+      "date": "Order date",
+      "amount": "Order amount",
+      "payment_method": "Payment method"
+    },
+    "delivery": {
+      "title": "Delivery",
+      "method": "Method",
+      "receiver": "Client",
+      "phone": "Phone"
+    },
+    "check_payment": "Check payment",
+    "back_to_catalog": "Back to catalog"
+  },
   "panel": {
     "img_placeholder": "Image",
     "img_placeholder_caption": "Drag & drop or click for load image",

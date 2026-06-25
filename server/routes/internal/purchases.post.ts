@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return response;
+    return response?.body;
   }
   catch (error) {
     console.error('FastAPI purchase request failed', error);

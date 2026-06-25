@@ -18,6 +18,14 @@
       />
     </div>
     <div class="form_item">
+      <CmsElementsInput
+        v-model="login"
+        name="cart.form.username"
+        type="text"
+        placeholder="@ivan_ivan0v"
+      />
+    </div>
+    <div class="form_item">
       <span>{{ t('cart.delivery_way') }}</span>
       <PanelSelection
         v-model="delivery"
@@ -76,6 +84,11 @@ const payment = computed({
 const delivery = computed({
   get: () => props.modelValue.delivery,
   set: val => emits('update:modelValue', { ...props.modelValue, delivery: val }),
+});
+
+const login = computed({
+  get: () => props.modelValue.username,
+  set: val => emits('update:modelValue', { ...props.modelValue, username: val }),
 });
 </script>
 

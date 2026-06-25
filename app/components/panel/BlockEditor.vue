@@ -27,7 +27,6 @@ const reusable = useReusable();
 const blocks = useBlocks();
 const blockSelectorShown = ref(false);
 const newBlock = ref('');
-const blockIdentity = new WeakMap<Record<string, unknown>, number>();
 let nextBlockId = 1;
 
 const props = defineProps({
@@ -43,17 +42,29 @@ const local = computed({
 });
 
 const getBlockKey = (block: Record<string, unknown>) => {
-  const known = blockIdentity.get(block);
-  if (known) return known;
+  const existing = block.__editorKey;
+  if (typeof existing === 'number') return existing;
 
   const created = nextBlockId++;
-  blockIdentity.set(block, created);
+  Object.defineProperty(block, '__editorKey', {
+    value: created,
+    enumerable: false,
+    writable: false,
+  });
   return created;
 };
 
 const pendingNewBlock = () => blockSelectorShown.value = true;
 const updateBlock = (idx: number, value: Record<string, unknown>) => {
   const next = [...local.value];
+  const currentKey = next[idx]?.__editorKey;
+  if (typeof currentKey === 'number') {
+    Object.defineProperty(value, '__editorKey', {
+      value: currentKey,
+      enumerable: false,
+      writable: false,
+    });
+  }
   next[idx] = value;
   local.value = next;
 };
@@ -89,6 +100,12 @@ watch(newBlock, (value) => {
       [value]: blockDefault,
     };
   }
+
+  Object.defineProperty(nextBlock, '__editorKey', {
+    value: nextBlockId++,
+    enumerable: false,
+    writable: false,
+  });
 
   local.value = [...local.value, nextBlock];
   newBlock.value = '';

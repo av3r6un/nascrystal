@@ -42,7 +42,7 @@
                 {{ t('cart.delivery') }}
               </div>
               <div v-if="deliveryPrice" class="cart_form-value">
-                {{ deliveryPrice }} ₽
+                от {{ deliveryPrice }} ₽
               </div>
             </div>
             <div class="cart_form-info">
@@ -50,8 +50,24 @@
                 {{ t('cart.total') }}
               </div>
               <div class="cart_form-value">
-                {{ totalPrice }} ₽
+                ≈ {{ totalPrice }} ₽
               </div>
+            </div>
+          </div>
+          <div class="cart_form-section">
+            <div class="cart_form-item">
+              <CmsElementsFormCheck v-model="order.privacy" required>
+                {{ t('cart.form.consent.start') }} <NuxtLink to="/privacy-policy" class="base_link">{{ $t('cart.form.consent.privacy') }}</NuxtLink>
+                {{ t('default.and') }} <NuxtLink to="/terms" class="base_link">{{ t('cart.form.consent.terms') }}</NuxtLink>
+                {{ t('cart.form.consent.end') }}
+              </CmsElementsFormCheck>
+            </div>
+            <div class="cart_form-item">
+              <CmsElementsFormCheck v-model="order.consent" required>
+                {{ t('cart.form.consent.start') }} <NuxtLink to="/public-offer" class="base_link">{{ $t('cart.form.consent.public_offer') }}</NuxtLink>
+                {{ t('default.and') }} <NuxtLink to="/return" class="base_link">{{ t('cart.form.consent.return') }}</NuxtLink>
+                {{ t('cart.form.consent.end') }}
+              </CmsElementsFormCheck>
             </div>
           </div>
           <div class="cart_form-section transparent">
@@ -59,6 +75,7 @@
               {{ t('cart.submit') }}
             </button>
             <span class="caption">{{ t('cart.caption') }}</span>
+            <span class="caption">{{ t('cart.subcaption') }}</span>
           </div>
         </div>
       </div>
@@ -90,6 +107,9 @@ const order = ref({
   payment: '',
   phone: '',
   name: '',
+  username: '',
+  consent: false,
+  privacy: false,
 });
 const isSubmitting = ref(false);
 
@@ -123,6 +143,7 @@ const totalPrice = computed(() => {
 const makeOrder = async () => {
   if (isSubmitting.value || cartItems.value.length === 0) return;
   if (!order.value.delivery || !order.value.payment) return;
+  if (!order.value.consent || !order.value.privacy) return;
 
   const orderDelivery = order.value.delivery.split('.');
   const orderPayment = order.value.payment.split('.');
@@ -131,6 +152,7 @@ const makeOrder = async () => {
     phone: order.value.phone,
     delivery: orderDelivery[orderDelivery.length - 1],
     payment: orderPayment[orderPayment.length - 1],
+    username: order.value.username,
     items: cartItems.value.map(item => ({
       id: item.id,
       properties: item.properties,
@@ -144,16 +166,24 @@ const makeOrder = async () => {
 
   isSubmitting.value = true;
   try {
-    await $fetch('/internal/purchases', {
+    const response = await $fetch('/internal/purchases', {
       method: 'POST',
       body: newOrder,
     });
     order.value = {
       delivery: '',
       payment: '',
+      username: '',
       phone: '',
       name: '',
+      consent: false,
+      privacy: false,
     };
+    if (response.payment_method === 'card') {
+      setTimeout(() => {
+        window.location.href = response?.payment.confirmation_url;
+      }, 1500);
+    }
   }
   finally {
     isSubmitting.value = false;
@@ -198,8 +228,10 @@ const makeOrder = async () => {
     display: flex;
     flex-direction: column;
     gap: 18px;
+    max-width: 500px;
     @media (max-width: 830px) {
       width: 100%;
+      max-width: auto;
     }
     &-section{
       padding: 20px;

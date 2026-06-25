@@ -1,6 +1,6 @@
 <template>
   <div class="input">
-    <div class="input_name">
+    <div class="input_name" :class="{ required }">
       {{ t(`${name}`) }}
     </div>
     <input
@@ -65,6 +65,17 @@ const localValue = computed({
     font-size: 16px;
     margin-bottom: 10px;
     font-weight: 600;
+    &.required{
+      position: relative;
+      &:after{
+        position: relative;
+        content: '*';
+        right: -2px;
+        color: red;
+        font-size: 11px;
+        top: -5px;
+      }
+    }
   }
 }
 </style>

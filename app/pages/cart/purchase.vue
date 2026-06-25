@@ -136,6 +136,8 @@ const makeDelivery = (way: string) => {
   return shortWay;
 };
 
+const { clearCart } = useCart();
+
 onMounted(async () => {
   try {
     const response = await $fetch(`/internal/purchase`, {
@@ -146,6 +148,9 @@ onMounted(async () => {
     });
     payment.value = response.payment;
     purchase.value = response.purchase;
+    if (payment.value.paid === true) {
+      clearCart();
+    }
   }
   catch (err) {
     error.value = err;

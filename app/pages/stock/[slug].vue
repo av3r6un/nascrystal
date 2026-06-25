@@ -185,7 +185,7 @@ const addToCart = () => {
     id: stock.value.offers[selectedOffer.value]?.id,
     name: stock.value.offers[selectedOffer.value]?.name,
     properties: [
-      stock.value.options[2].name || stock.value.options[2].value,
+      stock.value.options[2].value,
       selectedSize.value,
     ],
     price: stock.value.offers[selectedOffer.value]?.amount,

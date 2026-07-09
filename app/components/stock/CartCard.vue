@@ -25,7 +25,7 @@
         <Icon name="nsc:trash" :size="16" />
       </div>
       <div class="card_quantity">
-        <StockQuantity v-model="quant" :max="10" />
+        <StockQuantity v-model="quant" :max="quantity.max" />
       </div>
     </div>
   </div>

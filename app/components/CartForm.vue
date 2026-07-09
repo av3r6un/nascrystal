@@ -19,6 +19,14 @@
     </div>
     <div class="form_item">
       <CmsElementsInput
+        v-model="email"
+        name="cart.form.email"
+        type="email"
+        placeholder="ivan@example.com"
+      />
+    </div>
+    <div class="form_item">
+      <CmsElementsInput
         v-model="login"
         name="cart.form.username"
         type="text"
@@ -33,14 +41,6 @@
         placeholder="cart.delivery_placeholder"
       />
     </div>
-    <div class="form_item">
-      <span>{{ t('cart.payment_way') }}</span>
-      <PanelSelection
-        v-model="payment"
-        :options="payments"
-        placeholder="cart.payment_placeholder"
-      />
-    </div>
   </form>
 </template>
 
@@ -48,10 +48,6 @@
 const props = defineProps({
   modelValue: {
     type: Object,
-    required: true,
-  },
-  payments: {
-    type: Array<string>,
     required: true,
   },
   deliveries: {
@@ -76,11 +72,6 @@ const userName = computed({
   set: val => emits('update:modelValue', { ...props.modelValue, name: val }),
 });
 
-const payment = computed({
-  get: () => props.modelValue.payment,
-  set: val => emits('update:modelValue', { ...props.modelValue, payment: val }),
-});
-
 const delivery = computed({
   get: () => props.modelValue.delivery,
   set: val => emits('update:modelValue', { ...props.modelValue, delivery: val }),
@@ -89,6 +80,11 @@ const delivery = computed({
 const login = computed({
   get: () => props.modelValue.username,
   set: val => emits('update:modelValue', { ...props.modelValue, username: val }),
+});
+
+const email = computed({
+  get: () => props.modelValue.email,
+  set: val => emits('update:modelValue', { ...props.modelValue, email: val }),
 });
 </script>
 

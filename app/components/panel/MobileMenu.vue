@@ -70,7 +70,8 @@
         display: flex;
       }
       cursor: pointer;
-       &:has(.router-link-exact-active) {
+       &:has(.router-link-exact-active),
+       &:has(.router-link-active) {
         background: $pinky;
       }
     }

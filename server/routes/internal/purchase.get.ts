@@ -2,16 +2,19 @@ import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
 export default defineEventHandler(async (event) => {
   const uuid = getQuery(event).purchase;
+  const id = getQuery(event).id;
 
-  if (!uuid) {
+  if (!uuid && !id) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Purchase UUID is required',
+      statusMessage: 'Purchase UUID/ID is required',
     });
   }
 
   try {
-    const response = await callFastApiAsNitro(event, `/api/purchases/by-uuid/${uuid}`, {
+    const url = uuid ? `/api/purchases/by-uuid/${uuid}` : `/api/purchases/${id}`;
+
+    const response = await callFastApiAsNitro(event, url, {
       method: 'GET',
     });
 

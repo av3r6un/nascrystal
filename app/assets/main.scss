@@ -51,17 +51,35 @@ body{
 .logo .router-link-exact-active{
   color: $brown;
 }
-.navbar_item .router-link-exact-active,
-.mobilenav_menu-item .router-link-exact-active,
+
+.navbar_item,
+.mobilenav_menu-item,
 .selector_item.new.active{
-  color: $brown;
-  font-weight: 600;
-  .m-icon{
-    path {
-      stroke: $brown;
+  & .router-link-exact-active,
+  & .router-link-active {
+    color: $brown;
+    font-weight: 600;
+    .m-icon{
+      path {
+        stroke: $brown;
+      }
     }
   }
 }
+
+// .navbar_item .router-link-exact-active,
+// .mobilenav_menu-item .router-link-exact-active,
+// .navbar_item .router-link-active,
+// .mobilenav_menu-item .router-link-active,
+// .selector_item.new.active{
+//   color: $brown;
+//   font-weight: 600;
+//   .m-icon{
+//     path {
+//       stroke: $brown;
+//     }
+//   }
+// }
 
 .panel_stat-icon{
   .m-icon{
@@ -291,5 +309,31 @@ ul>li{
 .form_check{
   .base_link{
     text-decoration: underline;
+  }
+}
+
+.block_selection{
+  .selection{
+    &_label{
+      color: $brown;
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      &.required{
+        position: relative;
+        &:after{
+          position: relative;
+          content: '*';
+          right: -2px;
+          color: red;
+          font-size: 11px;
+          top: -5px;
+        }
+      }
+    }
+    .selection_default.selected{
+      font-size: 14px;
+      color: $brown;
+    }
   }
 }

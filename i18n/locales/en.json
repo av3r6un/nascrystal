@@ -1,8 +1,8 @@
 {
   "error": {
-    "go_home": "Return to home page",
     "404": "Page not found",
     "500": "Server response error",
+    "go_home": "Return to home page",
     "not_found": "Page not found",
     "load_page": "Errors while loading page. Try again later."
   },
@@ -12,7 +12,7 @@
     "redaction": "Last redacted on",
     "pieces": "pcs",
     "and": "and"
-  }, 
+  },
   "navbar": {
     "home": "Home",
     "catalog": "Explore",
@@ -22,7 +22,8 @@
     "stock_page": "Stock",
     "terms": "User Agreement",
     "privacy": "Privacy policy",
-    "cart": "Cart"
+    "cart": "Cart",
+    "purchase": "Purchase"
   },
   "work_hours": {
     "short": "Mon-Fri: 10:00 — 19:00",
@@ -64,18 +65,47 @@
   "index_page": {
     "title": "Home",
     "description": "Premium rhinestones and crystals for designers and brands, decorative elements for fashion, dance costumes and ateliers.",
-    "og_image": "/img/nascrystal.png"    
+    "og_image": "/img/nascrystal.png",
+    "error": "Failed to load page, please try again later"
   },
   "categories": {
     "title": "Product Categories",
     "list": [
-      { "icon": "diamond", "title": "Cold-fix rhinestones", "info": "12 faces" },
-      { "icon": "diamond", "title": "Cold-fix rhinestones", "info": "16 faces (xirius)" },
-      { "icon": "diamond", "title": "Hot-fix rhinestones", "info": "12 faces" },
-      { "icon": "diamond", "title": "Hot-fix rhinestones", "info": "16 faces (xirius)" },
-      { "icon": "diamond", "title": "Sewn-on rhinestones (K9)", "info": "For suits and dresses" },
-      { "icon": "diamond", "title": "Fancy Crystals", "info": "Unique shapes" },
-      { "icon": "diamond", "title": "Tools", "info": "Accessories for rhinestones and decorative elements" }
+      {
+        "icon": "diamond",
+        "title": "Cold-fix rhinestones",
+        "info": "12 faces"
+      },
+      {
+        "icon": "diamond",
+        "title": "Cold-fix rhinestones",
+        "info": "16 faces (xirius)"
+      },
+      {
+        "icon": "diamond",
+        "title": "Hot-fix rhinestones",
+        "info": "12 faces"
+      },
+      {
+        "icon": "diamond",
+        "title": "Hot-fix rhinestones",
+        "info": "16 faces (xirius)"
+      },
+      {
+        "icon": "diamond",
+        "title": "Sewn-on rhinestones (K9)",
+        "info": "For suits and dresses"
+      },
+      {
+        "icon": "diamond",
+        "title": "Fancy Crystals",
+        "info": "Unique shapes"
+      },
+      {
+        "icon": "diamond",
+        "title": "Tools",
+        "info": "Accessories for rhinestones and decorative elements"
+      }
     ]
   },
   "about_page": {
@@ -105,7 +135,10 @@
     },
     "map": {
       "apply": false
-    }
+    },
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "max": "Max"
   },
   "login_page": {
     "placeholders": {
@@ -150,6 +183,7 @@
       "phone": "Phone",
       "name": "Your name",
       "username": "Telegram/MAX username",
+      "email": "Email address",
       "consent": {
         "start": "I'm acquinted",
         "privacy": "Privacy Policy",
@@ -170,28 +204,40 @@
   },
   "purchase": {
     "title": {
+      "created": "Order placed",
+      "processing": "Order confirmed",
+      "delivering": "Order is being delivered",
+      "finished": "Order completed",
       "succeeded": "Order is confirmed",
-      "errored": "Errored order"
+      "errored": "Errored order",
+      "awaiting_payment": "Order confirmed"
     },
     "caption": {
+      "created": "We have received your order. A manager will check availability, confirm delivery, and send a payment link after approval.",
+      "processing": "The order has been confirmed by the manager. If payment is already available, you can use the link below.",
+      "delivering": "The order has been handed over for delivery.",
+      "finished": "The order is complete. Thank you for your purchase!",
       "succeeded": "Your order has been successfully paid for and submitted for processing. Our manager will contact you to confirm the delivery details.",
-      "errored": ""
+      "errored": "",
+      "awaiting_payment": "The order has been confirmed by the manager and is awaiting payment. You can proceed using the link below. After payment, you will be returned to this page."
     },
     "info_title": "Order info",
     "purchase": {
       "id": "Order ID",
       "date": "Order date",
       "amount": "Order amount",
-      "payment_method": "Payment method"
+      "total": "Total"
     },
     "delivery": {
       "title": "Delivery",
       "method": "Method",
       "receiver": "Client",
-      "phone": "Phone"
+      "phone": "Phone",
+      "pending": "we will confirm by phone"
     },
     "check_payment": "Check payment",
-    "back_to_catalog": "Back to catalog"
+    "back_to_catalog": "Back to catalog",
+    "go_to_payment": "Proceed to payment"
   },
   "panel": {
     "img_placeholder": "Image",
@@ -223,7 +269,9 @@
       "purchases": "Purchases",
       "settings": "Settings",
       "user": "Administrator",
-      "custom_editor": "Custom setting"
+      "custom_editor": "Custom setting",
+      "static_pages": "Static Pages",
+      "purchase": "Order"
     },
     "options": {
       "full_width": {
@@ -237,7 +285,9 @@
       "watch_purchases": "Manage purchases",
       "edit_main_page": "Edit main page",
       "change_contacts": "Edit contacts",
-      "quick_actions": "Quick Actions"
+      "quick_actions": "Quick Actions",
+      "changes": "Recent changes",
+      "changes_empty": "No recent changes"
     },
     "static": {
       "title": "Static Pages",
@@ -331,15 +381,42 @@
       },
       "deliveries": {
         "courier": "Courier",
-        "post":"Post",
+        "post": "Post",
         "cdek": "CDEK"
+      },
+      "purchase": "Order",
+      "form": {
+        "delivery_address": "Delivery address",
+        "delivery_address_ph": "Enter address",
+        "delivery_cost": "Price",
+        "delivery_cost_ph": "Enter delivery cost",
+        "delivery_type": "Delivery type",
+        "delivery_type_ph": "Choose delivery type",
+        "telegram_id": "Telegram/Max ID",
+        "name": "Name",
+        "name_ph": "John",
+        "email": "Email",
+        "phone": "Phone",
+        "phone_ph": "+79999999999",
+        "final_price": "Final price",
+        "submit": "Save changes",
+        "update_delivery": "Finish"
       }
+    },
+    "statuses": {
+      "created": "Created",
+      "processing": "Processing",
+      "awaiting_payment": "Awaiting payment",
+      "delivering": "Delivering",
+      "finished": "Finished",
+      "canceled": "Canceled"
     }
   },
   "dates": {
     "today": "Today",
     "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "from": "from"
   },
   "editor": {
     "title": "Block Editor",

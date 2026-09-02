@@ -12,7 +12,7 @@
       </div>
       <div v-else class="catalog_body-content">
         <PanelPropertyEditor
-          v-for="pr in properties"
+          v-for="pr in properties?.categories"
           :id="pr.id"
           :key="pr?.id"
           v-model="options"
@@ -126,7 +126,7 @@ const { data, pending, error, refresh } = await useAsyncData(
 
 const properties = computed(() => data.value?.properties);
 const options = computed({
-  get: () => { return data.value?.options; },
+  get: () => { return data.value; },
   set: (val) => { justUpdate(val); },
 });
 
@@ -135,7 +135,7 @@ const justUpdate = async (newVal: Array<object>) => {
     await ensureAuthorized();
     const resp = await $fetch('/internal/catalog/options', {
       method: 'PATCH',
-      body: { items: newVal.map(item => ({ id: item.id, icon: item.icon, name: item.name })) },
+      body: { items: newVal.map(item => ({ id: item.id, name: item.name })) },
       headers: auth.authHeader,
     });
     if (resp?.status === 'success') await refresh();

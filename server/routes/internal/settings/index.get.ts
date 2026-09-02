@@ -6,18 +6,21 @@ type SettingsEnvelope<T> = {
 };
 
 export default defineEventHandler(async (event) => {
-  const response = await callFastApiAsNitro<SettingsEnvelope<Record<string, unknown>>>(
-    event,
-    '/api/settings/',
-    { method: 'GET' },
-  );
+  try {
+    const response = await callFastApiAsNitro<SettingsEnvelope<Record<string, unknown>>>(
+      event,
+      '/api/settings/',
+      { method: 'GET' },
+    );
 
-  if (response.status !== 'success' || !response.body) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: 'Invalid settings response from backend',
-    });
+    if (response.status !== 'success' || !response.body) {
+      return {};
+    }
+
+    return response.body;
   }
-
-  return response.body;
+  catch (error) {
+    console.error('Settings request failed', error);
+    return {};
+  }
 });

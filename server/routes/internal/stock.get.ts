@@ -1,5 +1,22 @@
 import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
+type StockBody = {
+  items?: unknown[];
+  page_index?: number;
+  page_size?: number;
+  has_next_page?: boolean;
+};
+
+type StockEnvelope = {
+  status?: string;
+  body?: StockBody;
+};
+
+const getStockBody = (response: StockEnvelope | StockBody | null | undefined) => {
+  if (!response) return null;
+  return 'body' in response && response.body ? response.body : response;
+};
+
 export default defineEventHandler(async (event) => {
   const requestQuery = getQuery(event);
   const normalizedQuery = {
@@ -8,20 +25,17 @@ export default defineEventHandler(async (event) => {
   };
 
   try {
-    const response = await callFastApiAsNitro(event, '/api/stock/', {
+    const response = await callFastApiAsNitro<StockEnvelope | StockBody>(event, '/api/stock/', {
       method: 'GET',
       query: normalizedQuery,
     });
 
-    const items = Array.isArray(response?.body.items) ? response.body.items : [];
-    const filters = response?.body.filters ?? null;
-    const pageIndex = response?.body.page_index ?? 0;
-    const hasNextPage = response?.body.has_next_page ?? false;
+    const body = getStockBody(response);
     return {
-      stock: items,
-      filters,
-      pageIndex,
-      hasNextPage,
+      stock: Array.isArray(body?.items) ? body.items : [],
+      pageIndex: body?.page_index ?? 0,
+      pageSize: body?.page_size ?? 20,
+      hasNextPage: body?.has_next_page ?? false,
     };
   }
   catch (error) {

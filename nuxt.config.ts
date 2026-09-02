@@ -46,7 +46,7 @@ export default defineNuxtConfig({
     '/panel/**': { ssr: false },
   },
   devServer: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: 3000,
   },
   compatibilityDate: '2025-07-15',
@@ -157,6 +157,9 @@ export default defineNuxtConfig({
         normalizeIconName: false,
       },
     ],
+  },
+  ogImage: {
+    enabled: false,
   },
   robots: {
     sitemap: 'https://nascrystal.ru/sitemap.xml',

@@ -346,6 +346,9 @@
     "stock": {
       "title": "Stock",
       "load_error": "Error while loading stock",
+      "search_placeholder": "Search by name, SKU, or attributes",
+      "no_results": "No products found",
+      "page_status": "Page {current} of {total}",
       "image": "Image",
       "name": "Name",
       "price": "Price",
@@ -359,7 +362,12 @@
       "purge": "Purge stock",
       "purge_confirm": "Are you sure you want to purge all products?",
       "purge_success": "Products were purged successfully",
-      "purge_error": "Failed to purge products"
+      "purge_error": "Failed to purge products",
+      "manual_import": "Manual import",
+      "manual_confirm": "Are you sure you want to import products?",
+      "import_success": "Products imported successfully",
+      "import_error": "Failed to import products",
+      "skipped_products": "Skipped products without variants"
     },
     "purchases": {
       "title": "Purchases",

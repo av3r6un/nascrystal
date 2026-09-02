@@ -1,3 +1,12 @@
+type ImportResponse = {
+  status?: string;
+  body?: {
+    products: number;
+    variants: number;
+    skipped_products: Array<{ id: string; name: string }>;
+  };
+};
+
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization');
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
@@ -10,10 +19,10 @@ export default defineEventHandler(async (event) => {
   const baseUrl = useRuntimeConfig(event).fastApiBaseUrl.replace(/\/+$/, '');
 
   try {
-    const response = await $fetch(`${baseUrl}/api/products/purge/`, {
-      method: 'POST',
+    const response = await $fetch<ImportResponse>(`${baseUrl}/api/moysklad/import`, {
+      method: 'GET',
       retry: 0,
-      timeout: Number(process.env.NUXT_FASTAPI_TIMEOUT_MS ?? 4000),
+      timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': authHeader,
@@ -23,17 +32,17 @@ export default defineEventHandler(async (event) => {
     if (response && response?.status !== 'success') {
       throw createError({
         statusCode: 502,
-        statusMessage: 'Invalid products purge response from backend',
+        statusMessage: 'Invalid MoySklad import response from backend',
       });
     }
 
-    return { status: 'success' };
+    return response.body;
   }
   catch (error) {
-    console.error('FastAPI products purge request failed', error);
+    console.error('FastAPI MoySklad import request failed', error);
     throw createError({
       statusCode: 502,
-      statusMessage: 'Failed to purge products',
+      statusMessage: 'Failed to import products',
     });
   }
 });

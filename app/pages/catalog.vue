@@ -18,7 +18,7 @@
           </NuxtLink>
         </div>
         <div v-else class="catalog_body-content">
-          <CatalogFilters v-model="filtersQuery" :filters="allFilters" />
+          <CatalogFilters v-model="filtersQuery" :filters="allFilters" :show-form="showFormFilter" />
           <div class="catalog_body-stock">
             <div class="catalog_grid">
               <div v-for="item in stockItems" :key="item.id" class="catalog_item">
@@ -50,10 +50,55 @@ definePageMeta({
 
 const { t } = useI18n();
 const route = useRoute();
-const auth = useAuthStore();
 const isClient = ref(false);
 const currentPageIndex = ref(0);
 const previousScrollRestoration = ref<ScrollRestoration | null>(null);
+
+type ProductAttribute = {
+  attribute: { name: string };
+  value: string;
+  label?: string | null;
+};
+
+type ProductVariant = {
+  id: number;
+  attributes: ProductAttribute[];
+  offer: { amount: number | string };
+};
+
+type StockProduct = {
+  id: number;
+  category: { id: number };
+  variants: ProductVariant[];
+  min_price: number | string;
+};
+
+type StockResponse = {
+  stock: StockProduct[];
+  pageSize: number;
+};
+
+type AttributeOption = {
+  value: string;
+  label?: string | null;
+};
+
+type CatalogAttribute = {
+  name: string;
+  options: AttributeOption[];
+};
+
+type CatalogResponse = {
+  categories: Array<{ id: number; name: string; sort_order: number }>;
+  attributes: CatalogAttribute[];
+};
+
+const FILTER_NAMES: Record<string, string> = {
+  1: 'Грани',
+  2: 'Размер',
+  3: 'Цвет',
+  4: 'Форма',
+};
 
 const normalizeQueryValue = (value: unknown) => {
   if (Array.isArray(value)) {
@@ -78,11 +123,6 @@ const filtersQuery = ref<Record<string, string>>(
   }, {}),
 );
 
-const stockQuery = computed(() => ({
-  ...filtersQuery.value,
-  page_index: String(currentPageIndex.value),
-}));
-
 const scrollToPageTop = () => {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -106,15 +146,17 @@ onBeforeUnmount(() => {
   }
 });
 
-const { data: stockData, pending: stockPending, error: stockError } = await useAsyncData(
+const { data: catalogData, pending: stockPending, error: stockError } = await useAsyncData(
   'catalog-items',
-  () => $fetch('/internal/stock', {
-    headers: auth.authHeader,
-    query: stockQuery.value, // add currentPage query params to endpoint
-  }),
+  async () => {
+    const [stock, catalog] = await Promise.all([
+      $fetch<StockResponse>('/internal/stock', { query: { all: true } }),
+      $fetch<CatalogResponse>('/internal/catalog'),
+    ]);
+    return { stock, catalog };
+  },
   {
     server: false,
-    watch: [stockQuery],
     default: () => null,
   },
 );
@@ -125,17 +167,88 @@ watch(filtersQuery, () => {
 
 const showLoading = computed(() => {
   if (!isClient.value) return true;
-  return stockPending.value && !stockData.value;
+  return stockPending.value && !catalogData.value;
 });
 const showError = computed(() => {
   if (!isClient.value) return false;
-  return Boolean(stockError.value) && !stockData.value;
+  return Boolean(stockError.value) && !catalogData.value;
 });
 
-const allFilters = computed(() => stockData.value?.filters ?? {});
-const stockItems = computed(() => Array.isArray(stockData.value?.stock) ? stockData.value.stock : []);
-const pageIndex = computed(() => stockData.value?.pageIndex ?? currentPageIndex.value);
-const hasNextPage = computed(() => Boolean(stockData.value?.hasNextPage));
+const allFilters = computed(() => {
+  const catalog = catalogData.value?.catalog;
+  return {
+    0: [...(catalog?.categories ?? [])]
+      .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+      .map(category => ({ [category.id]: category.name })),
+    ...Object.fromEntries(Object.entries(FILTER_NAMES).map(([index, name]) => [
+      index,
+      (catalog?.attributes.find(attribute => attribute.name === name)?.options ?? [])
+        .map(option => ({ [option.value]: option.label || option.value })),
+    ])),
+  };
+});
+
+const selectedCategories = computed(() => (filtersQuery.value[0] ?? '').split(',').filter(Boolean));
+const showFormFilter = computed(() => {
+  const categoryId = selectedCategories.value[0];
+  const category = catalogData.value?.catalog.categories.find(item => String(item.id) === categoryId);
+  if (!category?.name.toLowerCase().startsWith('пришивные')) return false;
+
+  return (catalogData.value?.stock.stock ?? []).some(product => (
+    String(product.category.id) === categoryId
+    && product.variants.some(variant => variant.attributes.some(attribute => (
+      attribute.attribute.name === 'Фиксация' && attribute.value.toUpperCase() === 'K9'
+    )))
+  ));
+});
+const selectedAttributes = computed(() => Object.entries(filtersQuery.value)
+  .filter(([index]) => index !== '0')
+  .map(([index, value]) => ({
+    name: FILTER_NAMES[index],
+    values: value.split(',').map(item => item.trim()).filter(Boolean),
+  }))
+  .filter(filter => filter.name && filter.values.length));
+
+const filteredProducts = computed(() => {
+  const products = catalogData.value?.stock.stock ?? [];
+  if (!selectedCategories.value.length && !selectedAttributes.value.length) return products;
+
+  return products.flatMap((product) => {
+    if (selectedCategories.value.length && !selectedCategories.value.includes(String(product.category.id))) return [];
+
+    const variants = product.variants.filter(variant => selectedAttributes.value.every(filter => (
+      variant.attributes.some(attribute => (
+        attribute.attribute.name === filter.name && filter.values.includes(attribute.value)
+      ))
+    )));
+    if (!variants.length) return [];
+
+    const minPrice = Math.min(...variants.map(variant => Number(variant.offer.amount)));
+    return [{
+      ...product,
+      variants,
+      min_price: Number.isFinite(minPrice) ? minPrice.toFixed(2) : product.min_price,
+    }];
+  });
+});
+
+const pageSize = computed(() => {
+  const value = Number(catalogData.value?.stock.pageSize);
+  return Number.isInteger(value) && value > 0 ? value : 20;
+});
+const stockItems = computed(() => {
+  const start = currentPageIndex.value * pageSize.value;
+  return filteredProducts.value.slice(start, start + pageSize.value);
+});
+const pageIndex = computed(() => currentPageIndex.value);
+const hasNextPage = computed(() => (
+  (currentPageIndex.value + 1) * pageSize.value < filteredProducts.value.length
+));
+
+watch(filteredProducts, (products) => {
+  const lastPage = Math.max(0, Math.ceil(products.length / pageSize.value) - 1);
+  if (currentPageIndex.value > lastPage) currentPageIndex.value = lastPage;
+});
 
 const prevPage = () => {
   if (pageIndex.value <= 0) return;

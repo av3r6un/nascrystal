@@ -8,15 +8,15 @@
     </div>
     <div class="product_info">
       <div class="product_category">
-        {{ getProductCategory(product.options) }}
+        {{ productCategory }}
       </div>
       <div class="product_name">
         {{ product.name }}
       </div>
       <div class="product_footer">
         <div class="product_price">
-          <span v-if="!manyOffers" class="unique">{{ getPrice(product.offers) }} ₽</span>
-          <span v-else>от {{ getPrice(product.offers) }} ₽</span>
+          <span v-if="!manyOffers" class="unique">{{ product.min_price }} ₽</span>
+          <span v-else>от {{ product.min_price }} ₽</span>
         </div>
         <div class="product_more">
           <NuxtLink :to="`/stock/${product.id}`" class="base_link">
@@ -38,32 +38,33 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const getPrice = (offers: Array<object>) => {
-  const amounts = offers
-    .map(offer => Number(offer?.amount))
-    .filter(amount => !Number.isNaN(amount));
-
-  return amounts.length ? Math.min(...amounts) : 0;
+type ProductAttribute = {
+  attribute: { name: string };
+  value: string;
+  label?: string | null;
 };
 
-const getProductCategory = (options: Array<object>) => {
-  const primary = options[0].name ?? options[0].value;
-  let secondary = options[1].name ?? options[1].value;
-  if (options[0].value === 'K9') {
-    secondary = options[2].name ?? options[2].value;
-  }
-  return `${primary} (${secondary})`;
+const getAttribute = (name: string) => {
+  return props.product.variants[0]?.attributes.find((attribute: ProductAttribute) => (
+    attribute.attribute.name === name
+  ));
 };
 
-const manyOffers = computed(() => props.product.offers.length > 1);
+const attributeName = (attribute?: ProductAttribute) => attribute?.label || attribute?.value || '';
+const productCategory = computed(() => {
+  const fixation = getAttribute('Фиксация');
+  const secondary = getAttribute(fixation?.value === 'K9' ? 'Форма' : 'Грани');
+  const primaryName = attributeName(fixation) || props.product.category?.name || '';
+  const secondaryName = attributeName(secondary);
+  return secondaryName ? `${primaryName} (${secondaryName})` : primaryName;
+});
+
+const manyOffers = computed(() => props.product.variants.length > 1);
 
 const getProductImage = computed(() => {
   if (!props.product.images.length) return;
-  const image = props.product.images.find((image: object) => image.is_primary).path;
-  if (image.startsWith('http://') || image.startsWith('https://')) {
-    return image;
-  }
-  return `/img/${image}`;
+  return props.product.images.find((image: { primary: boolean }) => image.primary)?.url
+    || props.product.images[0]?.url;
 });
 </script>
 

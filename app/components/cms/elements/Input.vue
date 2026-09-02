@@ -6,7 +6,7 @@
     <input
       v-model="localValue"
       :type="type"
-      :placeholder="placeholder"
+      :placeholder="ph"
       :required="required"
       :autocomplete="defAutocomplete"
       class="input_wide"
@@ -18,7 +18,7 @@
 import type { PropType } from 'vue';
 
 const emit = defineEmits(['update:modelValue']);
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const props = defineProps({
   name: {
@@ -55,6 +55,9 @@ const localValue = computed({
   set(val) {
     emit('update:modelValue', val);
   },
+});
+const ph = computed(() => {
+  return te(props.placeholder) ? t(props.placeholder) : props.placeholder;
 });
 </script>
 

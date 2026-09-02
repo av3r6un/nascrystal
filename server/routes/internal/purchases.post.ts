@@ -9,13 +9,17 @@ type PurchaseItemPayload = {
   };
 };
 
-type PurchasePayload = {
-  delivery?: unknown;
-  items?: PurchaseItemPayload[];
+type CustomerPayload = {
   name?: unknown;
-  payment?: unknown;
   phone?: unknown;
   username?: string;
+  email?: string;
+};
+
+type PurchasePayload = {
+  customer?: CustomerPayload;
+  delivery?: unknown;
+  items?: PurchaseItemPayload[];
   price?: unknown;
 };
 
@@ -27,14 +31,17 @@ const isPositiveInteger = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
 export default defineEventHandler(async (event) => {
   const body = await readBody<PurchasePayload>(event);
 
   if (
-    !isNonEmptyString(body.name)
-    || !isNonEmptyString(body.phone)
-    || !isNonEmptyString(body.delivery)
-    || !isNonEmptyString(body.payment)
+    !isNonEmptyString(body?.customer?.name)
+    || !isNonEmptyString(body?.customer?.phone)
+    || !isRecord(body.delivery)
     || !Array.isArray(body.items)
     || body.items.length === 0
     || typeof body.price !== 'number'
@@ -73,11 +80,13 @@ export default defineEventHandler(async (event) => {
     const response = await callFastApiAsNitro(event, '/api/purchases/', {
       method: 'POST',
       body: {
-        name: body.name.trim(),
-        phone: body.phone.trim(),
-        delivery: body.delivery.trim(),
-        payment: body.payment.trim(),
-        username: isNonEmptyString(body.username) ? body.username.trim() : undefined,
+        customer: {
+          name: body.customer.name.trim(),
+          phone: body.customer.phone.trim(),
+          username: isNonEmptyString(body.customer.username) ? body.customer.username.trim() : undefined,
+          email: isNonEmptyString(body.customer.email) ? body.customer.email.trim() : undefined,
+        },
+        delivery: body.delivery,
         items,
         price: body.price,
       },

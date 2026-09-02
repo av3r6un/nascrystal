@@ -161,7 +161,8 @@ const handleLogout = async () => {
     border-radius: 8px;
     color: $light-brown;
     white-space: nowrap;
-    &:has(.router-link-exact-active) {
+    &:has(.router-link-exact-active),
+    &:has(.router-link-active) {
       background: $pinky;
     }
     .base_link{

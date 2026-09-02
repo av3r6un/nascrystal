@@ -24,7 +24,6 @@
           <CartForm
             :id="formId"
             v-model="order"
-            :payments="payments"
             :deliveries="deliveries"
             @submit="makeOrder"
           />
@@ -94,9 +93,6 @@ const deliveries = ref([
   'cart.delivery_ways.cdek', 'cart.delivery_ways.post', 'cart.delivery_ways.courier',
 ]);
 
-const payments = ref([
-  'cart.payment_ways.cash', 'cart.payment_ways.card',
-]);
 const formId = ref('infoForm');
 
 const { cartItems, changeQuantity, remove, clearCart } = useCart();
@@ -104,10 +100,10 @@ const { cartItems, changeQuantity, remove, clearCart } = useCart();
 
 const order = ref({
   delivery: '',
-  payment: '',
   phone: '',
   name: '',
   username: '',
+  email: '',
   consent: false,
   privacy: false,
 });
@@ -140,19 +136,34 @@ const totalPrice = computed(() => {
   return subtotal.value + (deliveryPrice.value || 0);
 });
 
+type CreatePurchaseResponse = {
+  uuid?: string;
+  purchase_uuid?: string;
+  purchase?: {
+    uuid?: string;
+    purchase_uuid?: string;
+  };
+};
+
 const makeOrder = async () => {
   if (isSubmitting.value || cartItems.value.length === 0) return;
-  if (!order.value.delivery || !order.value.payment) return;
+  if (!order.value.delivery) return;
   if (!order.value.consent || !order.value.privacy) return;
 
   const orderDelivery = order.value.delivery.split('.');
-  const orderPayment = order.value.payment.split('.');
+  const deliveryType = orderDelivery[orderDelivery.length - 1];
   const newOrder = {
-    name: order.value.name,
-    phone: order.value.phone,
-    delivery: orderDelivery[orderDelivery.length - 1],
-    payment: orderPayment[orderPayment.length - 1],
-    username: order.value.username,
+    customer: {
+      name: order.value.name,
+      phone: order.value.phone,
+      username: order.value.username,
+      email: order.value.email,
+    },
+    delivery: {
+      type: deliveryType,
+      address: '',
+      cost: deliveryPrice.value || 0,
+    },
     items: cartItems.value.map(item => ({
       id: item.id,
       properties: item.properties,
@@ -166,24 +177,30 @@ const makeOrder = async () => {
 
   isSubmitting.value = true;
   try {
-    const response = await $fetch('/internal/purchases', {
+    const response = await $fetch<CreatePurchaseResponse>('/internal/purchases', {
       method: 'POST',
       body: newOrder,
     });
+    const purchaseUuid = response.uuid ?? response.purchase_uuid ?? response.purchase?.uuid ?? response.purchase?.purchase_uuid;
+    if (!purchaseUuid) {
+      throw new Error('Purchase UUID is missing in create purchase response');
+    }
     order.value = {
       delivery: '',
-      payment: '',
       username: '',
       phone: '',
       name: '',
+      email: '',
       consent: false,
       privacy: false,
     };
-    if (response.payment_method === 'card') {
-      setTimeout(() => {
-        window.location.href = response?.payment.confirmation_url;
-      }, 1500);
-    }
+    clearCart();
+    await navigateTo({
+      path: '/cart/purchase',
+      query: {
+        purchase: purchaseUuid,
+      },
+    });
   }
   finally {
     isSubmitting.value = false;

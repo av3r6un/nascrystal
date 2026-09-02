@@ -8,6 +8,9 @@ export default defineI18nConfig(() => {
         document: {
           year: 'numeric', month: 'long', day: 'numeric',
         },
+        small: {
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+        },
         long: {
           year: 'numeric',
           month: 'long',
@@ -20,6 +23,9 @@ export default defineI18nConfig(() => {
       ru: {
         short: {
           year: 'numeric', month: 'short', day: 'numeric',
+        },
+        small: {
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
         },
         document: {
           year: 'numeric', month: 'long', day: 'numeric',

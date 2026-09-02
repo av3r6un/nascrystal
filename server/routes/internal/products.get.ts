@@ -1,5 +1,8 @@
 type ProductsBody = {
   items?: unknown[];
+  page_index?: number;
+  page_size?: number;
+  has_next_page?: boolean;
 };
 
 type ProductsEnvelope = {
@@ -14,7 +17,9 @@ const getProductsBody = (response: ProductsEnvelope | ProductsBody | null | unde
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization');
-  const page = getQuery(event).page || 1;
+  const query = getQuery(event);
+  const page = query.page || 1;
+  const fetchAll = query.all === 'true';
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
     throw createError({
       statusCode: 401,
@@ -34,6 +39,7 @@ export default defineEventHandler(async (event) => {
       },
       query: {
         page_index: page - 1,
+        all: fetchAll,
       },
     });
 
@@ -49,6 +55,7 @@ export default defineEventHandler(async (event) => {
     return {
       items: Array.isArray(body?.items) ? body.items : [],
       page_index: body?.page_index,
+      page_size: body?.page_size,
       has_next_page: body?.has_next_page || false,
     };
   }

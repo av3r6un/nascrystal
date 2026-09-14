@@ -53,13 +53,22 @@ const localValue = computed({
 
 const showFilters = ref(true);
 
+type FilterDefinition = {
+  name: string;
+  propertyIndex: string;
+  initialState: boolean;
+  single: boolean;
+  framed?: boolean;
+  modelValue: string[];
+};
+
 onMounted(() => {
   if (document.documentElement.scrollWidth < 630) {
     showFilters.value = false;
   }
 });
 
-const filtersMap = ref([
+const filtersMap = ref<FilterDefinition[]>([
   {
     name: 'catalog.filters.category',
     propertyIndex: 'category',
@@ -132,7 +141,8 @@ const filtersQuery = computed(() => {
   visibleFilters.value.forEach((filter) => {
     if (!filter.modelValue.length) return;
     if (filter.single) {
-      query[filter.propertyIndex] = filter.modelValue[0];
+      const value = filter.modelValue[0];
+      if (value) query[filter.propertyIndex] = value;
     }
     else {
       query[filter.propertyIndex] = filter.modelValue.join(',');
@@ -141,7 +151,7 @@ const filtersQuery = computed(() => {
   return query;
 });
 
-const updateState = (filter, val) => {
+const updateState = (filter: FilterDefinition, val: string[]) => {
   filter.modelValue = val;
   localValue.value = filtersQuery.value;
 };

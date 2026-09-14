@@ -12,7 +12,7 @@
           <div class="warning">
             {{ t('catalog.warning') }}
           </div>
-          {{ stockError }}
+          {{ loadError }}
           <NuxtLink to="/" class="base_link btn_submit big">
             {{ t('error.go_home') }}
           </NuxtLink>
@@ -50,34 +50,22 @@ definePageMeta({
 
 const { t } = useI18n();
 const route = useRoute();
+const router = useRouter();
 const isClient = ref(false);
 const currentPageIndex = ref(0);
 const previousScrollRestoration = ref<ScrollRestoration | null>(null);
 const headerHeight = ref(0);
 let headerResizeObserver: ResizeObserver | undefined;
 
-type ProductAttribute = {
-  attribute: { name: string };
-  value: string;
-  label?: string | null;
-};
-
-type ProductVariant = {
-  id: number;
-  attributes: ProductAttribute[];
-  offer: { amount: number | string };
-};
-
 type StockProduct = {
   id: number;
-  category: { id: number };
-  variants: ProductVariant[];
-  min_price: number | string;
 };
 
 type StockResponse = {
   stock: StockProduct[];
+  pageIndex: number;
   pageSize: number;
+  hasNextPage: boolean;
 };
 
 type AttributeOption = {
@@ -93,6 +81,11 @@ type CatalogAttribute = {
 type CatalogResponse = {
   categories: Array<{ id: number; name: string; sort_order: number }>;
   attributes: CatalogAttribute[];
+};
+
+type CatalogAvailabilityResponse = {
+  available: Record<string, string[]>;
+  k9CategoryIds: string[];
 };
 
 const DISABLED_FILTER_OPTION = Symbol.for('catalog-filter-option-disabled');
@@ -118,12 +111,14 @@ const normalizeQueryValue = (value: unknown) => {
 const legacyFilterKeys: Record<string, string> = {
   0: 'category', 1: 'cuts', 2: 'size', 3: 'color', 4: 'form',
 };
+const filterRouteKeys = new Set([...Object.keys(legacyFilterKeys), 'category', ...Object.keys(FILTER_NAMES)]);
 const readFilterQuery = () => {
   const query: Record<string, string> = {};
   for (const [key, value] of Object.entries(route.query)) {
     const normalizedValue = normalizeQueryValue(value);
     let filterKey = legacyFilterKeys[key] ?? key;
-    if (key === '0' && ['hot', 'non', 'k9'].includes(normalizedValue.toLowerCase())) {
+    const legacyZeroValues = normalizedValue.toLowerCase().split(',').filter(Boolean);
+    if (key === '0' && legacyZeroValues.length && legacyZeroValues.every(value => ['hot', 'non', 'k9'].includes(value))) {
       filterKey = 'fixation';
     }
     if (filterKey !== 'category' && !Object.hasOwn(FILTER_NAMES, filterKey)) continue;
@@ -132,9 +127,25 @@ const readFilterQuery = () => {
   return query;
 };
 const filtersQuery = ref<Record<string, string>>(readFilterQuery());
+const filterSignature = (filters: Record<string, string>) => JSON.stringify(
+  Object.entries(filters).sort(([left], [right]) => left.localeCompare(right)),
+);
 watch(() => route.query, () => {
-  filtersQuery.value = readFilterQuery();
+  const nextFilters = readFilterQuery();
+  if (filterSignature(nextFilters) !== filterSignature(filtersQuery.value)) {
+    filtersQuery.value = nextFilters;
+    currentPageIndex.value = 0;
+  }
 });
+watch(filtersQuery, (filters) => {
+  currentPageIndex.value = 0;
+  if (filterSignature(filters) === filterSignature(readFilterQuery())) return;
+
+  const query = Object.fromEntries(
+    Object.entries(route.query).filter(([key]) => !filterRouteKeys.has(key)),
+  );
+  void router.replace({ query: { ...query, ...filters } });
+}, { deep: true, flush: 'sync' });
 const scrollToPageTop = () => {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -168,73 +179,55 @@ onBeforeUnmount(() => {
   }
 });
 
-const { data: catalogData, pending: stockPending, error: stockError } = await useAsyncData(
-  'catalog-items',
-  async () => {
-    const [stock, catalog] = await Promise.all([
-      $fetch<StockResponse>('/internal/stock', { query: { all: true } }),
-      $fetch<CatalogResponse>('/internal/catalog'),
-    ]);
-    return { stock, catalog };
-  },
+const requestFilters = computed(() => Object.fromEntries(
+  Object.entries(filtersQuery.value).filter(([, value]) => value.trim().length > 0),
+));
+const stockRequestQuery = computed(() => ({
+  page_index: currentPageIndex.value,
+  ...requestFilters.value,
+}));
+
+const { data: catalogData, pending: catalogPending, error: catalogError } = await useAsyncData(
+  'catalog-metadata',
+  () => $fetch<CatalogResponse>('/internal/catalog'),
   {
     server: false,
     default: () => null,
   },
 );
-
-watch(filtersQuery, () => {
-  currentPageIndex.value = 0;
-});
+const { data: stockData, pending: stockPending, error: stockError } = await useAsyncData(
+  'catalog-stock',
+  () => $fetch<StockResponse>('/internal/stock', { query: stockRequestQuery.value }),
+  {
+    server: false,
+    watch: [stockRequestQuery],
+    default: () => null,
+  },
+);
+const { data: availabilityData, pending: availabilityPending, error: availabilityError } = await useAsyncData(
+  'catalog-availability',
+  () => $fetch<CatalogAvailabilityResponse>('/internal/catalog/availability', { query: requestFilters.value }),
+  {
+    server: false,
+    watch: [requestFilters],
+    default: () => null,
+  },
+);
 
 const showLoading = computed(() => {
   if (!isClient.value) return true;
-  return stockPending.value && !catalogData.value;
+  return (stockPending.value || catalogPending.value || availabilityPending.value)
+    && (!stockData.value || !catalogData.value || !availabilityData.value);
 });
+const loadError = computed(() => stockError.value || catalogError.value || availabilityError.value);
 const showError = computed(() => {
   if (!isClient.value) return false;
-  return Boolean(stockError.value) && !catalogData.value;
+  return Boolean(loadError.value) && (!stockData.value || !catalogData.value || !availabilityData.value);
 });
 
-const variantMatchesFilters = (variant: ProductVariant, excludedFilterIndex?: string) => {
-  const excludedFilterIndexes = new Set([excludedFilterIndex]);
-  if (excludedFilterIndex === 'category') {
-    excludedFilterIndexes.add('cuts');
-    excludedFilterIndexes.add('form');
-  }
-
-  return selectedAttributes.value
-    .filter(filter => !excludedFilterIndexes.has(filter.index))
-    .every(filter => variant.attributes.some(attribute => (
-      attribute.attribute.name === filter.name && filter.values.includes(filter.name === 'Фиксация' ? attribute.value.toLowerCase() : attribute.value)
-    )));
-};
-
 const isFilterOptionAvailable = (filterIndex: string, value: string) => {
-  const products = catalogData.value?.stock.stock ?? [];
-
-  return products.some((product) => {
-    if (filterIndex === 'category') {
-      if (String(product.category.id) !== value) return false;
-    }
-    else if (
-      selectedCategories.value.length
-      && !selectedCategories.value.includes(String(product.category.id))
-    ) {
-      return false;
-    }
-
-    return product.variants.some(variant => (
-      variantMatchesFilters(variant, filterIndex)
-      && (
-        filterIndex === 'category'
-        || variant.attributes.some(attribute => (
-          attribute.attribute.name === FILTER_NAMES[filterIndex]
-          && attribute.value === value
-        ))
-      )
-    ));
-  });
+  const availableValues = availabilityData.value?.available[filterIndex];
+  return !availableValues || availableValues.includes(value);
 };
 
 const isFilterOptionSelected = (filterIndex: string, value: string) => (
@@ -256,7 +249,7 @@ const visibleAttributeOptions = (filterIndex: string, options: AttributeOption[]
   ))
 );
 const allFilters = computed(() => {
-  const catalog = catalogData.value?.catalog;
+  const catalog = catalogData.value;
   return {
     category: [...(catalog?.categories ?? [])]
       .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
@@ -273,67 +266,20 @@ const allFilters = computed(() => {
 
 const selectedCategories = computed(() => (filtersQuery.value.category ?? '').split(',').filter(Boolean));
 const showFormFilter = computed(() => {
-  if (filtersQuery.value.fixation?.toUpperCase() === 'K9') return true;
+  const fixations = (filtersQuery.value.fixation ?? '')
+    .split(',')
+    .map(value => value.trim().toUpperCase());
+  if (fixations.includes('K9')) return true;
   const categoryId = selectedCategories.value[0];
-  const category = catalogData.value?.catalog.categories.find(item => String(item.id) === categoryId);
+  if (!categoryId) return false;
+  const category = catalogData.value?.categories.find(item => String(item.id) === categoryId);
   if (!category?.name.toLowerCase().startsWith('пришивные')) return false;
-
-  return (catalogData.value?.stock.stock ?? []).some(product => (
-    String(product.category.id) === categoryId
-    && product.variants.some(variant => variant.attributes.some(attribute => (
-      attribute.attribute.name === 'Фиксация' && attribute.value.toUpperCase() === 'K9'
-    )))
-  ));
-});
-const selectedAttributes = computed(() => Object.entries(filtersQuery.value)
-  .filter(([index]) => index !== 'category')
-  .map(([index, value]) => ({
-    index,
-    name: FILTER_NAMES[index],
-    values: value.split(',').map(item => index === 'fixation' ? item.trim().toLowerCase() : item.trim()).filter(Boolean),
-  }))
-  .filter(filter => filter.name && filter.values.length));
-
-const filteredProducts = computed(() => {
-  const products = catalogData.value?.stock.stock ?? [];
-  if (!selectedCategories.value.length && !selectedAttributes.value.length) return products;
-
-  return products.flatMap((product) => {
-    if (selectedCategories.value.length && !selectedCategories.value.includes(String(product.category.id))) return [];
-
-    const variants = product.variants.filter(variant => selectedAttributes.value.every(filter => (
-      variant.attributes.some(attribute => (
-        attribute.attribute.name === filter.name && filter.values.includes(filter.name === 'Фиксация' ? attribute.value.toLowerCase() : attribute.value)
-      ))
-    )));
-    if (!variants.length) return [];
-
-    const minPrice = Math.min(...variants.map(variant => Number(variant.offer.amount)));
-    return [{
-      ...product,
-      variants,
-      min_price: Number.isFinite(minPrice) ? minPrice.toFixed(2) : product.min_price,
-    }];
-  });
+  return availabilityData.value?.k9CategoryIds.includes(categoryId) ?? false;
 });
 
-const pageSize = computed(() => {
-  const value = Number(catalogData.value?.stock.pageSize);
-  return Number.isInteger(value) && value > 0 ? value : 20;
-});
-const stockItems = computed(() => {
-  const start = currentPageIndex.value * pageSize.value;
-  return filteredProducts.value.slice(start, start + pageSize.value);
-});
-const pageIndex = computed(() => currentPageIndex.value);
-const hasNextPage = computed(() => (
-  (currentPageIndex.value + 1) * pageSize.value < filteredProducts.value.length
-));
-
-watch(filteredProducts, (products) => {
-  const lastPage = Math.max(0, Math.ceil(products.length / pageSize.value) - 1);
-  if (currentPageIndex.value > lastPage) currentPageIndex.value = lastPage;
-});
+const stockItems = computed(() => stockData.value?.stock ?? []);
+const pageIndex = computed(() => stockData.value?.pageIndex ?? currentPageIndex.value);
+const hasNextPage = computed(() => stockData.value?.hasNextPage ?? false);
 
 const prevPage = () => {
   if (pageIndex.value <= 0) return;

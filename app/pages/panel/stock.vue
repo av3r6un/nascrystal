@@ -67,10 +67,10 @@
             </div>
           </div>
           <div class="stock_table-body">
-            <div v-if="!paginatedProducts.length" class="stock_empty">
+            <div v-if="!products.length" class="stock_empty">
               {{ t('panel.stock.no_results') }}
             </div>
-            <div v-for="pr in paginatedProducts" :key="pr.id" class="stock_table-row" @click="toggleProduct(pr.id)">
+            <div v-for="pr in products" :key="pr.id" class="stock_table-row" @click="toggleProduct(pr.id)">
               <div class="stock_table-data image">
                 <img v-if="primaryImage(pr.images)" :src="primaryImage(pr.images)" alt="product_image" class="base_image">
                 <div v-else class="image_placeholder">
@@ -129,7 +129,7 @@
             </div>
           </div>
         </div>
-        <div v-if="filteredAndSortedProducts.length" class="stock_body-pagination">
+        <div v-if="products.length || currentPage > 1" class="stock_body-pagination">
           <button
             type="button"
             class="btn btn_small"
@@ -207,11 +207,35 @@ type StockProduct = {
 
 type ProductsResponse = {
   items: StockProduct[];
-  page_size?: number;
+  page_index: number;
+  page_size: number;
+  has_next_page: boolean;
+  total_items: number;
+  total_pages: number;
 };
 
 const sortKey = ref<SortKey | null>(null);
 const sortDirection = ref<SortDirection | null>(null);
+const debouncedSearchQuery = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(searchQuery, (value) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1;
+    debouncedSearchQuery.value = value.trim();
+  }, 300);
+});
+onBeforeUnmount(() => {
+  if (searchTimer) clearTimeout(searchTimer);
+});
+
+const productsRequestQuery = computed(() => ({
+  page_index: currentPage.value - 1,
+  search: debouncedSearchQuery.value || undefined,
+  sort_by: sortKey.value || undefined,
+  sort_direction: sortDirection.value || undefined,
+}));
 
 const ensureAuthorized = async () => {
   const ok = await auth.ensureValidAccessToken();
@@ -237,9 +261,7 @@ const { data, pending, error, refresh } = await useAsyncData(
     await ensureAuthorized();
     const response = await $fetch<ProductsResponse>('/internal/products', {
       headers: auth.authHeader,
-      query: {
-        all: true,
-      },
+      query: productsRequestQuery.value,
     });
     return response;
   },
@@ -247,99 +269,26 @@ const { data, pending, error, refresh } = await useAsyncData(
     server: false,
     default: () => ({
       items: [],
+      page_index: 0,
       page_size: 20,
+      has_next_page: false,
+      total_items: 0,
+      total_pages: 1,
     }),
+    watch: [productsRequestQuery],
   },
 );
 
-const allProducts = computed(() => data.value?.items ?? []);
-const pageSize = computed(() => {
-  const value = Number(data.value?.page_size);
-  return Number.isInteger(value) && value > 0 ? value : 20;
-});
+const products = computed(() => data.value?.items ?? []);
 const expandedProducts = ref<Set<number>>(new Set());
+const totalPages = computed(() => Math.max(1, Number(data.value?.total_pages) || 1));
+const hasNextPage = computed(() => data.value?.has_next_page ?? false);
 
-const normalizeSearchValue = (value: unknown) => String(value ?? '')
-  .toLocaleLowerCase()
-  .replace(/\s+/g, ' ')
-  .trim();
-const productSearchIndex = computed(() => new Map(
-  allProducts.value.map(product => [
-    product.id,
-    normalizeSearchValue([
-      product.name,
-      product.sku,
-      ...product.variants.flatMap(variant => [
-        variant.name,
-        variant.sku,
-        ...variant.attributes.flatMap(attribute => [attribute.label, attribute.value]),
-      ]),
-    ].join(' ')),
-  ]),
-));
-
-const productMinPrice = (product: StockProduct) => {
-  const prices = product.variants
-    .map(variant => Number(variant.offer?.amount))
-    .filter(price => Number.isFinite(price));
-  return prices.length ? Math.min(...prices) : null;
-};
-
-const sortValue = (product: StockProduct, key: SortKey): string | number | null => {
-  if (key === 'name') return product.name;
-  if (key === 'price') return productMinPrice(product);
-  if (key === 'amount') return product.variants_count;
-  if (key === 'category') return product.category?.name ?? '';
-  return product.archived ? 1 : 0;
-};
-
-const compareProducts = (left: StockProduct, right: StockProduct, key: SortKey) => {
-  const leftValue = sortValue(left, key);
-  const rightValue = sortValue(right, key);
-  if (leftValue === null) return rightValue === null ? 0 : 1;
-  if (rightValue === null) return -1;
-  if (typeof leftValue === 'number' && typeof rightValue === 'number') {
-    return leftValue - rightValue;
+watch(data, (response) => {
+  if (response && currentPage.value > response.total_pages) {
+    currentPage.value = Math.max(1, response.total_pages);
   }
-  return String(leftValue).localeCompare(String(rightValue), undefined, {
-    numeric: true,
-    sensitivity: 'base',
-  });
-};
-
-const filteredAndSortedProducts = computed(() => {
-  const searchTerms = normalizeSearchValue(searchQuery.value).split(' ').filter(Boolean);
-  const filtered = searchTerms.length
-    ? allProducts.value.filter((product) => {
-        const searchIndex = productSearchIndex.value.get(product.id) ?? '';
-        return searchTerms.every(term => searchIndex.includes(term));
-      })
-    : allProducts.value;
-
-  if (!sortKey.value || !sortDirection.value) return filtered;
-  const direction = sortDirection.value === 'asc' ? 1 : -1;
-  return filtered
-    .map((product, index) => ({ product, index }))
-    .sort((left, right) => (
-      compareProducts(left.product, right.product, sortKey.value!) * direction
-      || left.index - right.index
-    ))
-    .map(item => item.product);
 });
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredAndSortedProducts.value.length / pageSize.value)));
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  return filteredAndSortedProducts.value.slice(start, start + pageSize.value);
-});
-const hasNextPage = computed(() => currentPage.value < totalPages.value);
-
-watch([searchQuery, sortKey, sortDirection], () => {
-  currentPage.value = 1;
-});
-watch([totalPages, pending], ([pages, isPending]) => {
-  if (!isPending && currentPage.value > pages) currentPage.value = pages;
-}, { immediate: true });
 
 const primaryImage = (images: Array<{ url: string; primary: boolean }> = []) => {
   return images.find(image => image.primary)?.url;
@@ -358,6 +307,7 @@ const toggleProduct = (productId: number) => {
   expandedProducts.value = expanded;
 };
 const toggleSort = (key: SortKey) => {
+  currentPage.value = 1;
   if (sortKey.value !== key) {
     sortKey.value = key;
     sortDirection.value = 'asc';

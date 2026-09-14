@@ -3,6 +3,8 @@ type ProductsBody = {
   page_index?: number;
   page_size?: number;
   has_next_page?: boolean;
+  total_items?: number;
+  total_pages?: number;
 };
 
 type ProductsEnvelope = {
@@ -12,14 +14,13 @@ type ProductsEnvelope = {
 
 const getProductsBody = (response: ProductsEnvelope | ProductsBody | null | undefined) => {
   if (!response) return null;
-  return 'body' in response && response.body ? response.body : response;
+  if ('body' in response) return response.body ?? null;
+  return response;
 };
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization');
-  const query = getQuery(event);
-  const page = query.page || 1;
-  const fetchAll = query.all === 'true';
+  const requestQuery = getQuery(event);
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
     throw createError({
       statusCode: 401,
@@ -38,8 +39,12 @@ export default defineEventHandler(async (event) => {
         Authorization: authHeader,
       },
       query: {
-        page_index: page - 1,
-        all: fetchAll,
+        page_index: requestQuery.page_index ?? 0,
+        page_size: requestQuery.page_size,
+        search: requestQuery.search,
+        sort_by: requestQuery.sort_by,
+        sort_direction: requestQuery.sort_direction,
+        all: requestQuery.all,
       },
     });
 
@@ -57,6 +62,8 @@ export default defineEventHandler(async (event) => {
       page_index: body?.page_index,
       page_size: body?.page_size,
       has_next_page: body?.has_next_page || false,
+      total_items: body?.total_items ?? 0,
+      total_pages: body?.total_pages ?? 1,
     };
   }
   catch (error) {

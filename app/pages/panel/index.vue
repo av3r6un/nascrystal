@@ -131,12 +131,9 @@ type LastUpdateResponse = {
   last_update_ts: number | null;
 };
 
-type CatalogProduct = {
-  variants_count?: number;
-};
-
-type ProductsResponse = {
-  items: CatalogProduct[];
+type ProductStatsResponse = {
+  productsCount: number;
+  variantsCount: number;
 };
 
 type DashboardPurchase = {
@@ -200,8 +197,8 @@ const { data: lastUpdateData } = await useAsyncData<LastUpdateResponse>(
   },
 );
 
-const { data: productsData } = await useAsyncData<ProductsResponse>(
-  'panel-dashboard-products',
+const { data: productsData } = await useAsyncData<ProductStatsResponse>(
+  'panel-dashboard-product-stats',
   async () => {
     const ok = await auth.ensureValidAccessToken();
     if (!ok) {
@@ -211,18 +208,16 @@ const { data: productsData } = await useAsyncData<ProductsResponse>(
       });
     }
 
-    return await $fetch('/internal/products', {
+    return await $fetch('/internal/products/stats', {
       method: 'GET',
-      query: {
-        all: true,
-      },
       headers: auth.authHeader,
     });
   },
   {
     server: false,
     default: () => ({
-      items: [],
+      productsCount: 0,
+      variantsCount: 0,
     }),
   },
 );
@@ -244,12 +239,9 @@ const monthlyPurchasesCount = computed(() => {
   }).length;
 });
 const catalogStatsText = computed(() => {
-  const products = Array.isArray(productsData.value?.items) ? productsData.value.items : [];
-  const variants = products.reduce((total, product) => {
-    const count = Number(product.variants_count);
-    return total + (Number.isFinite(count) ? count : 0);
-  }, 0);
-  return `${products.length} (${variants})`;
+  const products = Number(productsData.value?.productsCount ?? 0);
+  const variants = Number(productsData.value?.variantsCount ?? 0);
+  return `${products} (${variants})`;
 });
 const lastUpdateTs = computed(() => {
   const value = lastUpdateData.value?.last_update_ts;

@@ -41,8 +41,9 @@ const opened = ref(props.initialState);
 const filterOptions = ref<{ scrollToTop: () => void } | null>(null);
 
 const toggle = () => {
+  filterOptions.value?.scrollToTop();
   opened.value = !opened.value;
-  if (!opened.value) filterOptions.value?.scrollToTop();
+  nextTick(() => filterOptions.value?.scrollToTop());
 };
 </script>
 
@@ -59,6 +60,11 @@ const toggle = () => {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+  }
+  .filter_options.category{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
 }
 </style>

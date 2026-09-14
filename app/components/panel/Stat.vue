@@ -26,7 +26,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  number: Number,
+  number: [Number, String],
   date: Number,
 });
 

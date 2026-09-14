@@ -23,8 +23,9 @@
           </div>
           <div class="stock_info">
             <div class="stock_category">
-              <NuxtLink :to="`/catalog?0=${stock?.options[0].value}`" class="base_link">
-                {{ stockCategory }}
+              <NuxtLink to="/catalog" class="base_link">{{ t('stock.back_to_catalog') }} » </NuxtLink>
+              <NuxtLink :to="{ path: '/catalog', query: { category: stock.category.id } }" class="base_link">
+                {{ stock?.category.name }}
               </NuxtLink>
             </div>
             <div class="stock_name">
@@ -33,8 +34,11 @@
             <div class="stock_price">
               {{ selectedPrice }}
             </div>
+            <div v-if="variantGroups.length" class="stock_size">
+              <StockSizeSelector v-model="selectedGroup" :title="groupTitle" :options="variantGroups" />
+            </div>
             <div class="stock_size">
-              <StockSizeSelector v-model="selectedOffer" :options="stock.offers" />
+              <StockSizeSelector v-model="selectedSizeIndex" :options="visibleOffers" />
             </div>
             <div class="stock_quantity">
               <div class="stock_quantity-title">
@@ -85,16 +89,50 @@ definePageMeta({
 const route = useRoute();
 const { t } = useI18n();
 const cart = useCart();
-const isClient = ref(false);
-
-onMounted(() => {
-  isClient.value = true;
-});
 
 const stockSlug = computed(() => String(route.params.slug ?? ''));
 
-type StockItem = Record<string, unknown> & {
-  images?: Array<string>[];
+type ProductAttribute = {
+  option_id: number;
+  attribute: { name: string };
+  value: string;
+  label?: string | null;
+};
+
+type ProductOffer = {
+  id: number;
+  amount: number | string;
+  quantity: number;
+  is_active: boolean;
+};
+
+type ProductVariant = {
+  id: number;
+  name: string;
+  sku: string;
+  attributes: ProductAttribute[];
+  offer: ProductOffer;
+};
+
+type ProductImage = {
+  url: string;
+  primary: boolean;
+};
+
+type StockItem = {
+  id: number;
+  name: string;
+  description?: string | null;
+  category: { id: number; name: string };
+  images: ProductImage[];
+  variants: ProductVariant[];
+};
+
+type ViewOffer = ProductOffer & {
+  name: string;
+  attributes: ProductAttribute[];
+  primary_image: string;
+  variant: Record<number, { value: string; name?: string | null }>;
 };
 
 const { data, pending, error } = await useAsyncData<StockItem | null>(
@@ -107,95 +145,168 @@ const { data, pending, error } = await useAsyncData<StockItem | null>(
   },
 );
 
-const stock = computed(() => data.value ?? {});
+const attribute = (variant: ProductVariant | undefined, name: string) => (
+  variant?.attributes.find(item => item.attribute.name === name)
+);
+const attributeValue = (item?: ProductAttribute) => item?.label || item?.value || '';
+const productImage = computed(() => (
+  data.value?.images.find(image => image.primary)?.url
+  || data.value?.images[0]?.url
+  || ''
+));
 
-const imageSrc = computed(() => {
-  if (!stock.value.images.length) return;
-  const image = stock.value.images.find((image: object) => image.is_primary).path;
-  if (!image || typeof image !== 'string') return '';
-  if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/')) {
-    return image;
+const stock = computed(() => {
+  const product = data.value;
+  if (!product) {
+    return {
+      name: '',
+      description: '',
+      category: { id: 0, name: '' },
+      images: [] as ProductImage[],
+      variants: [] as ProductVariant[],
+      options: [{ value: '' }],
+      offers: [] as ViewOffer[],
+    };
   }
-  return `/img/${image}`;
+
+  return {
+    ...product,
+    options: [{ value: String(product.category.id) }],
+    offers: product.variants.map((variant) => {
+      const size = attribute(variant, 'Размер');
+      return {
+        ...variant.offer,
+        name: variant.name,
+        attributes: variant.attributes,
+        primary_image: productImage.value,
+        variant: {
+          [size?.option_id ?? variant.id]: {
+            value: size?.value || variant.name,
+            name: size?.label,
+          },
+        },
+      };
+    }),
+  };
 });
 
-const showLoading = computed(() => {
-  if (!isClient.value) return true;
-  return pending.value && !data.value;
-});
+const imageSrc = computed(() => productImage.value);
 
-const showError = computed(() => {
-  if (!isClient.value) return false;
-  return Boolean(error.value) && !data.value;
-});
+const showLoading = computed(() => pending.value || (!data.value && !error.value));
+const showError = computed(() => Boolean(error.value) && !data.value);
 
-const selectedOffer = ref(null);
+const selectedOffer = ref<number | null>(null);
 const selectedAmount = ref(1);
+const selectedGroup = ref<number | null>(0);
+const groupingAttribute = computed(() => {
+  const variants = stock.value.variants;
+  const names = new Set(variants.flatMap(variant => variant.attributes
+    .map(item => item.attribute.name)
+    .filter(name => name.toLowerCase() !== 'image_id')));
+  if (names.size < 3) return null;
+  return variants.some(variant => attribute(variant, 'Фиксация')?.value.trim().toUpperCase() === 'K9')
+    ? 'Форма'
+    : 'Грани';
+});
+const groupTitle = computed(() => t(groupingAttribute.value === 'Форма' ? 'stock.form' : 'stock.cuts'));
+const variantGroups = computed(() => {
+  const name = groupingAttribute.value;
+  if (!name) return [];
+  const groups = new Map<string, ProductAttribute>();
+  for (const variant of stock.value.variants) {
+    const item = attribute(variant, name);
+    // Keep every variant accessible when the grouping attribute is incomplete.
+    if (!item) return [];
+    groups.set(item.value, item);
+  }
+  return [...groups.values()].map(item => ({
+    value: item.value,
+    variant: { [item.option_id]: { value: item.value, name: item.label } },
+  }));
+});
+const visibleOfferIndexes = computed(() => {
+  const group = variantGroups.value[selectedGroup.value ?? 0];
+  return stock.value.variants.flatMap((variant, index) => (
+    !group || attribute(variant, groupingAttribute.value!)?.value === group.value ? [index] : []
+  ));
+});
+const visibleOffers = computed(() => visibleOfferIndexes.value.map(index => stock.value.offers[index]!));
+const selectedSizeIndex = computed({
+  get: () => selectedOffer.value === null ? null : visibleOfferIndexes.value.indexOf(selectedOffer.value),
+  set: (index: number | null) => {
+    selectedOffer.value = index === null ? null : visibleOfferIndexes.value[index] ?? null;
+  },
+});
+
+watch(
+  () => data.value,
+  () => {
+    selectedGroup.value = 0;
+    selectedOffer.value = stock.value.offers.length ? 0 : null;
+    selectedAmount.value = 1;
+  },
+  { immediate: true },
+);
+
+watch(visibleOfferIndexes, (indexes) => {
+  if (selectedOffer.value === null || !indexes.includes(selectedOffer.value)) {
+    selectedOffer.value = indexes[0] ?? null;
+    selectedAmount.value = 1;
+  }
+});
+
+const currentOffer = computed(() => (
+  selectedOffer.value === null ? undefined : stock.value.offers[selectedOffer.value]
+));
+const currentVariant = computed(() => (
+  selectedOffer.value === null ? undefined : stock.value.variants[selectedOffer.value]
+));
 
 const selectedPrice = computed(() => {
-  const amount = stock.value.offers[selectedOffer.value]?.amount;
-  const currency = stock.value.offers[selectedOffer.value]?.currency;
-  return amount ? `${amount ?? ''} ${currency ?? ''}` : t('stock.price_placeholder');
+  const amount = currentOffer.value?.amount;
+  return amount !== undefined && amount !== null
+    ? `${amount} ₽`
+    : t('stock.price_placeholder');
 });
 
-const selectedMaxQ = computed(() => stock.value.offers[selectedOffer.value]?.quantity);
-
-const stockCategory = computed(() => {
-  const name = stock.value?.options[0].name ?? stock.value?.options[0].value ?? '';
-  return `${t('stock.category.gems')} ${String(name).toLowerCase()}`;
-});
+const selectedMaxQ = computed(() => currentOffer.value?.quantity ?? 0);
 
 const buildAttrs = computed(() => {
-  const fixation = stock.value.options[0].value;
-  const attributes = [
-    { name: 'stock.fixation', value: stock.value.options[0].value },
-  ];
-  if (fixation === 'K9') {
-    attributes.push(
-      { name: 'stock.form', value: stock.value.options[2].value },
-      { name: 'stock.color', value: stock.value.options[1].name ?? stock.value.options[1].value },
-    );
-  }
-  else {
-    attributes.push(
-      { name: 'stock.cuts', value: stock.value.options[1].value },
-      { name: 'stock.color', value: stock.value.options[2].name ?? stock.value.options[2].value },
-    );
-  }
-  return attributes;
+  const variant = currentVariant.value ?? stock.value.variants[0];
+  const fixation = attribute(variant, 'Фиксация');
+  const color = attribute(variant, 'Цвет');
+  const secondary = attribute(variant, fixation?.value === 'K9' ? 'Форма' : 'Грани');
+
+  return [
+    { name: 'stock.fixation', value: attributeValue(fixation) },
+    {
+      name: fixation?.value === 'K9' ? 'stock.form' : 'stock.cuts',
+      value: attributeValue(secondary),
+    },
+    { name: 'stock.color', value: attributeValue(color) },
+  ].filter(item => item.value);
 });
 
-const selectedSize = computed(() => {
-  const offer = stock.value.offers[selectedOffer.value]?.variant;
-  let size = '';
-  Object.entries(offer).forEach(([_, info]) => {
-    size = info.name || info.value;
-  });
-  return size;
-});
-
-const primaryImage = computed(() => {
-  if (!stock.value.images?.length) return '';
-  const image = stock.value.images.find((item: object) => item.is_primary)?.path;
-  return typeof image === 'string' ? image : '';
-});
+const selectedSize = computed(() => attributeValue(attribute(currentVariant.value, 'Размер')));
+const primaryImage = computed(() => productImage.value);
 
 const addToCart = () => {
-  const cartItem = {
-    id: stock.value.offers[selectedOffer.value]?.id,
-    name: stock.value.offers[selectedOffer.value]?.name,
-    properties: [
-      stock.value.options[2].value,
-      selectedSize.value,
-    ],
-    price: stock.value.offers[selectedOffer.value]?.amount,
-    image: stock.value.offers[selectedOffer.value]?.primary_image || primaryImage.value,
+  const offer = currentOffer.value;
+  const variant = currentVariant.value;
+  if (!offer || !variant || offer.quantity <= 0) return;
+
+  const color = attributeValue(attribute(variant, 'Цвет'));
+  cart.add({
+    id: offer.id,
+    name: variant.name || stock.value.name,
+    properties: [color, selectedSize.value].filter(Boolean),
+    price: Number(offer.amount),
+    image: primaryImage.value,
     quantity: {
-      value: selectedAmount.value,
-      max: selectedMaxQ.value,
+      value: Math.min(selectedAmount.value, offer.quantity),
+      max: offer.quantity,
     },
-  };
-  cart.add(cartItem);
+  });
 };
 </script>
 

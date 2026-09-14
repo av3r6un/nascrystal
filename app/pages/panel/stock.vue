@@ -98,7 +98,15 @@
               </div>
               <div v-if="isProductExpanded(pr.id)" class="stock_table-variants" @click.stop>
                 <div v-for="v in pr.variants" :key="v.id" class="stock_table-variant-row">
-                  <div class="stock_table-data image tree" />
+                  <div class="stock_table-data tree image">
+                    <S3Image
+                      :image="v.image_url"
+                      :upload-url="`/internal/products/image?variant_id=${v.id}`"
+                      alt="variant_image"
+                      @click.stop
+                      @uploaded="v.image_url = $event.url"
+                    />
+                  </div>
                   <div class="stock_table-data name">
                     <span :title="v.sku">{{ v.name }}</span>
                     <Icon name="nsc:copy" :size="16" @click="toClipboard(v.sku)" />
@@ -148,6 +156,8 @@
 </template>
 
 <script lang="ts" setup>
+import S3Image from '~/components/S3Image.vue';
+
 definePageMeta({
   pageKey: 'stock',
   layout: 'panel',
@@ -181,6 +191,7 @@ type ProductVariant = {
   archived: boolean;
   attributes: ProductAttribute[];
   offer?: ProductOffer | null;
+  image_url?: string | null;
 };
 
 type StockProduct = {
@@ -460,7 +471,7 @@ const goPrev = () => {
     text-align: center;
   }
   &_table{
-    --stock-column-image: 80px;
+    --stock-column-image: 100px;
     --stock-column-name: minmax(220px, 2fr);
     --stock-column-price: minmax(96px, 0.7fr);
     --stock-column-amount: minmax(96px, 0.7fr);
@@ -578,6 +589,25 @@ const goPrev = () => {
         display: flex;
         align-items: center;
         justify-content: center;
+        .variant_image-upload{
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border: 1px dashed $yellow-brown;
+          border-radius: 8px;
+          color: $yellow-brown;
+          cursor: pointer;
+          input{
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+          }
+        }
         .base_image{
           width: 40px;
           height: 40px;
@@ -590,13 +620,14 @@ const goPrev = () => {
             content: '';
             border: 1px solid;
             border-color: $yellow-brown;
-            width: 25px;
-            right: 0;
-            left: calc(50% - 2px);
+            width: 15px;
+            right: 100%;
+            left: 10px;
           }
           &:before{
-            height: 20px;
+            height: 25px;
             width: 0;
+            top: calc(50% - 14px);
           }
         }
       }

@@ -152,6 +152,7 @@
   "stock": {
     "description": "Description",
     "attributes": "Attributes",
+    "back_to_catalog": "Catalog",
     "size": "Size",
     "color": "Color",
     "form": "Form",
@@ -210,6 +211,7 @@
       "finished": "Order completed",
       "succeeded": "Order is confirmed",
       "errored": "Errored order",
+      "not_found": "Order not found",
       "awaiting_payment": "Order confirmed"
     },
     "caption": {
@@ -218,7 +220,7 @@
       "delivering": "The order has been handed over for delivery.",
       "finished": "The order is complete. Thank you for your purchase!",
       "succeeded": "Your order has been successfully paid for and submitted for processing. Our manager will contact you to confirm the delivery details.",
-      "errored": "",
+      "errored": "Your order is not found. Try again a bit later.",
       "awaiting_payment": "The order has been confirmed by the manager and is awaiting payment. You can proceed using the link below. After payment, you will be returned to this page."
     },
     "info_title": "Order info",
@@ -287,7 +289,10 @@
       "change_contacts": "Edit contacts",
       "quick_actions": "Quick Actions",
       "changes": "Recent changes",
-      "changes_empty": "No recent changes"
+      "changes_empty": "No recent changes",
+      "orders": "Recent orders",
+      "all_orders": "All orders",
+      "orders_empty": "No orders yet"
     },
     "static": {
       "title": "Static Pages",
@@ -306,6 +311,11 @@
       "categories": "Categories",
       "sizes": "Sizes",
       "colors": "Colors",
+      "order_hint": "Drag categories or use the arrows, then save the order.",
+      "move_up": "Move {name} up",
+      "move_down": "Move {name} down",
+      "order_error": "Could not save the order. Please try again.",
+      "order_saved": "Category order saved.",
       "add_category": "Add category",
       "add_size": "Add size",
       "add_color": "Add color",
@@ -364,6 +374,9 @@
       "purge_success": "Products were purged successfully",
       "purge_error": "Failed to purge products",
       "manual_import": "Manual import",
+      "upload_image": "Upload image",
+      "upload_success": "Image uploaded",
+      "upload_error": "Failed to upload image",
       "manual_confirm": "Are you sure you want to import products?",
       "import_success": "Products imported successfully",
       "import_error": "Failed to import products",
@@ -482,6 +495,18 @@
     },
     "property_options": {
       "updated": "Updated attribute:"
+    },
+    "static": {
+      "page": {
+        "updated": "Page updated",
+        "status_changed": "Page status changed to:",
+        "created": "Page created"
+      }
+    },
+    "products": {
+      "moysklad": {
+        "imported": "Products imported"
+      }
     }
   }
 }

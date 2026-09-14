@@ -62,36 +62,36 @@ onMounted(() => {
 const filtersMap = ref([
   {
     name: 'catalog.filters.category',
-    propertyIndex: 0,
-    initialState: true,
-    single: true,
-    framed: true,
-    modelValue: [],
-  },
-  {
-    name: 'catalog.filters.cuts',
-    propertyIndex: 1,
+    propertyIndex: 'category',
     initialState: false,
     single: true,
     modelValue: [],
   },
   {
+    name: 'catalog.filters.cuts',
+    propertyIndex: 'cuts',
+    initialState: false,
+    single: true,
+    framed: true,
+    modelValue: [],
+  },
+  {
     name: 'catalog.filters.form',
-    propertyIndex: 4,
+    propertyIndex: 'form',
     initialState: false,
     single: false,
     modelValue: [],
   },
   {
     name: 'catalog.filters.color',
-    propertyIndex: 3,
+    propertyIndex: 'color',
     initialState: false,
     single: false,
     modelValue: [],
   },
   {
     name: 'catalog.filters.size',
-    propertyIndex: 2,
+    propertyIndex: 'size',
     initialState: false,
     single: false,
     modelValue: [],
@@ -99,8 +99,8 @@ const filtersMap = ref([
 ]);
 
 const visibleFilters = computed(() => filtersMap.value.filter((filter) => {
-  if (filter.propertyIndex === 4) return props.showForm;
-  if (filter.propertyIndex === 1) return !props.showForm;
+  if (filter.propertyIndex === 'form') return props.showForm;
+  if (filter.propertyIndex === 'cuts') return !props.showForm;
   return true;
 }));
 
@@ -125,6 +125,9 @@ const syncFiltersFromModelValue = (modelValue: Record<string, unknown>) => {
 
 const filtersQuery = computed(() => {
   const query: Record<string, string> = {};
+  if (typeof props.modelValue.fixation === 'string' && props.modelValue.fixation) {
+    query.fixation = props.modelValue.fixation;
+  }
 
   visibleFilters.value.forEach((filter) => {
     if (!filter.modelValue.length) return;
@@ -144,7 +147,7 @@ const updateState = (filter, val) => {
 };
 
 const filtersApplied = computed(() => {
-  return visibleFilters.value.some(filter => filter.modelValue.length);
+  return Boolean(props.modelValue.fixation) || visibleFilters.value.some(filter => filter.modelValue.length);
 });
 
 const clearFilters = () => {
@@ -163,7 +166,7 @@ watch(
 watch(
   () => props.showForm,
   (showForm) => {
-    const hiddenFilter = filtersMap.value.find(filter => filter.propertyIndex === (showForm ? 1 : 4));
+    const hiddenFilter = filtersMap.value.find(filter => filter.propertyIndex === (showForm ? 'cuts' : 'form'));
     if (!hiddenFilter?.modelValue.length) return;
     hiddenFilter.modelValue = [];
     localValue.value = filtersQuery.value;
@@ -171,7 +174,16 @@ watch(
   { immediate: true },
 );
 
-const toggleFilters = () => showFilters.value = !showFilters.value;
+const resetFilterScroll = () => {
+  document.querySelectorAll<HTMLElement>('.filters .filter_options')
+    .forEach(element => element.scrollTo({ top: 0 }));
+};
+
+const toggleFilters = () => {
+  resetFilterScroll();
+  showFilters.value = !showFilters.value;
+  nextTick(resetFilterScroll);
+};
 </script>
 
 <style lang="scss" scoped>

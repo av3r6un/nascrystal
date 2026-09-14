@@ -53,8 +53,16 @@ const localValue = computed({
 
 const scrollCont = ref(null);
 const isScrollable = ref(false);
+const disabledOption = Symbol.for('catalog-filter-option-disabled');
+
+const isDisabled = (value: number | string) => {
+  const option = props.options?.find(item => Object.keys(item)[0] === String(value));
+  return Boolean((option as Record<PropertyKey, unknown> | undefined)?.[disabledOption]);
+};
 
 const select = (val: number | string) => {
+  if (isDisabled(val) && !localValue.value.includes(val)) return;
+
   if (props.single) {
     localValue.value = [val];
     return;
@@ -96,7 +104,7 @@ watch(isOpened, () => {
 });
 
 function scrollToTop() {
-  scrollCont.value?.scrollTo({ top: 0, behavior: 'smooth' });
+  scrollCont.value?.scrollTo({ top: 0 });
 };
 
 defineExpose({

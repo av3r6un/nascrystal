@@ -1,5 +1,5 @@
 <template>
-  <article class="catalog">
+  <article class="catalog" :style="{ '--catalog-header-height': `${headerHeight}px` }">
     <div class="catalog_wrapper">
       <div class="catalog_title base_title a-left">
         {{ t('navbar.catalog') }}
@@ -18,7 +18,7 @@
           </NuxtLink>
         </div>
         <div v-else class="catalog_body-content">
-          <CatalogFilters v-model="filtersQuery" :filters="allFilters" :show-form="showFormFilter" />
+          <CatalogFilters v-model="filtersQuery" class="catalog_sticky-filters" :filters="allFilters" :show-form="showFormFilter" />
           <div class="catalog_body-stock">
             <div class="catalog_grid">
               <div v-for="item in stockItems" :key="item.id" class="catalog_item">
@@ -53,6 +53,8 @@ const route = useRoute();
 const isClient = ref(false);
 const currentPageIndex = ref(0);
 const previousScrollRestoration = ref<ScrollRestoration | null>(null);
+const headerHeight = ref(0);
+let headerResizeObserver: ResizeObserver | undefined;
 
 type ProductAttribute = {
   attribute: { name: string };
@@ -93,11 +95,14 @@ type CatalogResponse = {
   attributes: CatalogAttribute[];
 };
 
+const DISABLED_FILTER_OPTION = Symbol.for('catalog-filter-option-disabled');
+
 const FILTER_NAMES: Record<string, string> = {
-  1: 'Грани',
-  2: 'Размер',
-  3: 'Цвет',
-  4: 'Форма',
+  fixation: 'Фиксация',
+  cuts: 'Грани',
+  size: 'Размер',
+  color: 'Цвет',
+  form: 'Форма',
 };
 
 const normalizeQueryValue = (value: unknown) => {
@@ -110,19 +115,26 @@ const normalizeQueryValue = (value: unknown) => {
   return typeof value === 'string' ? value : '';
 };
 
-const filtersQuery = ref<Record<string, string>>(
-  Object.entries(route.query).reduce<Record<string, string>>((query, [key, value]) => {
-    if (key === 'page_index') return query;
-
+const legacyFilterKeys: Record<string, string> = {
+  0: 'category', 1: 'cuts', 2: 'size', 3: 'color', 4: 'form',
+};
+const readFilterQuery = () => {
+  const query: Record<string, string> = {};
+  for (const [key, value] of Object.entries(route.query)) {
     const normalizedValue = normalizeQueryValue(value);
-    if (normalizedValue) {
-      query[key] = normalizedValue;
+    let filterKey = legacyFilterKeys[key] ?? key;
+    if (key === '0' && ['hot', 'non', 'k9'].includes(normalizedValue.toLowerCase())) {
+      filterKey = 'fixation';
     }
-
-    return query;
-  }, {}),
-);
-
+    if (filterKey !== 'category' && !Object.hasOwn(FILTER_NAMES, filterKey)) continue;
+    if (normalizedValue && (!query[filterKey] || key === filterKey)) query[filterKey] = normalizedValue;
+  }
+  return query;
+};
+const filtersQuery = ref<Record<string, string>>(readFilterQuery());
+watch(() => route.query, () => {
+  filtersQuery.value = readFilterQuery();
+});
 const scrollToPageTop = () => {
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -131,6 +143,15 @@ const scrollToPageTop = () => {
 
 onMounted(() => {
   isClient.value = true;
+  const header = document.querySelector<HTMLElement>('header.header');
+  if (header) {
+    const updateHeaderHeight = () => {
+      headerHeight.value = header.getBoundingClientRect().bottom;
+    };
+    updateHeaderHeight();
+    headerResizeObserver = new ResizeObserver(updateHeaderHeight);
+    headerResizeObserver.observe(header);
+  }
 
   if ('scrollRestoration' in window.history) {
     previousScrollRestoration.value = window.history.scrollRestoration;
@@ -141,6 +162,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  headerResizeObserver?.disconnect();
   if (previousScrollRestoration.value && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = previousScrollRestoration.value;
   }
@@ -174,22 +196,84 @@ const showError = computed(() => {
   return Boolean(stockError.value) && !catalogData.value;
 });
 
+const variantMatchesFilters = (variant: ProductVariant, excludedFilterIndex?: string) => {
+  const excludedFilterIndexes = new Set([excludedFilterIndex]);
+  if (excludedFilterIndex === 'category') {
+    excludedFilterIndexes.add('cuts');
+    excludedFilterIndexes.add('form');
+  }
+
+  return selectedAttributes.value
+    .filter(filter => !excludedFilterIndexes.has(filter.index))
+    .every(filter => variant.attributes.some(attribute => (
+      attribute.attribute.name === filter.name && filter.values.includes(filter.name === 'Фиксация' ? attribute.value.toLowerCase() : attribute.value)
+    )));
+};
+
+const isFilterOptionAvailable = (filterIndex: string, value: string) => {
+  const products = catalogData.value?.stock.stock ?? [];
+
+  return products.some((product) => {
+    if (filterIndex === 'category') {
+      if (String(product.category.id) !== value) return false;
+    }
+    else if (
+      selectedCategories.value.length
+      && !selectedCategories.value.includes(String(product.category.id))
+    ) {
+      return false;
+    }
+
+    return product.variants.some(variant => (
+      variantMatchesFilters(variant, filterIndex)
+      && (
+        filterIndex === 'category'
+        || variant.attributes.some(attribute => (
+          attribute.attribute.name === FILTER_NAMES[filterIndex]
+          && attribute.value === value
+        ))
+      )
+    ));
+  });
+};
+
+const isFilterOptionSelected = (filterIndex: string, value: string) => (
+  (filtersQuery.value[filterIndex] ?? '').split(',').includes(value)
+);
+const filterOption = (filterIndex: string, value: string, label: string) => {
+  const option = { [value]: label };
+  Object.defineProperty(option, DISABLED_FILTER_OPTION, {
+    value: !isFilterOptionAvailable(filterIndex, value),
+    enumerable: false,
+  });
+  return option;
+};
+const visibleAttributeOptions = (filterIndex: string, options: AttributeOption[]) => (
+  options.filter(option => (
+    !['size', 'color'].includes(filterIndex)
+    || isFilterOptionAvailable(filterIndex, option.value)
+    || isFilterOptionSelected(filterIndex, option.value)
+  ))
+);
 const allFilters = computed(() => {
   const catalog = catalogData.value?.catalog;
   return {
-    0: [...(catalog?.categories ?? [])]
+    category: [...(catalog?.categories ?? [])]
       .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
-      .map(category => ({ [category.id]: category.name })),
+      .map(category => filterOption('category', String(category.id), category.name)),
     ...Object.fromEntries(Object.entries(FILTER_NAMES).map(([index, name]) => [
       index,
-      (catalog?.attributes.find(attribute => attribute.name === name)?.options ?? [])
-        .map(option => ({ [option.value]: option.label || option.value })),
+      visibleAttributeOptions(
+        index,
+        catalog?.attributes.find(attribute => attribute.name === name)?.options ?? [],
+      ).map(option => filterOption(index, option.value, option.label || option.value)),
     ])),
   };
 });
 
-const selectedCategories = computed(() => (filtersQuery.value[0] ?? '').split(',').filter(Boolean));
+const selectedCategories = computed(() => (filtersQuery.value.category ?? '').split(',').filter(Boolean));
 const showFormFilter = computed(() => {
+  if (filtersQuery.value.fixation?.toUpperCase() === 'K9') return true;
   const categoryId = selectedCategories.value[0];
   const category = catalogData.value?.catalog.categories.find(item => String(item.id) === categoryId);
   if (!category?.name.toLowerCase().startsWith('пришивные')) return false;
@@ -202,10 +286,11 @@ const showFormFilter = computed(() => {
   ));
 });
 const selectedAttributes = computed(() => Object.entries(filtersQuery.value)
-  .filter(([index]) => index !== '0')
+  .filter(([index]) => index !== 'category')
   .map(([index, value]) => ({
+    index,
     name: FILTER_NAMES[index],
-    values: value.split(',').map(item => item.trim()).filter(Boolean),
+    values: value.split(',').map(item => index === 'fixation' ? item.trim().toLowerCase() : item.trim()).filter(Boolean),
   }))
   .filter(filter => filter.name && filter.values.length));
 
@@ -218,7 +303,7 @@ const filteredProducts = computed(() => {
 
     const variants = product.variants.filter(variant => selectedAttributes.value.every(filter => (
       variant.attributes.some(attribute => (
-        attribute.attribute.name === filter.name && filter.values.includes(attribute.value)
+        attribute.attribute.name === filter.name && filter.values.includes(filter.name === 'Фиксация' ? attribute.value.toLowerCase() : attribute.value)
       ))
     )));
     if (!variants.length) return [];
@@ -266,6 +351,21 @@ const nextPage = () => {
 <style lang="scss" scoped>
 .catalog{
   padding: 112px 0;
+  .catalog_sticky-filters{
+    position: sticky;
+    top: var(--catalog-header-height);
+    z-index: 1;
+    box-sizing: border-box;
+    max-height: calc(100dvh - var(--catalog-header-height));
+    overflow-y: auto;
+    @media screen and (max-width: 630px) {
+      position: relative;
+      top: auto;
+      z-index: auto;
+      max-height: none;
+      overflow-y: visible;
+    }
+  }
   &_wrapper{
     max-width: $wrapper-width;
     margin: $wrapper-pos;

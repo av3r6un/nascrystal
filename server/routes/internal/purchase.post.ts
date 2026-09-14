@@ -1,6 +1,7 @@
 import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
 type PurchaseUpdatePayload = {
+  [key: string]: unknown;
   delivery?: {
     type?: unknown;
     address?: unknown;
@@ -46,6 +47,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const fastApiBody = {
+      ...body,
       delivery: {
         type: deliveryType.trim(),
         address: deliveryAddress.trim(),

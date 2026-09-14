@@ -5,9 +5,36 @@
     </div>
     <div class="dashboard_body">
       <div class="dashboard_info">
-        <PanelStat title="Товаров к каталоге" icon="box" :number="0" />
-        <PanelStat title="Заказов за месяц" icon="shopping-cart" :number="0" />
+        <PanelStat title="Товаров в каталоге" icon="box" :number="catalogStatsText" />
+        <PanelStat title="Заказов за месяц" icon="shopping-cart" :number="monthlyPurchasesCount" />
         <PanelStat title="Последнее обновление" icon="clock" :date="lastUpdateTs ?? undefined" />
+      </div>
+      <div class="dashboard_orders panel_section">
+        <div class="dashboard_orders-header">
+          <div class="dashboard_orders-title">
+            {{ t('panel.dashboard.orders') }}
+          </div>
+          <NuxtLink to="/panel/purchases" class="base_link">{{ t('panel.dashboard.all_orders') }}</NuxtLink>
+        </div>
+        <div v-if="purchasesPending" class="dashboard_orders-state">
+          {{ t('loading') }}
+        </div>
+        <div v-else-if="purchasesError" class="dashboard_orders-state">
+          {{ t('panel.purchases.load_error') }}
+        </div>
+        <div v-else-if="recentPurchases.length < 1" class="dashboard_orders-state">
+          {{ t('panel.dashboard.orders_empty') }}
+        </div>
+        <div v-else class="dashboard_orders-list">
+          <NuxtLink v-for="purchase in recentPurchases" :key="purchase.id" :to="`/panel/purchases/${purchase.id}`" class="dashboard_orders-item base_link">
+            <span class="dashboard_orders-id">{{ makeNASID(purchase.id) }}</span>
+            <span class="dashboard_orders-customer">{{ purchase.contact_info.name }}</span>
+            <span class="dashboard_orders-products">{{ purchaseProductsText(purchase) }}</span>
+            <span class="dashboard_orders-total">{{ purchaseTotal(purchase) }} ₽</span>
+            <span class="dashboard_orders-status" :class="purchase.status">{{ t(`panel.statuses.${purchase.status}`) }}</span>
+            <span class="dashboard_orders-date">{{ formatPurchaseDate(purchase.created_ts) }}</span>
+          </NuxtLink>
+        </div>
       </div>
       <div class="dashboard_row">
         <div class="dashboard_history panel_section">
@@ -104,6 +131,22 @@ type LastUpdateResponse = {
   last_update_ts: number | null;
 };
 
+type CatalogProduct = {
+  variants_count?: number;
+};
+
+type ProductsResponse = {
+  items: CatalogProduct[];
+};
+
+type DashboardPurchase = {
+  id: number;
+  created_ts: number;
+  status: string;
+  contact_info: { name: string; delivery?: { cost?: number } };
+  products: Array<{ id: number; name: string; price: number; quantity: { value: number } }>;
+};
+
 const { data, pending, error } = await useAsyncData<ChangeEventsResponse>(
   'panel-dashboard-changes',
   async () => {
@@ -157,11 +200,66 @@ const { data: lastUpdateData } = await useAsyncData<LastUpdateResponse>(
   },
 );
 
+const { data: productsData } = await useAsyncData<ProductsResponse>(
+  'panel-dashboard-products',
+  async () => {
+    const ok = await auth.ensureValidAccessToken();
+    if (!ok) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized',
+      });
+    }
+
+    return await $fetch('/internal/products', {
+      method: 'GET',
+      query: {
+        all: true,
+      },
+      headers: auth.authHeader,
+    });
+  },
+  {
+    server: false,
+    default: () => ({
+      items: [],
+    }),
+  },
+);
+
+const { data: purchasesData, pending: purchasesPending, error: purchasesError } = await useAsyncData<DashboardPurchase[]>('panel-dashboard-purchases', async () => {
+  const ok = await auth.ensureValidAccessToken();
+  if (!ok) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+  return await $fetch<DashboardPurchase[]>('/internal/purchases', { method: 'GET', headers: auth.authHeader });
+}, { server: false, default: () => [] });
+
 const changes = computed(() => Array.isArray(data.value?.items) ? data.value.items : []);
+const purchases = computed(() => Array.isArray(purchasesData.value) ? purchasesData.value : []);
+const recentPurchases = computed(() => [...purchases.value].sort((a, b) => b.created_ts - a.created_ts).slice(0, 5));
+const monthlyPurchasesCount = computed(() => {
+  const now = new Date();
+  return purchases.value.filter((purchase) => {
+    const date = new Date(purchase.created_ts * 1000);
+    return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+  }).length;
+});
+const catalogStatsText = computed(() => {
+  const products = Array.isArray(productsData.value?.items) ? productsData.value.items : [];
+  const variants = products.reduce((total, product) => {
+    const count = Number(product.variants_count);
+    return total + (Number.isFinite(count) ? count : 0);
+  }, 0);
+  return `${products.length} (${variants})`;
+});
 const lastUpdateTs = computed(() => {
   const value = lastUpdateData.value?.last_update_ts;
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 });
+const makeNASID = (id: number) => `NAS-${id.toString().padStart(3, '0')}`;
+const purchaseTotal = (purchase: DashboardPurchase) => purchase.products.reduce((total, product) => total + product.price * product.quantity.value, Number(purchase.contact_info.delivery?.cost ?? 0));
+const purchaseProductsText = (purchase: DashboardPurchase) => purchase.products.map(product => `${product.name} × ${product.quantity.value}`).join(', ');
+const formatPurchaseDate = (timestamp: number) => new Intl.DateTimeFormat(locale.value, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(timestamp * 1000));
+
 const smoothPayload = (payload: object) => {
   let res = '';
   Object.entries(payload).forEach(([v, k]) => {
@@ -246,6 +344,20 @@ const { $rd } = useNuxtApp();
       font-size: 14px;
       white-space: nowrap;
     }
+  }
+  &_orders{
+    margin-top: 24px;
+    &-header{ display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; .base_link{ color: $brown; font-size: 14px; } }
+    &-title{ color: $brown; font-size: 20px; font-family: $title-font; font-weight: 600; }
+    &-state{ color: $light-brown; }
+    &-list{ display: flex; flex-direction: column; }
+    &-item{ display: grid; grid-template-columns: 90px minmax(130px, 1fr) minmax(220px, 2fr) 90px 140px 110px; align-items: center; gap: 16px; min-height: 54px; color: $brown; font-size: 14px; &:not(:last-child){ border-bottom: 1px solid $pinky; } &:hover{ background: $light-pink; } @media (max-width: 900px) { grid-template-columns: 90px minmax(130px, 1fr) 90px 140px; } @media (max-width: 620px) { grid-template-columns: 80px minmax(110px, 1fr) 110px; } }
+    &-id{ font-weight: 600; }
+    &-customer, &-products{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    &-products{ font-weight: 500; @media (max-width: 900px) { display: none; } }
+    &-total{ font-weight: 600; white-space: nowrap; @media (max-width: 620px) { display: none; } }
+    &-status{ justify-self: start; padding: 3px 10px; border-radius: 20px; background: $pinky; font-size: 11px; font-weight: 600; text-transform: uppercase; white-space: nowrap; &.created, &.awaiting_payment{ background: $brown; color: $white; } }
+    &-date{ color: $light-brown; text-align: right; white-space: nowrap; @media (max-width: 620px) { display: none; } }
   }
   &_actions{
     &-wrapper{

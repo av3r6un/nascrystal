@@ -10,12 +10,12 @@
         </div>
         <div class="property_body-name">
           <input
-            v-model="o.name"
+            v-model="o.label"
             type="text"
             :placeholder="t('panel.property_name')"
             autocomplete="off"
             class="input_wide"
-            @input="updateVal($event)"
+            @input="updateVal"
           >
         </div>
       </div>
@@ -53,20 +53,15 @@ const initial = ref('[]');
 
 const stringifyItems = (items: unknown) => JSON.stringify(items ?? []);
 
-const currentOptions = computed(() => props.modelValue.filter(option => option.property_id === props.id));
+const currentOptions = computed(() => props.modelValue.filter(option => option.attribute_id === props.id));
 
 onMounted(() => {
   initial.value = stringifyItems(currentOptions.value);
 });
 const isDirty = ref(false);
 
-const updateVal = ({ target }) => {
-  const newValue = target.value;
-  if (!newValue || newValue === '') {
-    const valueIndex = props.modelValue.find(option => option.id === props.id);
-    valueIndex.name = null;
-  };
-  isDirty.value = stringifyItems(props.modelValue.filter(option => option.property_id === props.id)) !== initial.value;
+const updateVal = () => {
+  isDirty.value = stringifyItems(currentOptions.value) !== initial.value;
 };
 
 const saveDraft = () => {
@@ -79,6 +74,8 @@ const saveDraft = () => {
     }
   });
   emit('submit', changes);
+  initial.value = stringifyItems(currentOptions.value);
+  isDirty.value = false;
 };
 </script>
 

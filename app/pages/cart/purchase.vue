@@ -87,7 +87,13 @@
       </div>
       <div class="payment_links">
         <div v-if="paymentShown" class="payment_action" :class="paymentClass">
-          <button v-if="!payment?.paid" type="button" class="btn btn_add" :disabled="paymentLoading" @click="getPaymentLink">
+          <button
+            v-if="!payment?.paid"
+            type="button"
+            class="btn btn_add"
+            :disabled="paymentLoading"
+            @click="getPaymentLink"
+          >
             {{ t('purchase.go_to_payment') }}
           </button>
           <a v-else :href="payment?.confirmation_url" class="base_link btn_add">
@@ -99,9 +105,15 @@
         </div>
       </div>
     </div>
-    <div v-else class="payment_wrapper">
+    <div v-else class="payment_wrapper not_found">
       <div class="payment_icon">
         <Icon name="nsc:diamond" :size="32" />
+      </div>
+      <div class="payment_title">
+        {{ t(`purchase.title.not_found`) }}
+      </div>
+      <div class="payment_caption">
+        {{ t(`purchase.caption.not_found`) }}
       </div>
     </div>
   </article>
@@ -242,6 +254,9 @@ const getPaymentLink = async () => {
     flex-direction: column;
     align-items: center;
     gap: 24px;
+    &.not_found{
+      margin: 61px auto;
+    }
   }
   &_title{
     font-family: $title-font;

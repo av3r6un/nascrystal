@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const response = await callFastApiAsNitro<Record<string, any> | null>(
-      event, `/api/stock/${slug}`, { method: 'GET' },
+      event, `/api/products/${slug}`, { method: 'GET' },
     );
 
     if (response && 'status' in response && response.status && response.status !== 'success') {

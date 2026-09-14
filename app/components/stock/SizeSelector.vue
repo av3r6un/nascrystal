@@ -1,7 +1,7 @@
 <template>
   <div class="stock_size">
     <div class="stock_size-title">
-      {{ t('stock.size') }}
+      {{ title || t('stock.size') }}
     </div>
     <div class="stock_sizes">
       <div v-for="(offer, idx) in options" :key="idx" class="stock_sizes-item">
@@ -16,6 +16,7 @@
 <script lang="ts" setup>
 const emit = defineEmits(['update:modelValue']);
 const props = defineProps({
+  title: { type: String, default: '' },
   modelValue: {
     type: [Number, null],
     required: true,

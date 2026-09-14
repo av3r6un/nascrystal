@@ -8,7 +8,7 @@
     </div>
     <div class="card_info">
       <div class="card_name">
-        {{ name }}
+        {{ displayName }}
       </div>
       <div class="card_properties">
         <span v-for="(p, idx) in properties" :key="idx" class="card_property">
@@ -64,6 +64,23 @@ const imageSrc = computed(() => {
     return props.image;
   }
   return `/img/${props.image}`;
+});
+
+const displayName = computed(() => {
+  const value = props.name?.trim() || '';
+  const match = value.match(/^(.*)\(([^()]*)\)\s*$/);
+  if (!match) return value;
+
+  const attributes = match[2].split(',').map(attribute => attribute.trim());
+  const lastAttribute = attributes.at(-1) || '';
+  const isImagePath = /^(?:https?:\/\/|\/|\.\.?\/|.*\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$)/i.test(lastAttribute);
+
+  if (!isImagePath) return value;
+  attributes.pop();
+
+  return attributes.length
+    ? `${match[1].trim()} (${attributes.join(', ')})`
+    : match[1].trim();
 });
 
 const quant = computed({

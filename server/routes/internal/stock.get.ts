@@ -14,15 +14,22 @@ type StockEnvelope = {
 
 const getStockBody = (response: StockEnvelope | StockBody | null | undefined) => {
   if (!response) return null;
-  return 'body' in response && response.body ? response.body : response;
+  if ('body' in response) return response.body ?? null;
+  return response;
 };
 
 export default defineEventHandler(async (event) => {
   const requestQuery = getQuery(event);
-  const normalizedQuery = {
-    ...requestQuery,
-    page_index: `${requestQuery.page_index ?? 0}`,
-  };
+  const allowedKeys = [
+    'page_index', 'page_size', 'category', 'fixation', 'cuts', 'size', 'color', 'form',
+    '0', '1', '2', '3', '4',
+  ];
+  const normalizedQuery = Object.fromEntries(
+    allowedKeys
+      .filter(key => requestQuery[key] !== undefined && requestQuery[key] !== '')
+      .map(key => [key, requestQuery[key]]),
+  );
+  normalizedQuery.page_index ??= '0';
 
   try {
     const response = await callFastApiAsNitro<StockEnvelope | StockBody>(event, '/api/stock/', {

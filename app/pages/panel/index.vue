@@ -140,7 +140,7 @@ type DashboardPurchase = {
   id: number;
   created_ts: number;
   status: string;
-  contact_info: { name: string; delivery?: { cost?: number } };
+  contact_info: { name: string };
   products: Array<{ id: number; name: string; price: number; quantity: { value: number } }>;
 };
 
@@ -248,7 +248,7 @@ const lastUpdateTs = computed(() => {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 });
 const makeNASID = (id: number) => `NAS-${id.toString().padStart(3, '0')}`;
-const purchaseTotal = (purchase: DashboardPurchase) => purchase.products.reduce((total, product) => total + product.price * product.quantity.value, Number(purchase.contact_info.delivery?.cost ?? 0));
+const purchaseTotal = (purchase: DashboardPurchase) => purchase.products.reduce((total, product) => total + product.price * product.quantity.value, 0);
 const purchaseProductsText = (purchase: DashboardPurchase) => purchase.products.map(product => `${product.name} × ${product.quantity.value}`).join(', ');
 const formatPurchaseDate = (timestamp: number) => new Intl.DateTimeFormat(locale.value, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(timestamp * 1000));
 

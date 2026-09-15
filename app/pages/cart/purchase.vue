@@ -53,37 +53,6 @@
             </div>
           </div>
         </div>
-        <div class="payment_info-delivery payment_section">
-          <div class="payment_info-title">
-            {{ t('purchase.delivery.title') }}
-          </div>
-          <div class="payment_info-body">
-            <div class="payment_info-row">
-              <div class="payment_info-label">
-                {{ t('purchase.delivery.title') }}
-              </div>
-              <div class="payment_info-value">
-                {{ deliveryState }}
-              </div>
-            </div>
-            <div class="payment_info-row">
-              <div class="payment_info-label">
-                {{ t('purchase.delivery.receiver') }}
-              </div>
-              <div class="payment_info-value">
-                {{ receiver.name }}
-              </div>
-            </div>
-            <div class="payment_info-row">
-              <div class="payment_info-label">
-                {{ t('purchase.delivery.phone') }}
-              </div>
-              <div class="payment_info-value">
-                {{ receiver.phone }}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="payment_links">
         <div v-if="paymentShown" class="payment_action" :class="paymentClass">
@@ -141,9 +110,8 @@ type PurchaseDetails = {
   created_ts: number;
   final_price?: number;
   price?: number;
-  status?: string;
+  status: string;
   contact_info: {
-    delivery?: unknown;
     name?: string;
     phone?: string;
   };
@@ -168,9 +136,9 @@ const purchaseStatus = computed(() => purchase.value?.status ?? 'created');
 
 const purchaseID = computed(() => purchase.value?.id ?? 1);
 
-const receiver = computed(() => purchase.value?.contact_info ?? {});
-
-const purchaseDate = computed(() => purchase.value?.created_ts * 1000 ?? new Date().getTime());
+const purchaseDate = computed(() => purchase.value?.created_ts
+  ? purchase.value.created_ts * 1000
+  : Date.now());
 
 const normalDate = computed(() => {
   return new Intl.DateTimeFormat('ru-RU', {
@@ -183,10 +151,6 @@ const normalDate = computed(() => {
 });
 
 const NASID = computed(() => `NAS-${purchaseID.value.toFixed().padStart(4, '0')}`);
-
-const deliveryState = computed(() => purchase.value?.contact_info?.delivery?.address
-  ?? t(`cart.delivery_ways.${purchase.value?.contact_info?.delivery}`).split(' - ')[0]
-  ?? t('purchase.delivery.pending'));
 
 onMounted(async () => {
   try {

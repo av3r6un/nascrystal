@@ -28,9 +28,6 @@
             <div class="purchases_table-price th">
               {{ t('panel.purchases.table.price') }}
             </div>
-            <div class="purchases_table-delivery th">
-              {{ t('panel.purchases.table.delivery') }}
-            </div>
             <div class="purchases_table-status th">
               {{ t('panel.purchases.table.status') }}
             </div>
@@ -61,7 +58,8 @@
                 <div
                   class="payment_link"
                   :class="{ active: pur.payment?.confirmation_url }"
-                  @click="toClipboard(pur.payment.confirmation_url)">
+                  @click="toClipboard(pur.payment.confirmation_url)"
+                >
                   <span class="price" :class="{ active: pur.payment?.confirmation_url }">
                     {{ totalPrice(pur.products) }} ₽
                   </span>
@@ -69,9 +67,6 @@
                     <Icon name="nsc:copy" :size="16" />
                   </span>
                 </div>
-              </div>
-              <div class="purchases_table-data td delivery">
-                {{ getDeliveryType(pur.contact_info.delivery.type) }}
               </div>
               <div class="purchases_table-data td status" :class="pur.status">
                 <div class="purchase_status">
@@ -92,11 +87,11 @@ definePageMeta({
   layout: 'panel',
 });
 
-const { d, t } = useI18n();
+const { t } = useI18n();
 
 const auth = useAuthStore();
 
-const { data, pending, error, refresh } = await useAsyncData(
+const { data, pending, error } = await useAsyncData(
   'panel-purchases',
   async () => {
     const ok = await auth.ensureValidAccessToken();
@@ -151,11 +146,6 @@ const toClipboard = async (val: string) => {
 const totalPrice = (products: Array<object>) => {
   return products.reduce((sum: number, product: object) => sum + product.price * product.quantity.value, 0);
 };
-
-const getDeliveryType = (type: string) => {
-  const dType = t(`cart.delivery_ways.${type}`);
-  return dType.split(' - ')[0] || t('panel.statuses.processing');
-};
 </script>
 
 <style lang="scss" scoped>
@@ -171,7 +161,6 @@ const getDeliveryType = (type: string) => {
     --stock-column-contact: minmax(140px, 1fr);
     --stock-column-product: minmax(280px, 3fr);
     --stock-column-price: minmax(90px, 0.7fr);
-    --stock-column-delivery: minmax(90px, 0.7fr);
     --stock-column-status: minmax(80px, 0.5fr);
     --stock-columns:
       var(--stock-column-index)
@@ -179,7 +168,6 @@ const getDeliveryType = (type: string) => {
       var(--stock-column-contact)
       var(--stock-column-product)
       var(--stock-column-price)
-      var(--stock-column-delivery)
       var(--stock-column-status);
     background: $light-pink;
     display: flex;

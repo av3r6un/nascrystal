@@ -22,6 +22,7 @@
         v-model="email"
         name="cart.form.email"
         type="email"
+        required
         placeholder="ivan@example.com"
       />
     </div>
@@ -33,14 +34,6 @@
         placeholder="@ivan_ivan0v"
       />
     </div>
-    <div class="form_item">
-      <span>{{ t('cart.delivery_way') }}</span>
-      <PanelSelection
-        v-model="delivery"
-        :options="deliveries"
-        placeholder="cart.delivery_placeholder"
-      />
-    </div>
   </form>
 </template>
 
@@ -50,10 +43,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  deliveries: {
-    type: Array<string>,
-    required: true,
-  },
   id: {
     type: String,
     default: 'infoForm',
@@ -61,7 +50,6 @@ const props = defineProps({
 });
 const emits = defineEmits(['update:modelValue', 'submit']);
 
-const { t } = useI18n();
 const userPhone = computed({
   get: () => props.modelValue.phone,
   set: val => emits('update:modelValue', { ...props.modelValue, phone: val }),
@@ -70,11 +58,6 @@ const userPhone = computed({
 const userName = computed({
   get: () => props.modelValue.name,
   set: val => emits('update:modelValue', { ...props.modelValue, name: val }),
-});
-
-const delivery = computed({
-  get: () => props.modelValue.delivery,
-  set: val => emits('update:modelValue', { ...props.modelValue, delivery: val }),
 });
 
 const login = computed({

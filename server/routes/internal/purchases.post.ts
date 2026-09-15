@@ -18,10 +18,15 @@ type CustomerPayload = {
 
 type PurchasePayload = {
   customer?: CustomerPayload;
-  delivery?: unknown;
   items?: PurchaseItemPayload[];
   price?: unknown;
 };
+
+type FastApiPurchaseResponse = {
+  body?: CreatePurchaseBody;
+};
+
+type CreatePurchaseBody = Record<string, unknown>;
 
 const isNonEmptyString = (value: unknown): value is string => {
   return typeof value === 'string' && value.trim().length > 0;
@@ -31,17 +36,14 @@ const isPositiveInteger = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
 export default defineEventHandler(async (event) => {
   const body = await readBody<PurchasePayload>(event);
+  const idempotencyKey = getHeader(event, 'Idempotency-Key');
 
   if (
     !isNonEmptyString(body?.customer?.name)
     || !isNonEmptyString(body?.customer?.phone)
-    || !isRecord(body.delivery)
+    || !isNonEmptyString(body?.customer?.email)
     || !Array.isArray(body.items)
     || body.items.length === 0
     || typeof body.price !== 'number'
@@ -77,7 +79,7 @@ export default defineEventHandler(async (event) => {
   });
 
   try {
-    const response = await callFastApiAsNitro(event, '/api/purchases/', {
+    const response = await callFastApiAsNitro<FastApiPurchaseResponse>(event, '/api/purchases/', {
       method: 'POST',
       body: {
         customer: {
@@ -86,10 +88,11 @@ export default defineEventHandler(async (event) => {
           username: isNonEmptyString(body.customer.username) ? body.customer.username.trim() : undefined,
           email: isNonEmptyString(body.customer.email) ? body.customer.email.trim() : undefined,
         },
-        delivery: body.delivery,
         items,
         price: body.price,
       },
+      headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined,
+      timeout: 65000,
     });
 
     return response?.body;

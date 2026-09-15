@@ -159,7 +159,7 @@ const { $refreshSettings } = useNuxtApp();
 const isSaving = ref(false);
 const isClient = ref(false);
 const isApplyingRemote = ref(false);
-const pageLimitOptions = ref(['5', '10', '25', '50', '100']);
+const pageLimitOptions = ref(['9', '12', '27', '51', '99']);
 
 onMounted(() => {
   isClient.value = true;

@@ -67,29 +67,6 @@
                 placeholder="username@example.com"
               />
             </div>
-            <div class="purchase_info-block delivery">
-              <div class="block_selection">
-                <div class="selection_label">
-                  {{ t('panel.purchases.form.delivery_type') }}
-                </div>
-                <PanelSelection
-                  v-model="deliveryType"
-                  :options="deliveryWays"
-                  placeholder="panel.purchases.form.delivery_type_ph"
-                />
-              </div>
-              <CmsElementsInput
-                v-model="deliveryAddress"
-                name="panel.purchases.form.delivery_address"
-                placeholder="panel.purchases.form.delivery_address_ph"
-              />
-              <CmsElementsInput
-                v-model="deliveryCost"
-                name="panel.purchases.form.delivery_cost"
-                class="pricetag"
-                placeholder="panel.purchases.form.delivery_cost_ph"
-              />
-            </div>
             <div class="purchase_info-block summary">
               <div class="purchase_info-price">
                 <span class="title">{{ t('panel.purchases.form.final_price') }}</span>
@@ -129,19 +106,13 @@ definePageMeta({
   layout: 'panel',
 });
 
-const { t, d, tm } = useI18n();
+const { t, d } = useI18n();
 const route = useRoute();
 const auth = useAuthStore();
 
 type ProductQuantity = {
   value: number;
   max: number;
-};
-
-type PurchaseDelivery = {
-  type: string;
-  address: string;
-  cost: number;
 };
 
 type PurchasePayment = {
@@ -176,7 +147,6 @@ type PurchaseDetails = {
   final_price?: number;
   status?: string;
   contact_info: {
-    delivery?: PurchaseDelivery;
     name?: string;
     phone?: string;
     email: string;
@@ -217,22 +187,6 @@ const purchaseProducts = computed(() => pur.value?.products ?? []);
 const updating = ref(false);
 const finishing = ref(false);
 
-const currentDelivery = computed<PurchaseDelivery>(() => {
-  const delivery = pur.value?.contact_info.delivery;
-  if (typeof delivery === 'object' && delivery !== null) {
-    return {
-      type: delivery.type ?? '',
-      address: delivery.address ?? '',
-      cost: Number(delivery.cost) || 0,
-    };
-  }
-  return {
-    type: typeof delivery === 'string' ? delivery : '',
-    address: '',
-    cost: 0,
-  };
-});
-
 const updateContactInfo = (patch: Partial<PurchaseDetails['contact_info']>) => {
   if (!data.value) return;
   data.value = {
@@ -242,15 +196,6 @@ const updateContactInfo = (patch: Partial<PurchaseDetails['contact_info']>) => {
       ...patch,
     },
   };
-};
-
-const updateDeliveryFields = (patch: Partial<PurchaseDelivery>) => {
-  updateContactInfo({
-    delivery: {
-      ...currentDelivery.value,
-      ...patch,
-    },
-  });
 };
 
 const contactName = computed({
@@ -273,24 +218,8 @@ const contactEmail = computed({
   set: email => updateContactInfo({ email }),
 });
 
-const deliveryType = computed({
-  get: () => currentDelivery.value.type,
-  set: type => updateDeliveryFields({ type }),
-});
-
-const deliveryAddress = computed({
-  get: () => currentDelivery.value.address,
-  set: address => updateDeliveryFields({ address }),
-});
-
-const deliveryCost = computed({
-  get: () => currentDelivery.value.cost,
-  set: cost => updateDeliveryFields({ cost: Number(cost) || 0 }),
-});
-
 const totalPrice = computed(() => {
-  const goodsPrice = purchaseProducts.value.reduce((sum, product) => sum + product.price * product.quantity.value, 0);
-  return goodsPrice + currentDelivery.value.cost;
+  return purchaseProducts.value.reduce((sum, product) => sum + product.price * product.quantity.value, 0);
 });
 
 const purchasePayload = computed(() => ({
@@ -300,11 +229,6 @@ const purchasePayload = computed(() => ({
     phone: contactPhone.value,
     username: contactUsername.value,
     email: contactEmail.value,
-    delivery: currentDelivery.value,
-  },
-  delivery: {
-    ...currentDelivery.value,
-    price: currentDelivery.value.cost,
   },
   products: purchaseProducts.value.map(product => ({
     id: product.id,
@@ -369,11 +293,6 @@ const finishPurchase = async () => {
     finishing.value = false;
   }
 };
-
-const deliveryWays = computed(() => {
-  const ways = tm('cart.delivery_ways');
-  return Object.entries(ways).map(([key, value]) => ({ id: key, name: String(value).split(' - ')[0] }));
-});
 
 const normalProperties = (prop: Array<object>) => prop.map(property => property.name ?? property.value);
 
@@ -464,23 +383,6 @@ const toClipboard = async (val: string) => {
       gap: 8px;
       .input{
         width: 100%;
-      }
-      &.delivery{
-        .input{
-          width: 50%;
-        }
-        .block_selection{
-          width: 70%;
-          .selection{
-            height: 45px;
-            &_default{
-              font-size: 14px !important;
-            }
-          }
-        }
-        .pricetag{
-          width: 35%;
-        }
       }
       &.summary{
         display: flex;

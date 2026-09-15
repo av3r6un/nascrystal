@@ -24,26 +24,9 @@
           <CartForm
             :id="formId"
             v-model="order"
-            :deliveries="deliveries"
             @submit="makeOrder"
           />
           <div class="cart_form-section">
-            <div class="cart_form-info">
-              <div class="cart_form-label">
-                {{ t('cart.subtotal') }}
-              </div>
-              <div class="cart_form-value">
-                {{ subtotal }} ₽
-              </div>
-            </div>
-            <div class="cart_form-info">
-              <div class="cart_form-label">
-                {{ t('cart.delivery') }}
-              </div>
-              <div v-if="deliveryPrice" class="cart_form-value">
-                от {{ deliveryPrice }} ₽
-              </div>
-            </div>
             <div class="cart_form-info">
               <div class="cart_form-label">
                 {{ t('cart.total') }}
@@ -89,17 +72,12 @@ definePageMeta({
 
 const { t } = useI18n();
 
-const deliveries = ref([
-  'cart.delivery_ways.cdek', 'cart.delivery_ways.post', 'cart.delivery_ways.courier',
-]);
-
 const formId = ref('infoForm');
 
 const { cartItems, changeQuantity, remove, clearCart } = useCart();
 // const settings = useSettings();
 
 const order = ref({
-  delivery: '',
   phone: '',
   name: '',
   username: '',
@@ -108,6 +86,7 @@ const order = ref({
   privacy: false,
 });
 const isSubmitting = ref(false);
+const purchaseIdempotencyKey = ref('');
 
 const subtotal = computed(() => {
   let price = 0;
@@ -122,23 +101,16 @@ const subtotal = computed(() => {
   return price;
 });
 
-const deliveryPrice = computed(() => {
-  if (!order.value.delivery) return '';
-  const prices = {
-    'cart.delivery_ways.cdek': 350,
-    'cart.delivery_ways.post': 250,
-    'cart.delivery_ways.courier': 500,
-  };
-  return prices[order.value.delivery];
-});
-
 const totalPrice = computed(() => {
-  return subtotal.value + (deliveryPrice.value || 0);
+  return subtotal.value;
 });
 
 type CreatePurchaseResponse = {
   uuid?: string;
   purchase_uuid?: string;
+  payment?: {
+    confirmation_url?: string;
+  };
   purchase?: {
     uuid?: string;
     purchase_uuid?: string;
@@ -147,22 +119,14 @@ type CreatePurchaseResponse = {
 
 const makeOrder = async () => {
   if (isSubmitting.value || cartItems.value.length === 0) return;
-  if (!order.value.delivery) return;
   if (!order.value.consent || !order.value.privacy) return;
 
-  const orderDelivery = order.value.delivery.split('.');
-  const deliveryType = orderDelivery[orderDelivery.length - 1];
   const newOrder = {
     customer: {
       name: order.value.name,
       phone: order.value.phone,
       username: order.value.username,
       email: order.value.email,
-    },
-    delivery: {
-      type: deliveryType,
-      address: '',
-      cost: deliveryPrice.value || 0,
     },
     items: cartItems.value.map(item => ({
       id: item.id,
@@ -172,13 +136,17 @@ const makeOrder = async () => {
         max: item.quantity?.max,
       },
     })),
-    price: totalPrice.value,
+    price: subtotal.value,
   };
 
   isSubmitting.value = true;
   try {
+    purchaseIdempotencyKey.value ||= crypto.randomUUID();
     const response = await $fetch<CreatePurchaseResponse>('/internal/purchases', {
       method: 'POST',
+      headers: {
+        'Idempotency-Key': purchaseIdempotencyKey.value,
+      },
       body: newOrder,
     });
     const purchaseUuid = response.uuid ?? response.purchase_uuid ?? response.purchase?.uuid ?? response.purchase?.purchase_uuid;
@@ -186,7 +154,6 @@ const makeOrder = async () => {
       throw new Error('Purchase UUID is missing in create purchase response');
     }
     order.value = {
-      delivery: '',
       username: '',
       phone: '',
       name: '',
@@ -195,6 +162,12 @@ const makeOrder = async () => {
       privacy: false,
     };
     clearCart();
+    purchaseIdempotencyKey.value = '';
+    const confirmationUrl = response.payment?.confirmation_url;
+    if (confirmationUrl) {
+      window.location.assign(confirmationUrl);
+      return;
+    }
     await navigateTo({
       path: '/cart/purchase',
       query: {

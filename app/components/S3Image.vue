@@ -39,7 +39,7 @@ const previewUrl = computed({
 const updateImage = () => {
   if (!previewUrl.value || uploading.value) return;
   previewUrl.value = '';
-};f
+};
 
 const upload = async (event: Event) => {
   const input = event.target as HTMLInputElement;

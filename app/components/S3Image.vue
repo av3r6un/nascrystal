@@ -1,6 +1,11 @@
 <template>
-  <div class="s3-image" :class="{ 's3-image_preview': previewUrl }" @click.stop>
-    <img v-if="previewUrl" :src="previewUrl" :alt="alt" class="base_image">
+  <div class="s3-image" :class="{ 's3-image_preview': previewUrl, 'replaceble': previewUrl }" @click.stop="updateImage">
+    <img
+      v-if="previewUrl"
+      :src="previewUrl"
+      :alt="alt"
+      class="base_image"
+    >
     <label v-else class="s3-image_placeholder" :title="t('panel.stock.upload_image')">
       <Icon name="nsc:upload" :size="18" />
       <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="upload">
@@ -18,12 +23,23 @@ const emit = defineEmits<{ uploaded: [result: { object_key: string; url: string 
 const { t } = useI18n();
 const auth = useAuthStore();
 const uploading = ref(false);
-const uploadedImage = ref('');
-const previewUrl = computed(() => {
-  if (uploadedImage.value) return uploadedImage.value;
-  if (typeof props.image === 'string') return props.image.trim();
-  return props.image?.url || '';
+const uploadedImage = ref<string | null>(null);
+const previewUrl = computed({
+  get: () => {
+    if (uploadedImage.value !== null) return uploadedImage.value;
+    if (typeof props.image === 'string') return props.image.trim();
+    return props.image?.url || '';
+  },
+  set: (value) => {
+    uploadedImage.value = value;
+    emit('uploaded', { object_key: '', url: value });
+  },
 });
+
+const updateImage = () => {
+  if (!previewUrl.value || uploading.value) return;
+  previewUrl.value = '';
+};f
 
 const upload = async (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -68,6 +84,30 @@ const upload = async (event: Event) => {
   overflow: hidden;
   &:has(.s3-image_placeholder) {
     border: 1px dashed $yellow-brown;
+  }
+  &.replaceble{
+    position: relative;
+    &:hover:after{
+      visibility: visible;
+    }
+    &:after{
+      position: absolute;
+      content: 'x';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $white;
+      font-family: $text-font;
+      text-transform: uppercase;
+      visibility: hidden;
+      background: rgba(black, 0.4);
+      border-radius: inherit;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+    }
   }
   &_placeholder{
     display: flex;

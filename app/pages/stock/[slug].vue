@@ -178,7 +178,7 @@ const stock = computed(() => {
         ...variant.offer,
         name: variant.name,
         attributes: variant.attributes,
-        primary_image: productImage.value,
+        primary_image: variant.image_url,
         variant: {
           [size?.option_id ?? variant.id]: {
             value: size?.value || variant.name,
@@ -190,7 +190,7 @@ const stock = computed(() => {
   };
 });
 
-const imageSrc = computed(() => productImage.value);
+const imageSrc = computed(() => stock.value.offers[selectedOffer.value].primary_image || productImage.value);
 
 const showLoading = computed(() => pending.value || (!data.value && !error.value));
 const showError = computed(() => Boolean(error.value) && !data.value);

@@ -110,6 +110,7 @@ type ProductVariant = {
   id: number;
   name: string;
   sku: string;
+  image_url?: string | null;
   attributes: ProductAttribute[];
   offer: ProductOffer;
 };
@@ -131,7 +132,7 @@ type StockItem = {
 type ViewOffer = ProductOffer & {
   name: string;
   attributes: ProductAttribute[];
-  primary_image: string;
+  primary_image?: string | null;
   variant: Record<number, { value: string; name?: string | null }>;
 };
 
@@ -190,7 +191,28 @@ const stock = computed(() => {
   };
 });
 
-const imageSrc = computed(() => stock.value.offers[selectedOffer.value].primary_image || productImage.value);
+const imageSrc = computed(() => {
+  const variant = currentVariant.value;
+  if (!variant) return '';
+  if (variant.image_url) return variant.image_url;
+
+  const imageAttributes = (item: ProductVariant) => item.attributes.filter(attr => (
+    attr.attribute.name !== 'Размер' && attr.attribute.name.toLowerCase() !== 'image_id'
+  ));
+  const attributes = imageAttributes(variant);
+  const similarVariant = stock.value.variants.find((candidate) => {
+    if (!candidate.image_url) return false;
+    const candidateAttributes = imageAttributes(candidate);
+    return attributes.length === candidateAttributes.length && attributes.every(attr => (
+      candidateAttributes.some(other => (
+        other.attribute.name === attr.attribute.name && other.value === attr.value
+      ))
+    ));
+  });
+  if (similarVariant) return similarVariant.image_url || '';
+
+  return attribute(variant, 'Грани') || attribute(variant, 'Форма') ? '' : productImage.value;
+});
 
 const showLoading = computed(() => pending.value || (!data.value && !error.value));
 const showError = computed(() => Boolean(error.value) && !data.value);
@@ -288,7 +310,6 @@ const buildAttrs = computed(() => {
 });
 
 const selectedSize = computed(() => attributeValue(attribute(currentVariant.value, 'Размер')));
-const primaryImage = computed(() => productImage.value);
 
 const addToCart = () => {
   const offer = currentOffer.value;
@@ -301,7 +322,7 @@ const addToCart = () => {
     name: variant.name || stock.value.name,
     properties: [color, selectedSize.value].filter(Boolean),
     price: Number(offer.amount),
-    image: primaryImage.value,
+    image: imageSrc.value,
     quantity: {
       value: Math.min(selectedAmount.value, offer.quantity),
       max: offer.quantity,

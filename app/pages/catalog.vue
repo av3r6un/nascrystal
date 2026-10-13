@@ -4,9 +4,9 @@
       <div class="catalog_title base_title a-left">
         {{ t('navbar.catalog') }}
       </div>
-      <div class="catalog_body">
+      <div class="catalog_body" :class="{ loading: showLoading }">
         <div v-if="showLoading" class="catalog_state">
-          {{ t('default.loading') }}
+          <LoadSpinner />
         </div>
         <div v-else-if="showError" class="catalog_state">
           <div class="warning">
@@ -192,6 +192,7 @@ const { data: catalogData, pending: catalogPending, error: catalogError } = awai
   () => $fetch<CatalogResponse>('/internal/catalog'),
   {
     server: false,
+    lazy: true,
     default: () => null,
   },
 );
@@ -200,6 +201,7 @@ const { data: stockData, pending: stockPending, error: stockError } = await useA
   () => $fetch<StockResponse>('/internal/stock', { query: stockRequestQuery.value }),
   {
     server: false,
+    lazy: true,
     watch: [stockRequestQuery],
     default: () => null,
   },
@@ -209,6 +211,7 @@ const { data: availabilityData, pending: availabilityPending, error: availabilit
   () => $fetch<CatalogAvailabilityResponse>('/internal/catalog/availability', { query: requestFilters.value }),
   {
     server: false,
+    lazy: true,
     watch: [requestFilters],
     default: () => null,
   },
@@ -321,6 +324,9 @@ const nextPage = () => {
     margin: 48px 0;
     display: flex;
     align-items: center;
+    &.loading{
+      justify-content: center;
+    }
     .warning{
       text-align: center;
       margin-bottom: 19px;

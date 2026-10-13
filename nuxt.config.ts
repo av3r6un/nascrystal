@@ -44,6 +44,7 @@ export default defineNuxtConfig({
   buildDir: '.nuxt/',
   routeRules: {
     '/panel/**': { ssr: false },
+    '/catalog/**': { ssr: false },
   },
   devServer: {
     host: '0.0.0.0',

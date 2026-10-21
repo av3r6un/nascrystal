@@ -67,35 +67,35 @@
             </div>
           </div>
         </div>
-        <div class="dashboard_actions">
-          <div class="dashboard_actions-wrapper">
-            <div class="dashboard_actions-title">
-              {{ t('panel.dashboard.quick_actions') }}
-            </div>
-            <div class="dashboard_actions-body">
-              <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/stock" class="base_link">
-                  <Icon name="nsc:lightning" :size="24" />
-                  {{ t('panel.dashboard.add_stock') }}
-                </NuxtLink>
+        <div class="dashboard_updates panel_section">
+          <div class="dashboard_updates-title">
+            {{ t('panel.dashboard.last_updates') }}
+          </div>
+          <div v-if="pending" class="dashboard_updates-state">
+            Loading...
+          </div>
+          <div v-else-if="error" class="dashboard_updates-state">
+            Failed to load changes
+          </div>
+          <div v-else-if="syncUpdates.length < 1" class="dashboard_udpates-state">
+            {{ t('panel.dashboard.updates_empty') }}
+          </div>
+          <div v-else class="dashboard_updates-list">
+            <div v-for="update in syncUpdates" :key="update.id" class="dashboard_updates-item">
+              <div class="dashboard_updates-event">
+                {{ t(`panel.updates.${update.entity_type}.${update.action}`) }}
+                <span
+                  class="muted"
+                  :title="update.entity_name"
+                >
+                  «{{ update.entity_name }}»
+                </span>
               </div>
-              <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/purchases" class="base_link">
-                  <Icon name="nsc:lightning" :size="24" />
-                  {{ t('panel.dashboard.watch_purchases') }}
-                </NuxtLink>
+              <div v-if="update.status === 'pending'" class="dashboard_history-ts">
+                {{ t(`panel.updates.pending`) }}
               </div>
-              <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/home" class="base_link">
-                  <Icon name="nsc:lightning" :size="24" />
-                  {{ t('panel.dashboard.edit_main_page') }}
-                </NuxtLink>
-              </div>
-              <div class="dashboard_actions-action">
-                <NuxtLink to="/panel/settings" class="base_link">
-                  <Icon name="nsc:lightning" :size="24" />
-                  {{ t('panel.dashboard.change_contacts') }}
-                </NuxtLink>
+              <div v-else class="dashboard_history-ts" :class="update.status">
+                {{ $rd(update.updated_at) }}
               </div>
             </div>
           </div>
@@ -127,8 +127,19 @@ type ChangeEventsResponse = {
   items: ChangeEventItem[];
 };
 
+type SyncUpdate = {
+  id: number;
+  entity_type: string;
+  entity_uuid: string;
+  action: string;
+  status: string;
+  entity_name: string;
+  updated_at: number | null;
+};
+
 type LastUpdateResponse = {
-  last_update_ts: number | null;
+  last_update: number | null;
+  updates: SyncUpdate[];
 };
 
 type ProductStatsResponse = {
@@ -244,9 +255,15 @@ const catalogStatsText = computed(() => {
   return `${products} (${variants})`;
 });
 const lastUpdateTs = computed(() => {
-  const value = lastUpdateData.value?.last_update_ts;
+  const value = lastUpdateData.value?.last_update;
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 });
+
+const syncUpdates = computed(() => {
+  const value = lastUpdateData.value?.updates;
+  return Array.isArray(value) ? value : [];
+});
+
 const makeNASID = (id: number) => `NAS-${id.toString().padStart(3, '0')}`;
 const purchaseTotal = (purchase: DashboardPurchase) => purchase.products.reduce((total, product) => total + product.price * product.quantity.value, 0);
 const purchaseProductsText = (purchase: DashboardPurchase) => purchase.products.map(product => `${product.name} × ${product.quantity.value}`).join(', ');
@@ -291,7 +308,8 @@ const { $rd } = useNuxtApp();
       grid-template-columns: 1fr;
     }
   }
-  &_history{
+  &_history,
+  &_updates{
     &-title{
       color: $brown;
       font-size: 20px;
@@ -335,6 +353,12 @@ const { $rd } = useNuxtApp();
       color: $light-brown;
       font-size: 14px;
       white-space: nowrap;
+      &.synced{
+        color: #718753;
+      }
+      &.failed{
+        color: #A45A5A;
+      }
     }
   }
   &_orders{

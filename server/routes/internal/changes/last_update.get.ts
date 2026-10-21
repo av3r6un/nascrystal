@@ -78,10 +78,7 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Invalid last update response from backend',
       });
     }
-
-    return {
-      last_update_ts: parseLastUpdateTs(getLastUpdateValue(response)),
-    };
+    return response.body;
   }
   catch (error) {
     console.error('FastAPI last update request failed', error);

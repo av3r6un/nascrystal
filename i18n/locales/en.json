@@ -273,6 +273,7 @@
       "edit_main_page": "Edit main page",
       "change_contacts": "Edit contacts",
       "quick_actions": "Quick Actions",
+      "last_updates": "Catalog syncing",
       "changes": "Recent changes",
       "changes_empty": "No recent changes",
       "orders": "Recent orders",
@@ -397,6 +398,24 @@
         "update_delivery": "Finish"
       }
     },
+    "updates": {
+      "product": {
+        "UPDATE": "Product updated",
+        "CREATE": "Product created",
+        "DELETE": "Product deleted"
+      },
+      "variant": {
+        "UPDATE": "Variant updated",
+        "CREATE": "Variant created",
+        "DELETE": "Variant deleted"
+      },
+      "customerorder": {
+        "UPDATE": "Order updated",
+        "CREATE": "Order created",
+        "DELETE": "Order deleted"
+      },
+      "pending": "В очереди"
+    },
     "statuses": {
       "created": "Created",
       "processing": "Processing",
@@ -467,6 +486,9 @@
       "updated": "Settings updated:"
     },
     "property_options": {
+      "updated": "Updated attribute:"
+    },
+    "attribute_options": {
       "updated": "Updated attribute:"
     },
     "static": {

@@ -1,115 +1,61 @@
-# Nuxt Minimal Starter
+# NAS Crystal — витрина и панель управления
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Nuxt 4, Vue 3 и Nitro. Репозиторий содержит витрину с каталогом и фильтрами, корзину, страницу оплаты и статуса заказа, CMS и панель управления. Отдельный FastAPI-бэкенд хранит каталог и заказы, синхронизирует ассортимент с МойСкладом и работает с ЮKassa и СДЭК.
 
-## Setup
+Браузер обращается к маршрутам Nuxt `/internal/*`. Для публичных сценариев Nitro использует сервисную учётную запись FastAPI. Для операций с заказами в панели передаётся токен сотрудника, роль проверяет FastAPI.
 
-Make sure to install dependencies:
+## Локальный запуск
 
-```bash
-# npm
-npm install
+Нужны Node.js 20.19+ и npm. Сначала запустите FastAPI на порту 8000. Создайте `.env` в корне фронтенда:
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+```dotenv
+NUXT_FASTAPI_BASE_URL=http://127.0.0.1:8000
+NUXT_FASTAPI_SERVICE_EMAIL=
+NUXT_FASTAPI_SERVICE_PASSWORD=
+NUXT_PUBLIC_SITE_URL=http://localhost:3000
+NUXT_PUBLIC_YANDEX_MAPS_API_KEY=
+NUXT_YANDEX_GEOCODER_API_KEY=
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+`NUXT_FAST_API_BASE_URL` поддерживается как альтернативное имя адреса API. Параметры сервисной учётной записи и ключи задаются в окружении запуска.
 
 ```bash
-# npm
+npm ci
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Витрина доступна на `http://localhost:3000`, панель — по пути `/panel`.
 
-Build the application for production:
+## Корзина и СДЭК
+
+- В корзине доступны самовывоз и включённые модули доставки. Виджет СДЭК 4.1.0 позволяет выбрать ПВЗ, постамат или курьерский адрес.
+- После выбора FastAPI проверяет маршрут и рассчитывает справочную стоимость. Доставка сохраняется вместе с заказом. ЮKassa принимает оплату за товар, доставка оплачивается отдельно.
+- После оплаты менеджер проверяет получателя, вводит фактический вес и размеры и сохраняет данные доставки. Бэкенд пересчитывает тариф, регистрирует отправление и сверяет изменения со СДЭК. Панель показывает статус регистрации, отправления и ожидающих изменений.
+- Подключение СДЭК настраивается в разделе модулей. Учётные данные СДЭК хранятся в БД бэкенда.
+
+Ключ JavaScript API Яндекс Карт передаётся браузеру и ограничивается доменами сайта. Ключ HTTP Геокодера остаётся на сервере Nitro. Виджет обращается к `/internal/delivery/cdek/geocode`, а Nuxt передаёт Яндексу настроенный `Referer`. По умолчанию это `http://localhost:3000/` в DEV и `NUXT_PUBLIC_SITE_URL` в production. Для отдельного домена можно задать `NUXT_YANDEX_GEOCODER_REFERER`.
+
+## Локали
+
+Базовые переводы лежат в [ru.json](i18n/locales/ru.json) и [en.json](i18n/locales/en.json). Поддерживайте одинаковый набор ключей. Маршрут `/internal/i18n/{locale}` объединяет локальные сообщения с переводами бэкенда.
+
+## Сборка и Docker
 
 ```bash
-# npm
+npm run lint
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-
-## Docker (SSR)
-
-Build image locally:
-
-```bash
-docker build -t nascrystal:local .
-```
-
-Run with Compose:
-
-```bash
-docker compose up -d --build
-```
-
-To run a published Docker Hub image, set `DOCKER_IMAGE` (for example in `.env`):
-
-```env
-DOCKER_IMAGE=docker.io/<dockerhub-user>/<repository>:latest
-```
-
-Then deploy updates on server:
+Production-сборка запускается через `node .output/server/index.mjs`. Для локальной сборки образа и запуска используйте `docker compose up -d --build`. Для опубликованного образа задайте `DOCKER_IMAGE` в `.env` и обновите контейнер:
 
 ```bash
 docker compose pull
 docker compose up -d --force-recreate
 ```
 
-## Docker Hub Publish Workflow
+Compose читает настройки из `.env`. Если FastAPI работает на хосте, укажите `http://host.docker.internal:8000` как адрес API для контейнера.
 
-Workflow file: `.github/workflows/publish-dockerhub.yml`
+[Workflow публикации образа](.github/workflows/publish-dockerhub.yml) использует секреты `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` и необязательную переменную `DOCKERHUB_REPOSITORY`.
 
-Required GitHub Actions secrets:
-
-- `DOCKERHUB_USERNAME`
-- `DOCKERHUB_TOKEN`
-
-Optional GitHub Actions variable:
-
-- `DOCKERHUB_REPOSITORY` (defaults to GitHub repository name)
+Фронтенд и FastAPI выпускаются согласованно: маршруты панели требуют токен сотрудника. Сборка Nuxt и линтер интеграции проверены локально. Сквозной сценарий с боевым СДЭК предстоит подтвердить.

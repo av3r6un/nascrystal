@@ -20,6 +20,7 @@ type PurchasePayload = {
   customer?: CustomerPayload;
   items?: PurchaseItemPayload[];
   price?: unknown;
+  delivery?: { module: string; data: Record<string, unknown> } | null;
 };
 
 type FastApiPurchaseResponse = {
@@ -90,6 +91,7 @@ export default defineEventHandler(async (event) => {
         },
         items,
         price: body.price,
+        delivery: body.delivery,
       },
       headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined,
       timeout: 65000,

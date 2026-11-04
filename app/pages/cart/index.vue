@@ -26,13 +26,26 @@
             v-model="order"
             @submit="makeOrder"
           />
+          <div v-if="deliveryModules.length || deliveryModulesError" class="cart_form-section">
+            <label for="delivery-module" class="delivery_section-title">Доставка</label>
+            <p v-if="deliveryModulesError" role="alert">
+              Не удалось загрузить способы доставки. <button type="button" class="base_link" @click="refreshDeliveryModules()">
+                Повторить
+              </button>
+            </p>
+            <PanelSelection v-model="deliveryModule" :options="allDeliveryModules" />
+            <p v-if="deliveryModule === 'manual'" class="delivery_section-description">
+              {{ t('cart.manual_delivery') }}
+            </p>
+            <CdekDelivery v-if="deliveryModule === 'cdek'" v-model="delivery" :quantity="deliveryQuantity" />
+          </div>
           <div class="cart_form-section">
             <div class="cart_form-info">
               <div class="cart_form-label">
                 {{ t('cart.total') }}
               </div>
               <div class="cart_form-value">
-                ≈ {{ totalPrice }} ₽
+                {{ totalPrice }} ₽
               </div>
             </div>
           </div>
@@ -53,11 +66,10 @@
             </div>
           </div>
           <div class="cart_form-section transparent">
-            <button type="submit" class="btn btn_submit" :form="formId" :disabled="isSubmitting">
+            <button type="submit" class="btn btn_submit" :form="formId" :disabled="isSubmitting || (deliveryModule === 'cdek' && !delivery)">
               {{ t('cart.submit') }}
             </button>
             <span class="caption">{{ t('cart.caption') }}</span>
-            <span class="caption">{{ t('cart.subcaption') }}</span>
           </div>
         </div>
       </div>
@@ -85,6 +97,15 @@ const order = ref({
   consent: false,
   privacy: false,
 });
+const deliveryModule = ref('');
+const delivery = ref<{ module: string; data: Record<string, unknown> } | null>(null);
+watch(deliveryModule, () => {
+  delivery.value = null;
+}, { flush: 'sync' });
+const { data: deliveryOptions, error: deliveryModulesError, refresh: refreshDeliveryModules } = await useFetch<{ items: { code: string; name: string; configured: boolean }[] }>('/internal/delivery/modules');
+const deliveryModules = computed(() => deliveryOptions.value?.items.filter(module => module.configured) ?? []);
+const allDeliveryModules = computed(() => [{ id: 'manual', name: 'Самовывоз' }, ...deliveryModules.value.map(dm => ({ id: dm.code, name: dm.name }))]);
+const deliveryQuantity = computed(() => cartItems.value.reduce((total, item) => total + (item.quantity?.value ?? 1), 0));
 const isSubmitting = ref(false);
 const purchaseIdempotencyKey = ref('');
 
@@ -120,6 +141,7 @@ type CreatePurchaseResponse = {
 const makeOrder = async () => {
   if (isSubmitting.value || cartItems.value.length === 0) return;
   if (!order.value.consent || !order.value.privacy) return;
+  if (deliveryModule.value === 'cdek' && !delivery.value) return;
 
   const newOrder = {
     customer: {
@@ -137,6 +159,7 @@ const makeOrder = async () => {
       },
     })),
     price: subtotal.value,
+    delivery: deliveryModule.value === 'cdek' ? delivery.value : null,
   };
 
   isSubmitting.value = true;
@@ -161,6 +184,8 @@ const makeOrder = async () => {
       consent: false,
       privacy: false,
     };
+    delivery.value = null;
+    deliveryModule.value = '';
     clearCart();
     purchaseIdempotencyKey.value = '';
     const confirmationUrl = response.payment?.confirmation_url;
@@ -259,10 +284,21 @@ const makeOrder = async () => {
         }
       }
     }
-    .caption{
-      text-align: center;
-      color: $light-brown;
-      font-size: 12px;
+  .caption{
+    text-align: center;
+    color: $light-brown;
+    font-size: 12px;
+  }
+  .delivery_section{
+    &-title{
+      color: $brown;
+      font-weight: 600;
+      font-size: 16px;
     }
+    &-description{
+      color: $light-brown;
+      font-size: 14px;
+    }
+  }
 }
 </style>

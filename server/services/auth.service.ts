@@ -217,6 +217,15 @@ export const getNitroAccessToken = async (event?: H3Event, forceRefresh = false)
   return nitroSession.accessToken;
 };
 
+export const callFastApiAsUser = <T>(event: H3Event, path: string, options: FetchOptions<'json'> = {}) => {
+  const authorization = getHeader(event, 'authorization');
+  if (!authorization?.startsWith('Bearer ')) throw createError({ statusCode: 401 });
+  return $fetch<T>(buildUrl(event, path), withFastApiOptions({
+    ...options,
+    headers: { Authorization: authorization },
+  }));
+};
+
 export const callFastApiAsNitro = async <T>(
   event: H3Event,
   path: string,

@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   ],
   plugins: ['~/plugins/relativeDatePlugin'],
   ssr: true,
-  devtools: { enabled: false },
+  devtools: { enabled: true },
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
     head: {
@@ -34,9 +34,12 @@ export default defineNuxtConfig({
     description: 'NAS Crystal',
   },
   runtimeConfig: {
+    yandexGeocoderApiKey: '',
+    yandexGeocoderReferer: '',
     fastApiBaseUrl: process.env.NUXT_FASTAPI_BASE_URL || process.env.NUXT_FAST_API_BASE_URL,
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nascrystal.ru',
+      yandexMapsApiKey: '',
       siteName: 'NAS Crystal',
       siteDescription: 'NAS Crystal',
     },

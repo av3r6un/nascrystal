@@ -1,4 +1,4 @@
-import { callFastApiAsNitro } from '@@/server/services/auth.service';
+import { callFastApiAsNitro, callFastApiAsUser } from '@@/server/services/auth.service';
 
 export default defineEventHandler(async (event) => {
   const uuid = getQuery(event).purchase;
@@ -14,16 +14,17 @@ export default defineEventHandler(async (event) => {
   try {
     const url = uuid ? `/api/purchases/by-uuid/${uuid}` : `/api/purchases/${id}`;
 
-    const response = await callFastApiAsNitro(event, url, {
+    const request = uuid ? callFastApiAsNitro : callFastApiAsUser;
+    const response = await request<{ body: unknown }>(event, url, {
       method: 'GET',
+      timeout: 65000,
     });
 
     return response.body;
   }
   catch (error) {
-    console.error('FastAPI purchases request failed', error);
     throw createError({
-      statusCode: 502,
+      statusCode: (error as { statusCode?: number }).statusCode || 502,
       statusMessage: 'Failed to load purchases',
     });
   }

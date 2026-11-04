@@ -11,7 +11,10 @@
     "more": "More",
     "redaction": "Last redacted on",
     "pieces": "pcs",
-    "and": "and"
+    "and": "and",
+    "go_to": "Open",
+    "true": "Yes",
+    "false": "No"
   },
   "navbar": {
     "home": "Home",
@@ -74,27 +77,32 @@
       {
         "icon": "diamond",
         "title": "Cold-fix rhinestones",
-        "info": "12 faces"
+        "info": "12 faces",
+        "href": "/catalog?fixation=Non&cuts=12cut"
       },
       {
         "icon": "diamond",
         "title": "Cold-fix rhinestones",
-        "info": "16 faces (xirius)"
+        "info": "16 faces (xirius)",
+        "href": "/catalog?fixation=Non&cuts=16cut"
       },
       {
         "icon": "diamond",
         "title": "Hot-fix rhinestones",
-        "info": "12 faces"
+        "info": "12 faces",
+        "href": "/catalog?fixation=Hot&cuts=12cut"
       },
       {
         "icon": "diamond",
         "title": "Hot-fix rhinestones",
-        "info": "16 faces (xirius)"
+        "info": "16 faces (xirius)",
+        "href": "/catalog?fixation=Hot&cuts=16cut"
       },
       {
         "icon": "diamond",
         "title": "Sewn-on rhinestones (K9)",
-        "info": "For suits and dresses"
+        "info": "For suits and dresses",
+        "href": "/catalog?fixation=K9"
       },
       {
         "icon": "diamond",
@@ -193,12 +201,14 @@
     "caption": "After placing the order, you will be redirected to the secure YooKassa payment page",
     "subcaption": "The order will be created and sent to MoySklad before payment.",
     "empty": "The shopping cart is empty. Add products by selecting them from our catalog.",
-    "to_catalog": "Visit catalog"
+    "to_catalog": "Visit catalog",
+    "manual_delivery": "After you pay for the order, a manager will contact you with pickup details."
   },
   "purchase": {
     "title": {
       "created": "Order placed",
       "processing": "Order confirmed",
+      "assembling": "Order is being packed",
       "delivering": "Order is being delivered",
       "finished": "Order completed",
       "succeeded": "Order is confirmed",
@@ -209,11 +219,13 @@
     "caption": {
       "created": "We have received your order. If the automatic redirect did not happen, try proceeding to payment again.",
       "processing": "The order has been confirmed by the manager. If payment is already available, you can use the link below.",
+      "assembling": "Your order is paid. We are preparing and packing it for delivery.",
       "delivering": "The order has been handed over for delivery.",
       "finished": "The order is complete. Thank you for your purchase!",
       "succeeded": "Your order has been successfully paid for and submitted for processing.",
       "errored": "Your order is not found. Try again a bit later.",
-      "awaiting_payment": "The order has been created and is awaiting payment. After payment, you will be returned to this page."
+      "awaiting_payment": "The order has been created and is awaiting payment. After payment, you will be returned to this page.",
+      "not_found": "Order not found. Please try again later."
     },
     "info_title": "Order info",
     "purchase": {
@@ -229,6 +241,7 @@
   "panel": {
     "img_placeholder": "Image",
     "img_placeholder_caption": "Drag & drop or click for load image",
+    "description_placeholder": "Enable option",
     "title": "Title",
     "subtitle": "Subtitle",
     "button_add": "Add",
@@ -255,6 +268,7 @@
       "stock": "Stock",
       "purchases": "Purchases",
       "settings": "Settings",
+      "modules": "Modules",
       "user": "Administrator",
       "custom_editor": "Custom setting",
       "static_pages": "Static Pages",
@@ -382,20 +396,107 @@
       "statuses": {
         "created": "created",
         "processing": "processing",
+        "assembling": "Being packed",
         "delivering": "delivering",
         "finished": "finished"
       },
       "purchase": "Order",
       "form": {
         "telegram_id": "Telegram/Max ID",
-        "name": "Name",
-        "name_ph": "John",
+        "name": "Full name",
+        "name_ph": "Ivan Ivanov",
         "email": "Email",
         "phone": "Phone",
         "phone_ph": "+79999999999",
         "final_price": "Final price",
         "submit": "Save changes",
-        "update_delivery": "Finish"
+        "update_delivery": "Finish",
+        "contact_details": "Contact information",
+        "delivery_details": "Delivery details",
+        "payment_details": "Payment details",
+        "city_code": "City code",
+        "city_code_ph": "Start typing a city name",
+        "address": "Full address",
+        "address_ph": "Moscow, Varshavskoye Highway, 71/1",
+        "dispatch": "Hand over for delivery",
+        "delivery": {
+          "cdek": "CDEK",
+          "manual": "Self pickup",
+          "courier": "Courier",
+          "post": "Postal service"
+        },
+        "delivery_method": "Delivery method",
+        "delivery_methods": {
+          "courier": "Courier",
+          "pickup_point": "Pickup point"
+        },
+        "delivery_weight": "Weight",
+        "delivery_length": "Length",
+        "delivery_width": "Width",
+        "delivery_height": "Height",
+        "delivery_dimensions": "L × H × W",
+        "delivery_point": "Pickup point",
+        "delivery_point_ph": "Pickup point code",
+        "payment_amount": "Goods total",
+        "payment_status": "Payment status",
+        "payment_date": "Payment date",
+        "payment_confirmation": "Payment confirmation",
+        "payment_provider": "Payment provider",
+        "payment_statuses": {
+          "succeeded": "Paid",
+          "errored": "Payment failed"
+        },
+        "payment_providers": {
+          "yookassa": "YooKassa"
+        },
+        "review_and_packed": "Details checked and order packed",
+        "review_caption": "The order is packed and the parcel weight and dimensions have been entered.",
+        "recipient_collection_confirmed": "The buyer pays for delivery",
+        "collection_confirmation": "The recipient pays CDEK separately for delivery.",
+        "recipient_is_company": "The buyer is a legal entity",
+        "recipient_status": "Sale to a legal entity",
+        "company_name": "Company name",
+        "company_name_ph": "Flower Yard LLC",
+        "tin": "Tax ID",
+        "tin_ph": "10 digits"
+      },
+      "delivery_state": {
+        "phs": {
+          "purchase_state": "Order status",
+          "registration_state": "Registration status",
+          "delivery_state": "Delivery status",
+          "editing": "Changes allowed",
+          "tracking_number": "Waybill number",
+          "cancellation": "Cancelled"
+        },
+        "purchase": {
+          "delivering": "Out for delivery",
+          "processing": "Processing",
+          "assembling": "Being packed"
+        },
+        "operation": {
+          "accepted": "Awaiting confirmation",
+          "pending": "Processing",
+          "rejected": "Rejected",
+          "unknown": "Unknown",
+          "success": "Confirmed"
+        },
+        "cdek": {
+          "ACCEPTED": "With the sender",
+          "CREATED": "With the sender",
+          "TAKEN_BY_COURIER": "Collected by courier",
+          "DELIVERED": "Delivered",
+          "REMOVED": "Removed",
+          "NOT_DELIVERED": "Not delivered",
+          "RECEIVED_AT_SHIPMENT_WAREHOUSE": "Received at the dispatch warehouse"
+        },
+        "registration": {
+          "accepted": "Awaiting confirmation",
+          "submitting": "Submitting request",
+          "success": "Request created",
+          "rejected": "Request rejected",
+          "unknown": "Outcome unknown"
+        }
       }
     },
     "updates": {
@@ -414,15 +515,74 @@
         "CREATE": "Order created",
         "DELETE": "Order deleted"
       },
-      "pending": "В очереди"
+      "pending": "В очереди",
+      "stock": {
+        "UPDATE": "Product updated",
+        "CREATE": "Product created",
+        "DELETE": "Product deleted"
+      }
     },
     "statuses": {
       "created": "Created",
       "processing": "Processing",
       "awaiting_payment": "Awaiting payment",
+      "assembling": "Being packed",
       "delivering": "Delivering",
       "finished": "Finished",
       "canceled": "Canceled"
+    },
+    "integrations": {
+      "add_module": "Add module",
+      "conn_check": "Checking connection…",
+      "conn_success": "Connection verified and settings saved.",
+      "conn_error": "Could not verify or save the settings. Check the fields and module availability.",
+      "cdek": {
+        "auth": {
+          "title": "Authentication",
+          "account_placeholder": "Account",
+          "password_placeholder": "Secure password",
+          "caption": "Leave blank to keep the current values"
+        },
+        "shipment_point": {
+          "title": "CDEK point code",
+          "placeholder": "CDEK dispatch point code"
+        },
+        "from_location": {
+          "code": {
+            "title": "City code",
+            "placeholder": "Sender city code"
+          },
+          "address": {
+            "title": "Address",
+            "placeholder": "Warehouse address"
+          }
+        },
+        "contragent": {
+          "title": "Sender"
+        },
+        "tin": {
+          "title": "Tax ID",
+          "placeholder": "10 digits"
+        },
+        "company": {
+          "title": "Name",
+          "placeholder": "Company or sole proprietor name"
+        },
+        "sender": {
+          "name": {
+            "title": "Sender name",
+            "placeholder": "Ivan Ivanov"
+          },
+          "phone": {
+            "title": "Phone",
+            "placeholder": "+79951131212"
+          },
+          "email": {
+            "title": "Email",
+            "placeholder": "info{'@'}nascrystal.ru"
+          }
+        }
+      }
     }
   },
   "dates": {

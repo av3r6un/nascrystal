@@ -1,11 +1,12 @@
 <template>
   <div class="input">
-    <div class="input_name" :class="{ required }">
+    <div v-if="name" class="input_name" :class="{ required }">
       {{ t(`${name}`) }}
     </div>
     <input
       v-model="localValue"
       :type="type"
+      :inputmode="inputmode"
       :placeholder="ph"
       :required="required"
       :autocomplete="defAutocomplete"
@@ -23,7 +24,7 @@ const { t, te } = useI18n();
 const props = defineProps({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   type: {
     type: String,
@@ -33,6 +34,7 @@ const props = defineProps({
     type: String,
     default: 'Введите текст',
   },
+  inputmode: String,
   required: {
     type: Boolean,
     default: false,

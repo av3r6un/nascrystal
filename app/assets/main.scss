@@ -150,6 +150,11 @@ h3{
   }
 }
 .input {
+  &.dimension{
+    .input_wide{
+      max-width: 180px;
+    }
+  }
   .input_wide{
     margin-bottom: 0;
   }

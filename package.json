@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@cdek-it/widget": "4.1.0",
     "@nuxt/eslint": "^1.15.1",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/icon": "^2.2.1",

@@ -2,10 +2,10 @@
   <div class="checkbox">
     <div class="checkbox_info">
       <div class="checkbox_title">
-        {{ t(title) }}
+        {{ te(title) ? t(title) : title }}
       </div>
-      <div class="checkbox_description">
-        {{ t(description) }}
+      <div v-if="description" class="checkbox_description">
+        {{ te(description) ? t(description) : defDescr }}
       </div>
     </div>
     <div class="checkbox_checkbox" :class="{ checked: isChecked }" @click="toggle">
@@ -31,7 +31,7 @@ const props = defineProps({
   },
   description: {
     type: String,
-    default: 'Включить опцию',
+    required: false,
   },
   states: {
     type: Array as PropType<[CheckboxState, CheckboxState]>,
@@ -43,11 +43,12 @@ const props = defineProps({
   },
 });
 
-const { t } = useI18n();
+const { te, t } = useI18n();
 
 const stateOn = computed(() => props.states?.[0] ?? true);
 const stateOff = computed(() => props.states?.[1] ?? false);
 const isChecked = computed(() => props.modelValue === stateOn.value);
+const defDescr = computed(() => props.description !== null ? 'panel.description_placeholder' : null);
 
 const toggle = () => {
   emit('update:modelValue', isChecked.value ? stateOff.value : stateOn.value);
@@ -61,6 +62,7 @@ const toggle = () => {
   justify-content: space-between;
   width: 100%;
   padding: 0 5px;
+  gap: 20px;
   &_title{
     font-size: 22px;
     font-family: $title-font;
@@ -78,6 +80,7 @@ const toggle = () => {
   &_description{
     color: $light-brown;
     font-size: 15px;
+    white-space: pre;
   }
   &_checkbox{
     cursor: pointer;

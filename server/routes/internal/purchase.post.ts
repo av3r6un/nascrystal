@@ -1,4 +1,4 @@
-import { callFastApiAsNitro } from '@@/server/services/auth.service';
+import { callFastApiAsUser } from '@@/server/services/auth.service';
 
 type PurchaseUpdatePayload = {
   [key: string]: unknown;
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await callFastApiAsNitro<FastApiPurchaseResponse>(event, `/api/purchases/${id}`, {
+    const response = await callFastApiAsUser<FastApiPurchaseResponse>(event, `/api/purchases/${id}`, {
       method: 'PATCH',
       body,
       timeout: 65000,
@@ -29,10 +29,12 @@ export default defineEventHandler(async (event) => {
     return response.body;
   }
   catch (error) {
-    console.error('FastAPI purchase update request failed', error);
+    const failure = error as { statusCode?: number; data?: { data?: { message?: string }; message?: string; errors?: { message?: string }[] } };
+    const message = failure.data?.errors?.[0]?.message || failure.data?.data?.message || failure.data?.message;
     throw createError({
-      statusCode: 502,
+      statusCode: failure.statusCode || 502,
       statusMessage: 'Failed to update purchase',
+      data: { message: message || 'Не удалось сохранить заказ и данные СДЭК' },
     });
   }
 });

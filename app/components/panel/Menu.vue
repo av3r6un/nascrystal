@@ -65,6 +65,14 @@
         </NuxtLink>
       </div>
       <div class="navbar_item">
+        <NuxtLink to="/panel/modules" class="base_link">
+          <Icon name="nsc:modules" :size="24" />
+          <span class="navbar_item-text">
+            {{ t('panel.navbar.modules') }}
+          </span>
+        </NuxtLink>
+      </div>
+      <div class="navbar_item">
         <NuxtLink to="/panel/settings" class="base_link">
           <Icon name="nsc:cog" :size="24" />
           <span class="navbar_item-text">

@@ -11,7 +11,10 @@
     "more": "Подробнее",
     "redaction": "Редакция от",
     "pieces": "шт.",
-    "and": "и"
+    "and": "и",
+    "go_to": "Перейти",
+    "true": "Да",
+    "false": "Нет"
   },
   "navbar": {
     "home": "Главная",
@@ -65,7 +68,8 @@
   "index_page": {
     "title": "Главная",
     "description": "Премиальные стразы и кристаллы для дизайнеров и брендов, декоративные элементы для моды, танцевальных костюмов и ателье.",
-    "error": "Ошибка загрузки страницы, попробуйте позже"
+    "error": "Ошибка загрузки страницы, попробуйте позже",
+    "og_image": "/img/nascrystal.png"
   },
   "categories": {
     "title": "Категории товаров",
@@ -191,6 +195,7 @@
         "end": "и принимаю их условия."
       }
     },
+    "manual_delivery": "После оплаты заказы с Вами свяжется менеджер для передачи всей необходимой информации о самовывозе.",
     "subtotal": "Стоимость",
     "total": "Итого",
     "submit": "Перейти к оплате",
@@ -203,20 +208,24 @@
     "title": {
       "created": "Заказ оформлен",
       "awaiting_payment": "Заказ подтвержден",
+      "assembling": "Заказ в сборке",
       "delivering": "Заказ в доставке",
       "finished": "Заказ завершен",
       "succeeded": "Заказ успешно оформлен",
       "not_found": "Заказ не найден",
-      "errored": "Ошибка оформления заказа"
+      "errored": "Ошибка оформления заказа",
+      "processing": "Заказ подтверждён"
     },
     "caption": {
       "created": "Мы получили ваш заказ. Если автоматический переход не произошёл, попробуйте перейти к оплате ещё раз.",
       "awaiting_payment": "Заказ создан и ожидает оплаты. После оплаты вы вернётесь на эту страницу.",
+      "assembling": "Товар оплачен. Собираем и упаковываем заказ перед передачей в доставку.",
       "delivering": "Заказ передан в доставку.",
       "finished": "Заказ завершен. Спасибо за покупку!",
       "not_found": "Заказ не найден, попробуйте повторить позже",
       "succeeded": "Ваш заказ успешно оплачен и передан в обработку.",
-      "errored": ""
+      "errored": "",
+      "processing": "Менеджер подтвердил заказ. Если оплата уже доступна, воспользуйтесь ссылкой ниже."
     },
     "info_title": "Информация о заказе",
     "purchase": {
@@ -232,6 +241,7 @@
   "panel": {
     "img_placeholder": "Изображение",
     "img_placeholder_caption": "Перетащите изображение или нажмите для загрузки",
+    "description_placeholder": "Включить опцию",
     "title": "Заголовок",
     "subtitle": "Подзаголовок",
     "button_add": "Добавить",
@@ -258,9 +268,11 @@
       "stock": "Товары",
       "purchases": "Заказы",
       "settings": "Настройки",
+      "modules": "Модули",
       "user": "Администратор",
       "purchase": "Заказ",
-      "custom_editor": "Детальная настройка"
+      "custom_editor": "Детальная настройка",
+      "static_page": "Статические страницы"
     },
     "options": {
       "full_width": {
@@ -298,6 +310,7 @@
       "created": "Создан",
       "processing": "В обработке",
       "awaiting_payment": "Ожидание оплаты",
+      "assembling": "В сборке",
       "delivering": "В доставке",
       "finished": "Завершён",
       "canceled": "Отменён"
@@ -372,7 +385,11 @@
       "manual_confirm": "Вы уверены, что хотите принудительно импортировать товары?",
       "import_success": "Товары успешно импортированы",
       "import_error": "Не удалось импортировать товары",
-      "skipped_products": "Пропущены товары без модификаций"
+      "skipped_products": "Пропущены товары без модификаций",
+      "purge": "Очистить каталог",
+      "purge_confirm": "Удалить все товары из каталога?",
+      "purge_success": "Все товары удалены",
+      "purge_error": "Не удалось удалить товары"
     },
     "purchases": {
       "title": "Заказы",
@@ -386,16 +403,109 @@
         "price": "Цена",
         "status": "Статус"
       },
+      "delivery_state": {
+        "phs": {
+          "purchase_state": "Статус заказа",
+          "registration_state": "Статус регистрации",
+          "delivery_state": "Статус доставки",
+          "editing": "К изменению",
+          "tracking_number": "Накладная",
+          "cancellation": "Отменено"
+        },
+        "purchase": {
+          "delivering": "В доставке",
+          "processing": "В обработке",
+          "assembling": "В сборке"
+        },
+        "operation": {
+          "accepted": "Ожидает подтверждения",
+          "pending": "Обрабатывается",
+          "rejected": "Отклонена",
+          "unknown": "Неизвестен",
+          "success": "Подтверждено"
+        },
+        "cdek": {
+          "ACCEPTED": "У отправителя",
+          "CREATED": "У отправителя",
+          "TAKEN_BY_COURIER": "Принята курьером",
+          "DELIVERED": "Доставлено",
+          "REMOVED": "Удалено",
+          "NOT_DELIVERED": "Не доставлено",
+          "RECEIVED_AT_SHIPMENT_WAREHOUSE": "Принята на складе"
+        },
+        "registration": {
+          "accepted": "Ожидает подтверждения",
+          "submitting": "Заявка отправляется",
+          "success": "Заявка создана",
+          "rejected": "Заявка отклонена",
+          "unknown": "Результат неизвестен"
+        }
+      },
       "form": {
+        "contact_details": "Контактная информация",
+        "delivery_details": "Информация о доставке",
+        "payment_details": "Информация об оплате",
         "telegram_id": "Telegram/Max ID",
-        "name": "Имя",
-        "name_ph": "Иван",
+        "name": "ФИО",
+        "name_ph": "Иванов Иван Иванович",
         "email": "Почта",
         "phone": "Телефон",
         "phone_ph": "+79999999999",
         "final_price": "Итоговая стоимость",
+        "city_code": "Код города",
+        "city_code_ph": "Начните вводить название города",
+        "address": "Полный адрес",
+        "address_ph": "г. Москва, Варшавское шоссе 71к1",
         "submit": "Сохранить изменения",
-        "update_delivery": "Завершить"
+        "update_delivery": "  Завершить",
+        "dispatch": "Передать в доставку",
+        "delivery": {
+          "cdek": "СДЭК",
+          "manual": "Самовывоз",
+          "courier": "Курьер",
+          "post": "Почта"
+        },
+        "delivery_method": "Способ доставки",
+        "delivery_methods": {
+          "courier": "Курьер",
+          "pickup_point": "ПВЗ"
+        },
+        "delivery_weight": "Вес",
+        "delivery_length": "Длина",
+        "delivery_width": "Ширина",
+        "delivery_height": "Высота",
+        "delivery_dimensions": "ДхВхШ",
+        "delivery_point": "Пункт выдачи",
+        "delivery_point_ph": "Код пункта выдачи",
+        "payment_amount": "Стоимость товаров",
+        "payment_status": "Статус оплаты",
+        "payment_date": "Дата платежа",
+        "payment_confirmation": "Потверждение платежа",
+        "payment_provider": "Платёжный сервис",
+        "payment_statuses": {
+          "succeeded": "Успешно оплачен",
+          "errored": "Ошибка оплаты"
+        },
+        "payment_providers": {
+          "yookassa": "ЮКасса"
+        },
+        "review_and_packed": "Данные проверены, заказ собран",
+        "review_caption": "Заказ упакован, указаны вес и размеры\nготовой посылки.",
+        "recipient_collection_confirmed": "Доставку оплачивает покупатель",
+        "collection_confirmation": "Доставку получатель оплачивает\nотдельно в СДЭК.",
+        "recipient_is_company": "Покупателем является юр. лицо",
+        "recipient_status": "Продажа юр. лицу",
+        "company_name": "Название компании",
+        "company_name_ph": "ООО \"Цветочный двор\"",
+        "tin": "ИНН",
+        "tin_ph": "10 цифр"
+      },
+      "statuses": {
+        "created": "Создан",
+        "processing": "В обработке",
+        "assembling": "В сборке",
+        "delivering": "В доставке",
+        "finished": "Завершён"
       }
     },
     "updates": {
@@ -411,10 +521,68 @@
       },
       "customerorder": {
         "UPDATE": "Заказ обновлён",
-        "CREATE": "Заказ обновлён",
-        "DELETE": "Заказ обновлён"
+        "CREATE": "Заказ создан",
+        "DELETE": "Заказ удалён"
+      },
+      "stock": {
+        "UPDATE": "Товар обновлён",
+        "CREATE": "Товар создан",
+        "DELETE": "Товар удалён"
       },
       "pending": "В очереди"
+    },
+    "integrations": {
+      "add_module": "Добавить модуль",
+      "conn_check": "Проверка подключения…",
+      "conn_success": "Подключение проверено, настройки сохранены.",
+      "conn_error": "Не удалось проверить или сохранить настройки. Проверьте поля и доступность модуля.",
+      "cdek": {
+        "auth": {
+          "title": "Авторизация",
+          "account_placeholder": "Account",
+          "password_placeholder": "Secure password",
+          "caption": "Пустые поля сохраняют текущие значения"
+        },
+        "shipment_point": {
+          "title": "Код СДЭК",
+          "placeholder": "Код пункта выдачи СДЭК"
+        },
+        "from_location": {
+          "code": {
+            "title": "Код города",
+            "placeholder": "Код города отправителя"
+          },
+          "address": {
+            "title": "Адрес",
+            "placeholder": "Адрес склада"
+          }
+        },
+        "contragent": {
+          "title": "Отправитель"
+        },
+        "tin": {
+          "title": "ИНН",
+          "placeholder": "10 цифр"
+        },
+        "company": {
+          "title": "Название",
+          "placeholder": "Название компании или ИП"
+        },
+        "sender": {
+          "name": {
+            "title": "Имя отправителя",
+            "placeholder": "Иван Иванов"
+          },
+          "phone": {
+            "title": "Телефон",
+            "placeholder": "+79951131212"
+          },
+          "email": {
+            "title": "E-mail",
+            "placeholder": "info{'@'}nascrystal.ru"
+          }
+        }
+      }
     }
   },
   "dates": {

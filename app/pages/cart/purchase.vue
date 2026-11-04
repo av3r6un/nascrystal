@@ -179,7 +179,7 @@ const paymentClass = computed(() => {
 });
 
 const paymentShown = computed(() => {
-  const canBeShownPayment = ['awaiting_payment', 'delivering', 'finished', 'succeeded'];
+  const canBeShownPayment = ['awaiting_payment', 'delivering', 'finished', 'assembling', 'succeeded'];
   return canBeShownPayment.includes(purchase.value?.status ?? '');
 });
 

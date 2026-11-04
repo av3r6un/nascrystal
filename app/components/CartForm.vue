@@ -9,7 +9,7 @@
       />
     </div>
     <div class="form_item">
-      <CmsElementsInput
+      <CmsElementsPhone
         v-model="userPhone"
         name="cart.form.phone"
         type="text"

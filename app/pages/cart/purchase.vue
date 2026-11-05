@@ -53,6 +53,38 @@
             </div>
           </div>
         </div>
+        <div v-if="purchase.delivery" class="payment_info-delivery payment_section">
+          <div class="payment_info-title">
+            {{ t('purchase.delivery.title') }}
+          </div>
+          <div class="payment_info-body">
+            <div class="payment_info-row">
+              <div class="payment_info-label">
+                {{ t('purchase.delivery.status_title') }}
+              </div>
+              <div class="payment_info-value">
+                {{ deliveryStatus }}
+              </div>
+            </div>
+            <div class="payment_info-row">
+              <div class="payment_info-label">
+                {{ t('purchase.delivery.address') }}
+              </div>
+              <div class="payment_info-value address" :title="fullAddress">
+                {{ delivery.delivery_point }}
+                <Icon name="nsc:info" :size="16" />
+              </div>
+            </div>
+            <div class="payment_info-row">
+              <div class="payment_info-label">
+                {{ t('purchase.delivery.amount') }}
+              </div>
+              <div class="payment_info-value">
+                &asymp; {{ Number(delivery.delivery_cost).toFixed() }} ₽
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="payment_links">
         <div v-if="paymentShown" class="payment_action" :class="paymentClass">
@@ -65,8 +97,19 @@
           >
             {{ t('purchase.go_to_payment') }}
           </button>
-          <a v-else :href="payment?.confirmation_url" class="base_link btn_add">
+          <a
+            v-else-if="payment.paid && !purchase.delivery?.tracking_number"
+            :href="payment?.confirmation_url"
+            class="base_link btn_add"
+          >
             {{ t('purchase.check_payment') }}
+          </a>
+          <a
+            v-else
+            :href="trackingLink"
+            class="base_link btn_add"
+          >
+            {{ t('purchase.track_order') }}
           </a>
         </div>
         <div class="payment_leave">
@@ -95,7 +138,23 @@ definePageMeta({
 
 const route = useRoute();
 
-const { t } = useI18n();
+const { t, te } = useI18n();
+
+type DeliveryData = {
+  delivery_point: string;
+  package: object;
+  delivery_cost: string;
+  address: string;
+  city_name: string;
+  recipient: object;
+};
+
+type DeliveryResponse = {
+  tracking_number?: string;
+  status?: string;
+  module: string;
+  data: DeliveryData;
+};
 
 type PurchasePayment = {
   confirmation_url?: string;
@@ -115,7 +174,7 @@ type PurchaseDetails = {
     name?: string;
     phone?: string;
   };
-  payment?: PurchasePayment | null;
+  delivery: DeliveryResponse | null;
 };
 
 type PurchaseResponse = {
@@ -205,6 +264,19 @@ const getPaymentLink = async () => {
     paymentLoading.value = false;
   }
 };
+
+const delivery = computed<Partial<DeliveryData>>(() => purchase.value?.delivery?.data ?? {});
+const deliveryStatus = computed(() => {
+  const status = purchase.value?.delivery?.status ?? 'draft';
+  const key = `purchase.delivery.status.${status}`;
+  return t(te(key) ? key : 'purchase.delivery.status.unknown');
+});
+
+const fullAddress = computed(() =>
+  (`${delivery.value.delivery_point}, ${delivery.value.city_name}, ${delivery.value.address}`),
+);
+
+const trackingLink = computed(() => `https://lk.cdek.ru/order-history/trace?orderNumber=${purchase.value?.delivery?.tracking_number}`);
 </script>
 
 <style lang="scss" scoped>
@@ -253,6 +325,12 @@ const getPaymentLink = async () => {
     }
     &-value{
       text-align: right;
+      cursor: default;
+      &.address{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
     }
     &-title{
       color: $brown;
@@ -260,6 +338,7 @@ const getPaymentLink = async () => {
       font-size: 24px;
       font-weight: 600;
       margin-bottom: 12px;
+      user-select: none;
     }
     &-label{
       color: $light-brown;

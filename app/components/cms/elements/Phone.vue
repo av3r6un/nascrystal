@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AsYouType } from 'libphonenumber-js';
+import { AsYouType, isValidPhoneNumber } from 'libphonenumber-js';
 
 const props = defineProps({
   name: {
@@ -52,7 +52,9 @@ const isValid = ref(true);
 
 const formatInput = (value: string) => {
   const formatter = new AsYouType();
-  const formatted = formatter.input(value);
+  const trimmed = value.trim();
+  const internationalValue = trimmed && !trimmed.startsWith('+') ? `+${trimmed}` : trimmed;
+  const formatted = formatter.input(internationalValue);
   const country = formatter.getCountry();
   const callingCode = formatter.getCallingCode();
   countryFlag.value = country
@@ -62,7 +64,7 @@ const formatInput = (value: string) => {
   nationalNumber.value = callingCode
     ? formatted.slice(dialCode.value.length).trimStart()
     : formatted;
-  isValid.value = value === '' ? !props.required : formatter.isValid();
+  isValid.value = trimmed === '' ? !props.required : formatter.isValid();
   return formatter.getChars();
 };
 
@@ -74,10 +76,10 @@ const onInput = (e: Event) => {
   const target = e.target;
   if (!(target instanceof HTMLInputElement)) return;
 
-  const value = target.value;
+  const value = target.value.trim();
   const internationalValue = value === '' || value.startsWith('+')
     ? value
-    : `${dialCode.value}${value}`;
+    : isValidPhoneNumber(`+${value}`) ? `+${value}` : `${dialCode.value}${value}`;
   const normalized = formatInput(internationalValue);
   target.value = nationalNumber.value;
   emit('update:modelValue', normalized);

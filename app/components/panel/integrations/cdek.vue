@@ -6,6 +6,12 @@
     <p v-else-if="error" role="alert">
       Не удалось загрузить настройки СДЭК.
     </p>
+    <div v-if="data?.environment_selectable" class="module_item">
+      <div class="module_item-title">
+        Среда СДЭК
+      </div>
+      <PanelSelection v-model="finalForm.environment" :options="environments" />
+    </div>
     <div class="module_item">
       <div class="module_item-title required">
         {{ t('panel.integrations.cdek.auth.title') }}
@@ -119,7 +125,13 @@ const ensureAuthorized = async () => {
   }
 };
 
+const environments = [
+  { id: 'test', name: 'Учебная' },
+  { id: 'production', name: 'Боевая' },
+];
+
 const emptyForm = () => ({
+  environment: 'test',
   account: '',
   secure_password: '',
   from_location: {
@@ -147,9 +159,11 @@ const contragentTypes = ref([
 const isLegalContragent = computed(() => finalForm.value?.sender.contragent_type === 'LEGAL_ENTITY');
 
 type ModuleConfig = {
+  environment_selectable: boolean;
   account_configured: boolean;
   secure_password_configured: boolean;
   config: {
+    environment?: 'test' | 'production';
     from_location?: Partial<Omit<ReturnType<typeof emptyForm>['from_location'], 'code'>> & { code: number } | null;
     sender?: Partial<ReturnType<typeof emptyForm>['sender']> | null;
     shipment_point?: string | null;

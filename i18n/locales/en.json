@@ -14,7 +14,8 @@
     "and": "and",
     "go_to": "Open",
     "true": "Yes",
-    "false": "No"
+    "false": "No",
+    "stock_empty": "Out of stock"
   },
   "navbar": {
     "home": "Home",
@@ -113,6 +114,12 @@
         "icon": "diamond",
         "title": "Tools",
         "info": "Accessories for rhinestones and decorative elements"
+      },
+      {
+        "icon": "diamond",
+        "title": "Craft Fabrics",
+        "info": "Spandex, stretch mesh, velvet and more",
+        "href": "/catalog?category=115"
       }
     ]
   },
@@ -711,6 +718,9 @@
       "moysklad": {
         "imported": "Products imported"
       }
+    },
+    "categories": {
+      "updated": "Categories updated"
     }
   }
 }

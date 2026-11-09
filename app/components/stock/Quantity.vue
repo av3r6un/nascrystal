@@ -1,5 +1,5 @@
 <template>
-  <div class="quantity">
+  <div v-if="Number(max) >= 1" class="quantity">
     <button type="button" class="btn quantity_button minus" :disabled="localValue <= 1" @click="subtract">
       <Icon name="nsc:minus" :size="16" />
     </button>
@@ -10,10 +10,16 @@
       <Icon name="nsc:plus-small" :size="16" />
     </button>
   </div>
+  <div v-else class="quantity">
+    <div class="quantity_value long empty">
+      {{ t('default.stock_empty') }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 const emit = defineEmits(['update:modelValue']);
+const { t } = useI18n();
 const props = defineProps({
   modelValue: {
     type: Number,
@@ -45,6 +51,12 @@ const subtract = () => {
     width: 30px;
     padding: 0;
     text-align: center;
+    &.long{
+      width: auto;
+    }
+    &.empty{
+      color: $light-red;
+    }
   }
   &_button{
     border: 1px solid $semi-grey;

@@ -46,7 +46,7 @@
               </div>
               <StockQuantity v-model="selectedAmount" :max="selectedMaxQ" />
             </div>
-            <button class="btn btn_submit" @click="addToCart">
+            <button class="btn btn_submit" :disabled="buttonDisabled" @click="addToCart">
               {{ t('stock.submit') }}
             </button>
           </div>
@@ -156,6 +156,7 @@ const productImage = computed(() => (
   || ''
 ));
 
+const buttonDisabled = computed(() => selectedAmount.value < 1 || selectedMaxQ.value < 1);
 const stock = computed(() => {
   const product = data.value;
   if (!product) {
@@ -359,6 +360,7 @@ const addToCart = () => {
     display: flex;
     gap: 48px;
     width: 100%;
+    align-items: flex-start;
     @media (max-width: 730px) {
       flex-direction: column !important;
       align-items: center;

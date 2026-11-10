@@ -32,7 +32,7 @@
               {{ stock?.name }}
             </div>
             <div class="stock_price">
-              {{ selectedPrice }}
+              <StockPrice :amount="currentOffer.amount" :discounts="currentOffer?.discounts" />
             </div>
             <div v-if="variantGroups.length" class="stock_size">
               <StockSizeSelector v-model="selectedGroup" :title="groupTitle" :options="variantGroups" />
@@ -254,6 +254,7 @@ const visibleOfferIndexes = computed(() => {
   ));
 });
 const visibleOffers = computed(() => visibleOfferIndexes.value.map(index => stock.value.offers[index]!));
+
 const selectedSizeIndex = computed({
   get: () => selectedOffer.value === null ? null : visibleOfferIndexes.value.indexOf(selectedOffer.value),
   set: (index: number | null) => {
@@ -318,11 +319,17 @@ const addToCart = () => {
   if (!offer || !variant || offer.quantity <= 0) return;
 
   const color = attributeValue(attribute(variant, 'Цвет'));
+  const discounts = offer.discounts.length >= 1
+    ? offer.discounts.sort((a: object, b: object) => Number(b?.percent) - Number(a?.percent))
+    : null;
+  const discount = discounts === null ? 0 : Number(discounts[0].percent);
   cart.add({
     id: offer.id,
     name: variant.name || stock.value.name,
     properties: [color, selectedSize.value].filter(Boolean),
     price: Number(offer.amount),
+    discount: discount,
+    salePrice: discount ? Number(offer.amount) - (Number(offer.amount) * (discount) / 100) : Number(offer.amount),
     image: imageSrc.value,
     quantity: {
       value: Math.min(selectedAmount.value, offer.quantity),
@@ -422,11 +429,6 @@ const addToCart = () => {
     font-size: 32px;
     font-weight: 600;
     font-family: $title-font;
-  }
-  &_price{
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
   }
   &_section{
     &-title{

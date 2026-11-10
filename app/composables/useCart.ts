@@ -9,7 +9,9 @@ export interface CartItem {
   properties: string[];
   price: number;
   image: string;
-  quantity?: CartItemQuantity;
+  salePrice: number;
+  quantity: CartItemQuantity;
+  discount?: number;
 }
 
 const CART_STORAGE_KEY = 'cart';

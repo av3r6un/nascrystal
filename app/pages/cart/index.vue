@@ -113,10 +113,10 @@ const subtotal = computed(() => {
   let price = 0;
   cartItems.value.forEach((ci) => {
     if (ci?.quantity) {
-      price += ci.price * ci.quantity.value;
+      price += ci.salePrice * ci.quantity.value;
     }
     else {
-      price += ci.price;
+      price += ci.salePrice;
     }
   });
   return price;

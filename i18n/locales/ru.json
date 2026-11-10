@@ -15,7 +15,8 @@
     "go_to": "Перейти",
     "true": "Да",
     "false": "Нет",
-    "stock_empty": "Нет в наличии"
+    "stock_empty": "Нет в наличии",
+    "discount": "Скидка"
   },
   "navbar": {
     "home": "Главная",

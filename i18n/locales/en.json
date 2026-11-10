@@ -15,7 +15,8 @@
     "go_to": "Open",
     "true": "Yes",
     "false": "No",
-    "stock_empty": "Out of stock"
+    "stock_empty": "Out of stock",
+    "discount": "sale"
   },
   "navbar": {
     "home": "Home",

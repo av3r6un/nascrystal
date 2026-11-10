@@ -5,6 +5,9 @@
       <div v-else class="product_image-placehoolder">
         <Icon name="nsc:diamond" :size="24" />
       </div>
+      <div v-if="product.has_discounts" class="product_image-discount">
+        {{ t('default.discount') }}
+      </div>
     </div>
     <div class="product_info">
       <div class="product_category">
@@ -81,6 +84,19 @@ const getProductImage = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    &-discount{
+      display: block;
+      position: absolute;
+      padding: 2px 25px;
+      font-size: 12px;
+      background: $light-red;
+      color: $white;
+      transform: rotate(-45deg);
+      right: -20px;
+      bottom: 16px;
+    }
   }
   &_info{
     padding: 20px;

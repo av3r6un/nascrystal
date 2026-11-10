@@ -17,7 +17,7 @@
         </span>
       </div>
       <div class="card_price">
-        {{ price }} ₽
+        <StockPrice :amount="price" :sale-price="salePrice" small />
       </div>
     </div>
     <div class="card_actions">
@@ -50,6 +50,14 @@ const props = defineProps({
   price: {
     type: Number,
     required: true,
+  },
+  salePrice: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Number,
+    required: false,
   },
   quantity: {
     type: Object,
@@ -131,16 +139,14 @@ const quant = computed({
     font-size: 12px;
     color: $light-brown;
   }
-  &_price{
-    margin-top: auto;
-    color: $brown;
-    font-weight: 700;
-  }
   &_name{
     font-family: $title-font;
     color: $brown;
     font-size: 20px;
     font-weight: 600;
+  }
+  &_price{
+    margin-top: auto;
   }
   &_actions{
     margin-left: auto;

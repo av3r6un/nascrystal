@@ -53,7 +53,7 @@ const newPrice = computed(() => {
   return Number(props.amount - (props.amount * (minimalDiscount.value / 100))).toFixed(2);
 });
 
-const priceDiffer = computed(() => Number(props.amount).toFixed(2) !== Number(props.salePrice).toFixed(2));
+const priceDiffer = computed(() => props.salePrice ? Number(props.amount).toFixed(2) !== Number(props.salePrice).toFixed(2) : false);
 </script>
 
 <style lang="scss" scoped>

@@ -11,7 +11,13 @@
         {{ t('panel.catalog.load_error') }}
       </div>
       <div v-else class="catalog_body-content">
-        <PanelCategoryOrder :categories="data.categories" @saved="data.categories = $event" />
+        <PanelCategoryOrder
+          :categories="data.categories"
+          :deleting="deletingCategory"
+          :delete-error="categoryDeleteError ? t(`panel.catalog.${categoryDeleteError}`) : null"
+          @saved="data.categories = $event"
+          @delete="deleteCategory"
+        />
         <PanelPropertyEditor
           v-for="attribute in attributes"
           :id="attribute.id"
@@ -48,7 +54,7 @@ type CatalogAttribute = {
 
 type CatalogResponse = {
   attributes: CatalogAttribute[];
-  categories: Array<{ id: number; name: string; sort_order: number }>;
+  categories: Array<{ id: number; name: string; sort_order: number; empty?: boolean }>;
 };
 
 const ensureAuthorized = async () => {
@@ -82,6 +88,30 @@ const { data, pending, error, refresh } = await useAsyncData(
 
 const attributes = computed(() => data.value?.attributes ?? []);
 const options = computed(() => attributes.value.flatMap(attribute => attribute.options));
+const deletingCategory = ref(false);
+const categoryDeleteError = ref<'delete_conflict' | 'delete_error' | null>(null);
+
+const deleteCategory = async (id: number) => {
+  if (deletingCategory.value) return;
+  deletingCategory.value = true;
+  categoryDeleteError.value = null;
+  try {
+    await ensureAuthorized();
+    await $fetch(`/internal/catalog/categories/${id}`, {
+      method: 'DELETE',
+      headers: auth.authHeader,
+    });
+    data.value.categories = data.value.categories.filter(category => category.id !== id);
+  }
+  catch (error) {
+    categoryDeleteError.value = (error as { statusCode?: number }).statusCode === 409
+      ? 'delete_conflict'
+      : 'delete_error';
+  }
+  finally {
+    deletingCategory.value = false;
+  }
+};
 
 const justUpdate = async (newVal: AttributeOption[]) => {
   try {

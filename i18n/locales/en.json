@@ -382,7 +382,10 @@
       "size_placeholder": "Size (mm)",
       "categories_empty": "There is no one category yet.",
       "sizes_empty": "There is no one size yet.",
-      "colors_empty": "There is no one color yet."
+      "colors_empty": "There is no one color yet.",
+      "delete_category": "Delete empty category",
+      "delete_conflict": "This category cannot be deleted while it contains products, including archived ones.",
+      "delete_error": "Could not delete the category."
     },
     "settings": {
       "title": "Settings",

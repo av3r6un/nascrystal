@@ -544,7 +544,8 @@
         "payment_provider": "Платёжный сервис",
         "payment_statuses": {
           "succeeded": "Успешно оплачен",
-          "errored": "Ошибка оплаты"
+          "errored": "Ошибка оплаты",
+          "pending": "Ожидание оплаты"
         },
         "payment_providers": {
           "yookassa": "ЮКасса"

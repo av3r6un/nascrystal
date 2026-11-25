@@ -7,6 +7,7 @@ export interface CartItem {
   id: number;
   name: string;
   properties: string[];
+  propertyValues?: string[];
   price: number;
   image: string;
   salePrice: number;
@@ -66,6 +67,7 @@ export const useCart = () => {
     const currentValue = cartItem.quantity?.value ?? 1;
     const addedValue = item.quantity?.value ?? 1;
     const maxValue = cartItem.quantity?.max ?? item.quantity?.max ?? currentValue + addedValue;
+    cartItem.propertyValues = item.propertyValues ?? cartItem.propertyValues;
 
     cartItem.quantity = {
       value: Math.min(currentValue + addedValue, maxValue),

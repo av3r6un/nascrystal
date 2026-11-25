@@ -1,5 +1,7 @@
 import { callFastApiAsNitro } from '@@/server/services/auth.service';
 
+const STOCK_TIMEOUT_MS = Number(process.env.NUXT_FASTAPI_STOCK_TIMEOUT_MS) || 15000;
+
 type StockBody = {
   items?: unknown[];
   page_index?: number;
@@ -35,6 +37,7 @@ export default defineEventHandler(async (event) => {
     const response = await callFastApiAsNitro<StockEnvelope | StockBody>(event, '/api/stock/', {
       method: 'GET',
       query: normalizedQuery,
+      timeout: STOCK_TIMEOUT_MS,
     });
 
     const body = getStockBody(response);

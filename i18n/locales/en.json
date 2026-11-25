@@ -504,7 +504,8 @@
         "payment_provider": "Payment provider",
         "payment_statuses": {
           "succeeded": "Paid",
-          "errored": "Payment failed"
+          "errored": "Payment failed",
+          "pending": "Pending payment"
         },
         "payment_providers": {
           "yookassa": "YooKassa"

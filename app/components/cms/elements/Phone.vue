@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AsYouType, isValidPhoneNumber } from 'libphonenumber-js';
+import { AsYouType } from 'libphonenumber-js';
 
 const props = defineProps({
   name: {
@@ -79,7 +79,7 @@ const onInput = (e: Event) => {
   const value = target.value.trim();
   const internationalValue = value === '' || value.startsWith('+')
     ? value
-    : isValidPhoneNumber(`+${value}`) ? `+${value}` : `${dialCode.value}${value}`;
+    : `${dialCode.value}${value}`;
   const normalized = formatInput(internationalValue);
   target.value = nationalNumber.value;
   emit('update:modelValue', normalized);

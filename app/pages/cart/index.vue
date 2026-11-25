@@ -7,9 +7,16 @@
       <div class="cart_body">
         <div v-if="cartItems.length" class="cart_items">
           <StockCartCard
-            v-for="i in cartItems"
-            v-bind="i"
-            :key="i.id"
+            v-for="item in cartItems"
+            :id="item.id"
+            :key="item.id"
+            :name="item.name"
+            :properties="item.properties"
+            :price="item.price"
+            :image="item.image"
+            :sale-price="item.salePrice"
+            :quantity="item.quantity"
+            :discount="item.discount"
             @remove="remove"
             @quant-changed="changeQuantity"
           />
@@ -152,7 +159,7 @@ const makeOrder = async () => {
     },
     items: cartItems.value.map(item => ({
       id: item.id,
-      properties: item.properties,
+      properties: item.propertyValues,
       quantity: {
         value: item.quantity?.value ?? 1,
         max: item.quantity?.max,

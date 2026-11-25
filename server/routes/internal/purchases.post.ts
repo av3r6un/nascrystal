@@ -69,7 +69,7 @@ export default defineEventHandler(async (event) => {
       id: item.id,
       properties: Array.isArray(item.properties)
         ? item.properties.filter((property): property is string => typeof property === 'string')
-        : [],
+        : undefined,
       quantity: {
         value: item.quantity.value,
         max: typeof item.quantity.max === 'number' && Number.isInteger(item.quantity.max)

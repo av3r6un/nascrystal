@@ -311,14 +311,13 @@ const buildAttrs = computed(() => {
   ].filter(item => item.value);
 });
 
-const selectedSize = computed(() => attributeValue(attribute(currentVariant.value, 'Размер')));
-
 const addToCart = () => {
   const offer = currentOffer.value;
   const variant = currentVariant.value;
   if (!offer || !variant || offer.quantity <= 0) return;
 
-  const color = attributeValue(attribute(variant, 'Цвет'));
+  const cartAttributes = [attribute(variant, 'Цвет'), attribute(variant, 'Размер')]
+    .filter(item => item !== undefined);
   const discounts = offer.discounts.length >= 1
     ? offer.discounts.sort((a: object, b: object) => Number(b?.percent) - Number(a?.percent))
     : null;
@@ -326,7 +325,8 @@ const addToCart = () => {
   cart.add({
     id: offer.id,
     name: variant.name || stock.value.name,
-    properties: [color, selectedSize.value].filter(Boolean),
+    properties: cartAttributes.map(attributeValue),
+    propertyValues: cartAttributes.map(item => item.value),
     price: Number(offer.amount),
     discount: discount,
     salePrice: discount ? Number(offer.amount) - (Number(offer.amount) * (discount) / 100) : Number(offer.amount),

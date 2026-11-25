@@ -155,6 +155,7 @@ onBeforeUnmount(() => {
   &_caption {
     font-size: 13px;
     color: $light-brown;
+    margin-top: 20px;
   }
   .data{
     &_address{
